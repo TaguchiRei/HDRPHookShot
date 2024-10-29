@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [HideInInspector] public static GameManager Instance = default;
+    
 
     private void Awake()
     {
