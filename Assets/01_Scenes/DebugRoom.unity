@@ -6788,7 +6788,7 @@ Rigidbody:
   m_GameObject: {fileID: 9176499206125890058}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 5
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -6819,9 +6819,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canMove: 1
-  _moveSpeed: 10
+  _moveSpeed: 2
   _canJump: 1
   _jumpPower: 1
+  _gravityScale: 1
+  _gravityScaleChangePoint: []
   _rigidbody: {fileID: 9176499206125890060}
 --- !u!1 &9177086677562006323
 GameObject:

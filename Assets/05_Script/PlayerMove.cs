@@ -10,9 +10,10 @@ public class PlayerMove : MonoBehaviour
     public bool _canJump = false;
     [SerializeField] float _jumpPower = 1;
 
+    [SerializeField] float _gravityScale = 1;
+    [SerializeField] float[] _gravityScaleChangePoint;
     [SerializeField] Rigidbody _rigidbody;
     Vector3 _movePower = Vector3.zero;
-    bool _addForce = false;
     private void Start()
     {
         _gameManager = GameObject.FindGameObjectWithTag("Manager");
@@ -21,18 +22,23 @@ public class PlayerMove : MonoBehaviour
     void Update()
     {
         //プレイヤーの動きを作る
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S) ||Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
-        {
-            _movePower = transform.TransformDirection(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"))) * _moveSpeed;
-            _addForce = true;
-        }
+        _movePower = transform.TransformDirection(new Vector3(Input.GetAxisRaw("Horizontal") * _moveSpeed, Input.GetAxisRaw("Jump") * _jumpPower, Input.GetAxisRaw("Vertical") * _moveSpeed));
     }
     private void FixedUpdate()
     {
-        if (_addForce)
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S))
         {
-            _rigidbody.AddForce(_movePower);
-            _movePower = Vector3.zero;
+            
         }
+        _rigidbody.AddForce(_movePower, ForceMode.VelocityChange);
+        _movePower = Vector3.zero;
+        
+        //重力を作る
+        var boxCast = Physics.BoxCast(transform.position, transform.localScale/2, Vector3.down,out RaycastHit hit, Quaternion.identity); 
+        if(hit.distance < _gravityScaleChangePoint[0])
+        {
+
+        }
+        
     }
 }
