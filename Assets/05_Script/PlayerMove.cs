@@ -89,7 +89,7 @@ public class PlayerMove : MonoBehaviour
     private void FixedUpdate()
     {
         //プレイヤーの動きを作る
-        _rigidbody.AddForce(_movePower);
+        _rigidbody.AddForce(transform.TransformDirection(_movePower));
         //重力を作る
         Physics.BoxCast(transform.position, transform.localScale / 2, Vector3.down, out RaycastHit hit, Quaternion.identity);
         _groundDistanse = hit.distance;
@@ -125,8 +125,16 @@ public class PlayerMove : MonoBehaviour
     {
         //回転速度を調節するために20で割っている。また、デフォルト値が反転操作なのでX軸回転は-1をかける
         Vector2 look = context.ReadValue<Vector2>() / 20f;
-        transform.Rotate(0,look.x * _gameManager._horiaontalCamera,0);
-        _playerBody.transform.Rotate(look.y * _gameManager._verticalCamera * -1f, 0, 0);
+        transform.Rotate(0, look.x * _gameManager._horiaontalCamera, 0);
+        //上下カメラの上限と下限を設定する。
+        float verticalAngle = Mathf.Clamp(look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
+        float playerAngle = _playerBody.transform.rotation.eulerAngles.x;
+        //プレイヤーの角度をeulerAnglesで取得しているのでマイナスの値がなく、マイナスは360からその値を引いた数になるので360で引くことで戻す。
+        if (playerAngle > 180) playerAngle -= 360;
+        if (verticalAngle + playerAngle < 80 && -80 < verticalAngle + playerAngle)
+        {
+            _playerBody.transform.Rotate(verticalAngle, 0, 0);
+        }
     }
     /// <summary>
     /// ジャンプのための操作をここに書く。
