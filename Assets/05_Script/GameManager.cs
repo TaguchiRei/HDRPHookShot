@@ -1,10 +1,18 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [HideInInspector] public static GameManager Instance = default;
-    
+    /// <summary>
+    /// カメラの水平方向の反転の可否を行う。単に数値を下げればカメラの感度が変わる
+    /// </summary>
+    [Range (-1,1)] public int _horiaontalCamera = 0;
+    /// <summary>
+    /// カメラの垂直方向の反転の可否を行う。単に数値を下げればカメラの感度が変わる
+    /// </summary>
+    [Range(-1, 1)] public int _verticalCamera = 0;
 
     private void Awake()
     {
@@ -21,7 +29,9 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        
+        //マウスを固定して隠す
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
