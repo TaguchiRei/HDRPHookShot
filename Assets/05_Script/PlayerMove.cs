@@ -129,7 +129,7 @@ public class PlayerMove : MonoBehaviour
         //上下カメラの上限と下限を設定する。
         float verticalAngle = Mathf.Clamp(look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
         float playerAngle = _playerBody.transform.rotation.eulerAngles.x;
-        //プレイヤーの角度をeulerAnglesで取得しているのでマイナスの値がなく、マイナスは360からその値を引いた数になるので360で引くことで戻す。
+        //プレイヤーの角度をeulerAnglesで取得しているのでマイナスは360からその値を引いた数になるので360で引くことで正しい値に戻す。
         if (playerAngle > 180) playerAngle -= 360;
         if (verticalAngle + playerAngle < 80 && -80 < verticalAngle + playerAngle)
         {
@@ -142,7 +142,7 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnJump(InputAction.CallbackContext context)
     {
-
+        _rigidbody.AddForce(new Vector3(0,_jumpPower,0), ForceMode.Acceleration);
     }
     /// <summary>
     /// 射撃のための操作をここに書く。

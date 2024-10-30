@@ -5499,8 +5499,8 @@ Transform:
   - {fileID: 5978577600591599652}
   - {fileID: 3316409017818195671}
   - {fileID: 2454795636651624994}
-  - {fileID: 140308938}
   - {fileID: 408418679}
+  - {fileID: 140308938}
   m_Father: {fileID: 8363934118273740976}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &6610741421823307082
@@ -6852,11 +6852,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canMove: 1
-  _moveSpeed: 10
+  _moveSpeed: 20
   _canJump: 1
   _jumpPower: 1
   _gravityScale: 1
-  _gravityScaleChangePoint: 0
+  _gravityScaleChangePoint: 2
   _playerBody: {fileID: 5190584121416393652}
   _rigidbody: {fileID: 9176499206125890060}
 --- !u!1 &9177086677562006323
