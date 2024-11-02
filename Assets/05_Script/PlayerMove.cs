@@ -6,17 +6,21 @@ using UnityEngine.InputSystem;
 public class PlayerMove : MonoBehaviour
 {
     GameManager _gameManager;
-    public bool _canMove = false;
+    public bool _canMoveInput = false;
     [SerializeField] float _moveSpeed = 1;
-    public bool _canJump = false;
+    public bool _canJumpInput = false;
     [SerializeField] float _jumpPower = 1;
-
+    public bool _canUseWeapon = false;
+    [SerializeField] WeaponStatus _weaponStatus;
+    
     [SerializeField] float _gravityScale = 1;
     [SerializeField] float _gravityScaleChangePoint;
     [SerializeField] GameObject _playerBody;
     [SerializeField] Rigidbody _rigidbody;
     Vector3 _movePower = Vector3.zero;
+    Vector2 look;
 
+    bool _canJump = false;
     private float _groundDistanse = 0;
     private PlayerInput _playerInput;
 
@@ -84,20 +88,35 @@ public class PlayerMove : MonoBehaviour
     void Update()
     {
         //プレイヤーの動きを作る
-
+        //視点操作はここで行う。
+        transform.Rotate(0, look.x * _gameManager._horiaontalCamera, 0);
+        //上下カメラの上限と下限を設定する。また、デフォルト値が反転操作なのでX軸回転(カメラの上下方向操作)は-1をかける
+        float verticalAngle = Mathf.Clamp(look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
+        float playerAngle = _playerBody.transform.rotation.eulerAngles.x;
+        //プレイヤーの角度をeulerAnglesで取得しているのでマイナスは360からその値を引いた数になるので360で引くことで正しい値に戻す。
+        if (playerAngle > 180) playerAngle -= 360;
+        if (verticalAngle + playerAngle < 80 && -80 < verticalAngle + playerAngle)
+        {
+            _playerBody.transform.Rotate(verticalAngle, 0, 0);
+        }
     }
     private void FixedUpdate()
     {
         //プレイヤーの動きを作る
         _rigidbody.AddForce(transform.TransformDirection(_movePower));
         //重力を作る
-        Physics.BoxCast(transform.position, transform.localScale / 2, Vector3.down, out RaycastHit hit, Quaternion.identity);
+        Physics.BoxCast(transform.position, new Vector3(transform.localScale.x,0.1f,transform.localScale.z), Vector3.down, out RaycastHit hit, Quaternion.identity);
         _groundDistanse = hit.distance;
         //重力加速度に重力の強さをかけ、落ちる時はさらに重力を増加させる。地面に近づくとさらに強力に
         Vector3 gravity = new Vector3(0, -9.81f, 0) * _gravityScale;
         gravity = _rigidbody.linearVelocity.y < 0 ? gravity * 1.2f : gravity;
         gravity = _groundDistanse < _gravityScaleChangePoint ? gravity * 2f : gravity;
         _rigidbody.AddForce(gravity, ForceMode.Acceleration);
+        //接地判定のために地面との距離とベロシティを測る
+        if (_groundDistanse < 0.1f && _rigidbody.linearVelocity.y <= 0)
+        {
+            _canJump = true;
+        }
     }
 
     private void OnDestroy()
@@ -123,18 +142,16 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnLook(InputAction.CallbackContext context)
     {
-        //回転速度を調節するために20で割っている。また、デフォルト値が反転操作なのでX軸回転は-1をかける
-        Vector2 look = context.ReadValue<Vector2>() / 20f;
-        transform.Rotate(0, look.x * _gameManager._horiaontalCamera, 0);
-        //上下カメラの上限と下限を設定する。
-        float verticalAngle = Mathf.Clamp(look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
-        float playerAngle = _playerBody.transform.rotation.eulerAngles.x;
-        //プレイヤーの角度をeulerAnglesで取得しているのでマイナスは360からその値を引いた数になるので360で引くことで正しい値に戻す。
-        if (playerAngle > 180) playerAngle -= 360;
-        if (verticalAngle + playerAngle < 80 && -80 < verticalAngle + playerAngle)
+        //ゲームパッドとマウスで操作を分ける。キーボードマウスでは視点操作が早すぎるため、20で割っている。
+        if (context.control.device is Gamepad)
         {
-            _playerBody.transform.Rotate(verticalAngle, 0, 0);
+            look = context.ReadValue<Vector2>();
         }
+        else
+        {
+            look =  context.ReadValue<Vector2>() / 20f;
+        }
+        //実際に回す動きはUpdate内で行う。
     }
     /// <summary>
     /// ジャンプのための操作をここに書く。
@@ -142,7 +159,12 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnJump(InputAction.CallbackContext context)
     {
-        _rigidbody.AddForce(new Vector3(0,_jumpPower,0), ForceMode.Acceleration);
+        //下に向けたボックスキャストで取得した地面との距離で接地判定をとる。このオブジェクトは足元が原点になっており、原点からボックスキャストを出しているので大きさを変えても常に地面との距離は一定。
+        if (_groundDistanse < 0.1f && _canJump)
+        {
+            _rigidbody.AddForce(new Vector3(0, _jumpPower, 0), ForceMode.Impulse);
+            _canJump = false;
+        }
     }
     /// <summary>
     /// 射撃のための操作をここに書く。
@@ -150,7 +172,7 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnShot(InputAction.CallbackContext context)
     {
-
+        Debug.Log("ShotButton");
     }
     /// <summary>
     /// インタラクトの操作をここに書く。
@@ -158,7 +180,7 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnInteract(InputAction.CallbackContext context)
     {
-
+        Debug.Log("InteractButton");
     }
     /// <summary>
     /// エイムボタンを押した時の操作をここに書く。エイムの処理とフックショットを飛ばす処理。
@@ -166,7 +188,7 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnAim(InputAction.CallbackContext context)
     {
-
+        Debug.Log("AimAndHookShotButton");
     }
     /// <summary>
     /// 武器の変形のための処理をここに書く。
@@ -174,7 +196,7 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnConvert(InputAction.CallbackContext context)
     {
-
+        Debug.Log("ConvertButton");
     }
     /// <summary>
     /// アビリティ１を呼び出す処理
@@ -182,7 +204,7 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility1(InputAction.CallbackContext context)
     {
-
+        Debug.Log("UseAbility1");
     }
     /// <summary>
     /// アビリティ２を呼び出す処理
@@ -190,7 +212,7 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility2(InputAction.CallbackContext context)
     {
-
+        Debug.Log("UseAbility2");
     }
     /// <summary>
     /// アビリティ３を呼び出す処理
@@ -198,6 +220,6 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility3(InputAction.CallbackContext context)
     {
-
+        Debug.Log("UseAbility3");
     }
 }
