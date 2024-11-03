@@ -11,7 +11,7 @@ public class PlayerMove : MonoBehaviour
     public bool _canJumpInput = false;
     [SerializeField] float _jumpPower = 1;
     public bool _canUseWeapon = false;
-    [SerializeField] WeaponStatus _weaponStatus;
+    public WeaponStatus _weaponStatus;
     
     [SerializeField] float _gravityScale = 1;
     [SerializeField] float _gravityScaleChangePoint;
@@ -145,7 +145,7 @@ public class PlayerMove : MonoBehaviour
         //ゲームパッドとマウスで操作を分ける。キーボードマウスでは視点操作が早すぎるため、20で割っている。
         if (context.control.device is Gamepad)
         {
-            look = context.ReadValue<Vector2>();
+            look = context.ReadValue<Vector2>() * 5;
         }
         else
         {
@@ -173,6 +173,7 @@ public class PlayerMove : MonoBehaviour
     private void OnShot(InputAction.CallbackContext context)
     {
         Debug.Log("ShotButton");
+
     }
     /// <summary>
     /// インタラクトの操作をここに書く。
