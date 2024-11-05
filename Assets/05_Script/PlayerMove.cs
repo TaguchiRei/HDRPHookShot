@@ -173,7 +173,6 @@ public class PlayerMove : MonoBehaviour
     private void OnShot(InputAction.CallbackContext context)
     {
         Debug.Log("ShotButton");
-
     }
     /// <summary>
     /// インタラクトの操作をここに書く。
