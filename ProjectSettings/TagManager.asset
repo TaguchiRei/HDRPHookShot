@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Manager
+  - Muzzle
   layers:
   - Default
   - TransparentFX

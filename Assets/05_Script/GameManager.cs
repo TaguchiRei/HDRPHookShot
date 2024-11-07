@@ -2,9 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : SingletonMonoBehaviour<MonoBehaviour>
 {
-    [HideInInspector] public static GameManager Instance = default;
     /// <summary>
     /// カメラの水平方向の反転の可否を行う。単に数値を下げればカメラの感度が変わる
     /// </summary>
@@ -14,19 +13,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     [Range(-1, 1)] public int _verticalCamera = 0;
 
-    private void Awake()
-    {
-        if (Instance)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            Instance = this;
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            DontDestroyOnLoad(this.gameObject);
-        }
-    }
     void Start()
     {
         //マウスを固定して隠す
@@ -40,15 +26,11 @@ public class GameManager : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// シーンがロードされたときに呼ばれる
-    /// </summary>
-    /// <param name="s"></param>
-    /// <param name="mode"></param>
-    void OnSceneLoaded(Scene s, LoadSceneMode mode)
+    public override void OnSceneLoaded(Scene s, LoadSceneMode mode)
     {
-
+        base.OnSceneLoaded(s, mode);
     }
+
 }
 
 [Serializable]
