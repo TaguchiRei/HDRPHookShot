@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.VFX;
 
 [RequireComponent(typeof(Rigidbody))]
 
@@ -20,7 +19,13 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject _bullet;
     [SerializeField] GameObject _playerBody;
     [SerializeField] Rigidbody _rigidbody;
+
+    //í èÌéÀåÇÇÃÇΩÇﬂÇÃïœêî
     [SerializeField] UnityEvent _shot;
+    bool _shotting = false;
+    float _shotInterval = 0.2f;
+
+
     Vector3 _movePower = Vector3.zero;
     Vector2 look;
 
@@ -102,6 +107,16 @@ public class PlayerMove : MonoBehaviour
         {
             _playerBody.transform.Rotate(verticalAngle, 0, 0);
         }
+
+        //éÀåÇÉvÉçÉOÉâÉÄ
+        if (_shotting && _shotInterval <=0)
+        {
+            _shot.Invoke();
+        }
+        if (_shotInterval > 0)
+        {
+            _shotInterval -= Time.deltaTime;
+        }
     }
     private void FixedUpdate()
     {
@@ -180,14 +195,13 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnShot(InputAction.CallbackContext context)
     {
-        _shot.Invoke();
         if (context.phase == InputActionPhase.Started)
         {
-
+            _shotting = true;
         }
-        else
+        else if (context.phase == InputActionPhase.Canceled)
         {
-
+            _shotting = false;
         }
     }
     /// <summary>
