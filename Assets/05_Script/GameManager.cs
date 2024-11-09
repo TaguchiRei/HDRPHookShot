@@ -17,7 +17,6 @@ public class GameManager : SingletonMonoBehaviour<MonoBehaviour>
     {
         //ƒ}ƒEƒX‚ðŒÅ’è‚µ‚Ä‰B‚·
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     // Update is called once per frame

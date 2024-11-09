@@ -23,6 +23,7 @@ public class PlayerMove : MonoBehaviour
     //通常射撃のための変数
     [SerializeField] UnityEvent _shot;
     bool _shotting = false;
+    [SerializeField] float _defaultShotInterval = 0.2f;
     float _shotInterval = 0.2f;
 
 
@@ -112,6 +113,7 @@ public class PlayerMove : MonoBehaviour
         if (_shotting && _shotInterval <=0)
         {
             _shot.Invoke();
+            _shotInterval = _defaultShotInterval;
         }
         if (_shotInterval > 0)
         {
@@ -148,7 +150,7 @@ public class PlayerMove : MonoBehaviour
     }
 
 
-    /* ここから先は入力受付のためのプログラム*/
+    // ここから先は入力受付のためのプログラム
 
     /// <summary>
     /// 移動のための処理を書く。movePowerの値をここで変更。
