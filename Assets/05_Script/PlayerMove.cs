@@ -11,13 +11,14 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _moveSpeed = 1;
     public bool _canJumpInput = false;
     [SerializeField] float _jumpPower = 1;
-    public bool _canUseWeapon = false;
+    public bool _canUseWeaponInput = false;
     public WeaponStatus _weaponStatus;
-    
     [SerializeField] float _gravityScale = 1;
     [SerializeField] float _gravityScaleChangePoint;
     [SerializeField] GameObject _bullet;
+    [SerializeField] GameObject _Anchor;
     [SerializeField] GameObject _playerBody;
+    [SerializeField] Animator _anim;
     [SerializeField] Rigidbody _rigidbody;
 
     //通常射撃のための変数
@@ -25,7 +26,7 @@ public class PlayerMove : MonoBehaviour
     bool _shotting = false;
     [SerializeField] float _defaultShotInterval = 0.2f;
     float _shotInterval = 0.2f;
-
+    float anchorTimer = 0;
 
     Vector3 _movePower = Vector3.zero;
     Vector2 look;
@@ -34,58 +35,55 @@ public class PlayerMove : MonoBehaviour
     private float _groundDistance = 0;
     private PlayerInput _playerInput;
 
+    //プレイヤーの状態を保存する変数
+    Mode _mode = Mode.submachineGun;
+    bool _canShotConvert = true;//通常射撃、コンバート、レールガン射撃を管理
+    bool _canUseAbility = false;
+    bool _movingNow = false;
+    bool _jumping = false;
+
+
+
     private void Start()
     {
         _gameManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
         _playerInput = new();
 
         //アクションイベントを登録
-
-        // Moveアクションのイベント登録
         _playerInput.Player.Move.performed += OnMove;
         _playerInput.Player.Move.started += OnMove;
         _playerInput.Player.Move.canceled += OnMove;
 
-        // Lookアクションのイベント登録
         _playerInput.Player.Look.performed += OnLook;
         _playerInput.Player.Look.started += OnLook;
         _playerInput.Player.Look.canceled += OnLook;
 
-        // Jumpアクションのイベント登録
         _playerInput.Player.Jump.performed += OnJump;
         _playerInput.Player.Jump.started += OnJump;
 
-        // Shotアクションのイベント登録
         _playerInput.Player.Shot.performed += OnShot;
         _playerInput.Player.Shot.started += OnShot;
         _playerInput.Player.Shot.canceled += OnShot;
 
-        // Interactアクションのイベント登録
         _playerInput.Player.Interact.performed += OnInteract;
         _playerInput.Player.Interact.started += OnInteract;
         _playerInput.Player.Interact.canceled += OnInteract;
 
-        // Aimアクションのイベント登録
-        _playerInput.Player.Aim.performed += OnAim;
-        _playerInput.Player.Aim.started += OnAim;
-        _playerInput.Player.Aim.canceled += OnAim;
+        _playerInput.Player.Aim.started += OnAimAndHookShot;
+        _playerInput.Player.Aim.canceled += OnAimAndHookShot;
 
-        // Convertアクションのイベント登録
         _playerInput.Player.Convert.performed += OnConvert;
         _playerInput.Player.Convert.started += OnConvert;
         _playerInput.Player.Convert.canceled += OnConvert;
 
-        // Ability1アクションのイベント登録
         _playerInput.Player.Ability1.performed += OnAbility1;
         _playerInput.Player.Ability1.started += OnAbility1;
         _playerInput.Player.Ability1.canceled += OnAbility1;
 
-        // Ability2アクションのイベント登録
         _playerInput.Player.Ability2.performed += OnAbility2;
         _playerInput.Player.Ability2.started += OnAbility2;
         _playerInput.Player.Ability2.canceled += OnAbility2;
 
-        // Ability3アクションのイベント登録
         _playerInput.Player.Ability3.performed += OnAbility3;
         _playerInput.Player.Ability3.started += OnAbility3;
         _playerInput.Player.Ability3.canceled += OnAbility3;
@@ -98,7 +96,7 @@ public class PlayerMove : MonoBehaviour
     {
         //プレイヤーの動きを作る
         //視点操作はここで行う。
-        transform.Rotate(0, look.x * _gameManager._horiaontalCamera, 0);
+        transform.Rotate(0, look.x * _gameManager._horizontalCamera, 0);
         //上下カメラの上限と下限を設定する。また、デフォルト値が反転操作なのでX軸回転(カメラの上下方向操作)は-1をかける
         float verticalAngle = Mathf.Clamp(look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
         float playerAngle = _playerBody.transform.rotation.eulerAngles.x;
@@ -119,11 +117,26 @@ public class PlayerMove : MonoBehaviour
         {
             _shotInterval -= Time.deltaTime;
         }
+        if (anchorTimer > 0)
+        {
+            anchorTimer -= Time.deltaTime;
+            if (anchorTimer < 0)
+            {
+                _Anchor.GetComponent<Anchor>().AnchorReset();
+                _anim.SetBool("HookShotOrAim", false);
+                _canShotConvert = true;
+            }
+        }
     }
     private void FixedUpdate()
     {
         //プレイヤーの動きを作る
-        _rigidbody.AddForce(transform.TransformDirection(_movePower));
+        if(_groundDistance < 0.1f && _movingNow && _movePower != Vector3.zero)
+        {
+            Vector3 move = transform.TransformDirection(_movePower);
+            _rigidbody.linearVelocity = new Vector3(move.x,_rigidbody.linearVelocity.y,move.z);
+        }
+
         //重力を作る
         Physics.BoxCast(transform.position, new Vector3(transform.localScale.x,0.1f,transform.localScale.z), Vector3.down, out RaycastHit hit, Quaternion.identity);
         _groundDistance = hit.distance;
@@ -137,16 +150,17 @@ public class PlayerMove : MonoBehaviour
         {
             _canJump = true;
         }
+        //ジャンプの処理
+        if (_canJump && _jumping)
+        {
+            _rigidbody.AddForce(new Vector3(0, _jumpPower, 0), ForceMode.Impulse);
+            _canJump = false;
+        }
     }
 
     private void OnDestroy()
     {
         _playerInput?.Dispose();
-    }
-
-    public void Shot()
-    {
-
     }
 
 
@@ -160,6 +174,14 @@ public class PlayerMove : MonoBehaviour
     {
         Vector2 vector2 = context.ReadValue<Vector2>() * _moveSpeed;
         _movePower = new Vector3(vector2.x, 0, vector2.y);
+        if (context.phase == InputActionPhase.Started)
+        {
+            _movingNow = true;
+        }
+        else if (context.phase == InputActionPhase.Canceled)
+        {
+            _movingNow = false;
+        }
     }
     /// <summary>
     /// 視点操作のためのプログラムを書く。
@@ -184,11 +206,13 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnJump(InputAction.CallbackContext context)
     {
-        //下に向けたボックスキャストで取得した地面との距離で接地判定をとる。このオブジェクトは足元が原点になっており、原点からボックスキャストを出しているので大きさを変えても常に地面との距離は一定。
-        if (_groundDistance < 0.1f && _canJump)
+        if (context.phase == InputActionPhase.Started)
         {
-            _rigidbody.AddForce(new Vector3(0, _jumpPower, 0), ForceMode.Impulse);
-            _canJump = false;
+            _jumping = true;
+        }
+        else
+        {
+            _jumping = false;
         }
     }
     /// <summary>
@@ -199,7 +223,20 @@ public class PlayerMove : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Started)
         {
-            _shotting = true;
+            if (_mode == Mode.submachineGun)
+            {
+                if (_canShotConvert)
+                {
+                    _shotting = true;
+                }
+            }
+            else
+            {
+                if (_canShotConvert)
+                {
+                    _anim.SetBool("R_Shot", true);
+                }
+            }
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
@@ -218,9 +255,35 @@ public class PlayerMove : MonoBehaviour
     /// エイムボタンを押した時の操作をここに書く。エイムの処理とフックショットを飛ばす処理。
     /// </summary>
     /// <param name="context"></param>
-    private void OnAim(InputAction.CallbackContext context)
+    private void OnAimAndHookShot(InputAction.CallbackContext context)
     {
-        Debug.Log("AimAndHookShotButton");
+        if(context.phase == InputActionPhase.Started)
+        {
+            _anim.SetBool("HookShotOrAim", true);
+            if(_mode == Mode.submachineGun)
+            {
+                anchorTimer = _weaponStatus.HookShotTimer;
+                _Anchor.GetComponent<Anchor>().AnchorShot(_weaponStatus.HookShotSpeed);
+                _canShotConvert = false;
+            }
+            else
+            {
+                _canShotConvert = true;
+            }
+        }
+        else if(context.phase == InputActionPhase.Canceled)
+        {
+            _anim.SetBool("HookShotOrAim", false);
+            if (_mode == Mode.submachineGun)
+            {
+                _Anchor.GetComponent<Anchor>().AnchorReset(gameObject);
+                _canShotConvert = true;
+            }
+            else
+            {
+                _canShotConvert = false;
+            }
+        }
     }
     /// <summary>
     /// 武器の変形のための処理をここに書く。
@@ -228,7 +291,13 @@ public class PlayerMove : MonoBehaviour
     /// <param name="context"></param>
     private void OnConvert(InputAction.CallbackContext context)
     {
-        Debug.Log("ConvertButton");
+        if (_canShotConvert)
+        {
+            _anim.SetBool("RailGunMode", true);
+            _mode = Mode.railgun;
+            _canShotConvert = false;
+            _shotting = false;
+        }
     }
     /// <summary>
     /// アビリティ１を呼び出す処理
@@ -254,4 +323,16 @@ public class PlayerMove : MonoBehaviour
     {
         Debug.Log("UseAbility3");
     }
+
+    public void ModeReset()
+    {
+        _mode = Mode.submachineGun;
+        _canShotConvert = true;
+    }
+    public enum Mode
+    {
+        submachineGun,
+        railgun,
+    }
 }
+

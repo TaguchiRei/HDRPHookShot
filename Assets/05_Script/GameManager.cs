@@ -7,11 +7,11 @@ public class GameManager : SingletonMonoBehaviour<MonoBehaviour>
     /// <summary>
     /// カメラの水平方向の反転の可否を行う。単に数値を下げればカメラの感度が変わる
     /// </summary>
-    [Range(-1, 1)] public int _horiaontalCamera = 0;
+    [Range(-1, 1)] public int _horizontalCamera = 1;
     /// <summary>
     /// カメラの垂直方向の反転の可否を行う。単に数値を下げればカメラの感度が変わる
     /// </summary>
-    [Range(-1, 1)] public int _verticalCamera = 0;
+    [Range(-1, 1)] public int _verticalCamera = 1;
 
     void Start()
     {
@@ -41,6 +41,8 @@ public class WeaponStatus
     [SerializeField] float _magazineCapacity = 10f;
     [SerializeField] float _railgunPower = 5f;
     [SerializeField] float _railgunAttackRange = 5f;
+    [SerializeField] float _hookShotSpeed = 50f;
+    [SerializeField] float _hookShotTimer = 5f;
 
     public float Power { get => _power; set => _power = value; }
     public float BulletSpeed { get => _bulletSpeed; set => _bulletSpeed = value; }
@@ -48,4 +50,6 @@ public class WeaponStatus
     public float MagazineCapacity { get => _magazineCapacity; set => _magazineCapacity = value; }
     public float RailgunPower { get => _railgunPower; set => _railgunPower = value; }
     public float RailgunAttackRange { get => _railgunAttackRange; set => _railgunAttackRange = value; }
+    public float HookShotSpeed { get => _hookShotSpeed; set => _hookShotSpeed = value; }
+    public float HookShotTimer { get => _hookShotTimer; set => _hookShotTimer = value; }
 }
