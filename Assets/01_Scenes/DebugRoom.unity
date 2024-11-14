@@ -974,6 +974,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 765181c9ef4b24d32a4f7cbd2ef370dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _variables: {fileID: 0}
 --- !u!114 &1030863777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3857,6 +3858,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _muzzle: {fileID: 263575176}
   _camera: {fileID: 140308935}
+  _gun: {fileID: 2985969000349756661}
   _meshRenderer: {fileID: 3480215474775639776}
   _lineRenderer: {fileID: 3480215474775639779}
   _rig: {fileID: 3480215474775639777}
@@ -6969,6 +6971,7 @@ GameObject:
   - component: {fileID: 9176499206125890059}
   - component: {fileID: 9176499206125890061}
   - component: {fileID: 9176499206125890060}
+  - component: {fileID: 9176499206125890062}
   m_Layer: 3
   m_Name: player
   m_TagString: Untagged
@@ -7037,7 +7040,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canMoveInput: 0
-  _moveSpeed: 15
   _canJumpInput: 0
   _jumpPower: 10
   _canUseWeaponInput: 0
@@ -7084,7 +7086,28 @@ MonoBehaviour:
           m_StringArgument: OnShot
           m_BoolArgument: 0
         m_CallState: 2
-  _defaultShotInterval: 0.2
+  _shotting: 0
+  _movePower: {x: 0, y: 0, z: 0}
+  look: {x: 0, y: 0}
+  _canShotConvert: 1
+  _canUseAbility: 0
+  _moving: 0
+  _jumping: 0
+--- !u!114 &9176499206125890062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9176499206125890058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae615638352509f40bbf490dcaba6dd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 9176499206125890061}
+  _moveSpeed: 1
+  _Anchor: {fileID: 3120090714176644917}
 --- !u!1 &9177086677562006323
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,7 +9,6 @@ public class Bullet : MonoBehaviour
     float _bulletSpeed = 1;
     float _railgunAttackRange = 1;
     [SerializeField] Rigidbody _rig;
-    [SerializeField] 
     private void Start()
     {
         transform.position = _playerEye.transform.position;

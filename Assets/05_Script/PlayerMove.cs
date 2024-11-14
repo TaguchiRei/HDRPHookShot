@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 
@@ -8,7 +7,6 @@ public class PlayerMove : MonoBehaviour
 {
     GameManager _gameManager;
     public bool _canMoveInput = false;
-    [SerializeField] float _moveSpeed = 1;
     public bool _canJumpInput = false;
     [SerializeField] float _jumpPower = 1;
     public bool _canUseWeaponInput = false;
@@ -23,73 +21,27 @@ public class PlayerMove : MonoBehaviour
 
     //通常射撃のための変数
     [SerializeField] UnityEvent _shot;
-    bool _shotting = false;
-    [SerializeField] float _defaultShotInterval = 0.2f;
-    float _shotInterval = 0.2f;
+    public bool _shotting = false;
+    float _shotIntervalTimer = 0.2f;
     float anchorTimer = 0;
 
-    Vector3 _movePower = Vector3.zero;
-    Vector2 look;
+    public Vector3 _movePower = Vector3.zero;
+    public Vector2 look;
 
+    public bool _canShotConvert = true;//通常射撃、コンバート、レールガン射撃を管理
+    public bool _canUseAbility = false;
     bool _canJump = false;
     private float _groundDistance = 0;
-    private PlayerInput _playerInput;
 
     //プレイヤーの状態を保存する変数
-    Mode _mode = Mode.submachineGun;
-    bool _canShotConvert = true;//通常射撃、コンバート、レールガン射撃を管理
-    bool _canUseAbility = false;
-    bool _movingNow = false;
-    bool _jumping = false;
+    public bool _moving = false;
+    public bool _jumping = false;
 
 
 
     private void Start()
     {
         _gameManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
-        _playerInput = new();
-
-        //アクションイベントを登録
-        _playerInput.Player.Move.performed += OnMove;
-        _playerInput.Player.Move.started += OnMove;
-        _playerInput.Player.Move.canceled += OnMove;
-
-        _playerInput.Player.Look.performed += OnLook;
-        _playerInput.Player.Look.started += OnLook;
-        _playerInput.Player.Look.canceled += OnLook;
-
-        _playerInput.Player.Jump.performed += OnJump;
-        _playerInput.Player.Jump.started += OnJump;
-
-        _playerInput.Player.Shot.performed += OnShot;
-        _playerInput.Player.Shot.started += OnShot;
-        _playerInput.Player.Shot.canceled += OnShot;
-
-        _playerInput.Player.Interact.performed += OnInteract;
-        _playerInput.Player.Interact.started += OnInteract;
-        _playerInput.Player.Interact.canceled += OnInteract;
-
-        _playerInput.Player.Aim.started += OnAimAndHookShot;
-        _playerInput.Player.Aim.canceled += OnAimAndHookShot;
-
-        _playerInput.Player.Convert.performed += OnConvert;
-        _playerInput.Player.Convert.started += OnConvert;
-        _playerInput.Player.Convert.canceled += OnConvert;
-
-        _playerInput.Player.Ability1.performed += OnAbility1;
-        _playerInput.Player.Ability1.started += OnAbility1;
-        _playerInput.Player.Ability1.canceled += OnAbility1;
-
-        _playerInput.Player.Ability2.performed += OnAbility2;
-        _playerInput.Player.Ability2.started += OnAbility2;
-        _playerInput.Player.Ability2.canceled += OnAbility2;
-
-        _playerInput.Player.Ability3.performed += OnAbility3;
-        _playerInput.Player.Ability3.started += OnAbility3;
-        _playerInput.Player.Ability3.canceled += OnAbility3;
-
-        // アクションを有効化
-        _playerInput.Enable();
     }
 
     void Update()
@@ -108,14 +60,14 @@ public class PlayerMove : MonoBehaviour
         }
 
         //射撃プログラム
-        if (_shotting && _shotInterval <=0)
+        if (_shotting && _shotIntervalTimer <=0)
         {
             _shot.Invoke();
-            _shotInterval = _defaultShotInterval;
+            _shotIntervalTimer = 1 / _weaponStatus.RateOfFire;
         }
-        if (_shotInterval > 0)
+        if (_shotIntervalTimer > 0)
         {
-            _shotInterval -= Time.deltaTime;
+            _shotIntervalTimer -= Time.deltaTime;
         }
         if (anchorTimer > 0)
         {
@@ -131,7 +83,7 @@ public class PlayerMove : MonoBehaviour
     private void FixedUpdate()
     {
         //プレイヤーの動きを作る
-        if(_groundDistance < 0.1f && _movingNow && _movePower != Vector3.zero)
+        if(_groundDistance < 0.1f && _moving && _movePower != Vector3.zero)
         {
             Vector3 move = transform.TransformDirection(_movePower);
             _rigidbody.linearVelocity = new Vector3(move.x,_rigidbody.linearVelocity.y,move.z);
@@ -158,181 +110,19 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        _playerInput?.Dispose();
-    }
-
-
-    // ここから先は入力受付のためのプログラム
-
     /// <summary>
-    /// 移動のための処理を書く。movePowerの値をここで変更。
+    /// 外部からアニメーションの変更を行う際に使用する。
     /// </summary>
-    /// <param name="context"></param>
-    private void OnMove(InputAction.CallbackContext context)
+    /// <param name="animName">変更するBool型変数の名前を入力</param>
+    /// <param name="which">falseにする際のみfalseと入力</param>
+    public void AnimationChange(string animName , bool which = true)
     {
-        Vector2 vector2 = context.ReadValue<Vector2>() * _moveSpeed;
-        _movePower = new Vector3(vector2.x, 0, vector2.y);
-        if (context.phase == InputActionPhase.Started)
-        {
-            _movingNow = true;
-        }
-        else if (context.phase == InputActionPhase.Canceled)
-        {
-            _movingNow = false;
-        }
+        _anim.SetBool(animName, which);
     }
-    /// <summary>
-    /// 視点操作のためのプログラムを書く。
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnLook(InputAction.CallbackContext context)
+    public void AncShot()
     {
-        //ゲームパッドとマウスで操作を分ける。キーボードマウスでは視点操作が早すぎるため、20で割っている。
-        if (context.control.device is Gamepad)
-        {
-            look = context.ReadValue<Vector2>() * 5;
-        }
-        else
-        {
-            look =  context.ReadValue<Vector2>() / 20f;
-        }
-        //実際に回す動きはUpdate内で行う。
-    }
-    /// <summary>
-    /// ジャンプのための操作をここに書く。
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnJump(InputAction.CallbackContext context)
-    {
-        if (context.phase == InputActionPhase.Started)
-        {
-            _jumping = true;
-        }
-        else
-        {
-            _jumping = false;
-        }
-    }
-    /// <summary>
-    /// 射撃のための操作をここに書く。
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnShot(InputAction.CallbackContext context)
-    {
-        if (context.phase == InputActionPhase.Started)
-        {
-            if (_mode == Mode.submachineGun)
-            {
-                if (_canShotConvert)
-                {
-                    _shotting = true;
-                }
-            }
-            else
-            {
-                if (_canShotConvert)
-                {
-                    _anim.SetBool("R_Shot", true);
-                }
-            }
-        }
-        else if (context.phase == InputActionPhase.Canceled)
-        {
-            _shotting = false;
-        }
-    }
-    /// <summary>
-    /// インタラクトの操作をここに書く。
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnInteract(InputAction.CallbackContext context)
-    {
-        Debug.Log("InteractButton");
-    }
-    /// <summary>
-    /// エイムボタンを押した時の操作をここに書く。エイムの処理とフックショットを飛ばす処理。
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnAimAndHookShot(InputAction.CallbackContext context)
-    {
-        if(context.phase == InputActionPhase.Started)
-        {
-            _anim.SetBool("HookShotOrAim", true);
-            if(_mode == Mode.submachineGun)
-            {
-                anchorTimer = _weaponStatus.HookShotTimer;
-                _Anchor.GetComponent<Anchor>().AnchorShot(_weaponStatus.HookShotSpeed);
-                _canShotConvert = false;
-            }
-            else
-            {
-                _canShotConvert = true;
-            }
-        }
-        else if(context.phase == InputActionPhase.Canceled)
-        {
-            _anim.SetBool("HookShotOrAim", false);
-            if (_mode == Mode.submachineGun)
-            {
-                _Anchor.GetComponent<Anchor>().AnchorReset(gameObject);
-                _canShotConvert = true;
-            }
-            else
-            {
-                _canShotConvert = false;
-            }
-        }
-    }
-    /// <summary>
-    /// 武器の変形のための処理をここに書く。
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnConvert(InputAction.CallbackContext context)
-    {
-        if (_canShotConvert)
-        {
-            _anim.SetBool("RailGunMode", true);
-            _mode = Mode.railgun;
-            _canShotConvert = false;
-            _shotting = false;
-        }
-    }
-    /// <summary>
-    /// アビリティ１を呼び出す処理
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnAbility1(InputAction.CallbackContext context)
-    {
-        Debug.Log("UseAbility1");
-    }
-    /// <summary>
-    /// アビリティ２を呼び出す処理
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnAbility2(InputAction.CallbackContext context)
-    {
-        Debug.Log("UseAbility2");
-    }
-    /// <summary>
-    /// アビリティ３を呼び出す処理
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnAbility3(InputAction.CallbackContext context)
-    {
-        Debug.Log("UseAbility3");
-    }
-
-    public void ModeReset()
-    {
-        _mode = Mode.submachineGun;
-        _canShotConvert = true;
-    }
-    public enum Mode
-    {
-        submachineGun,
-        railgun,
+        anchorTimer = _weaponStatus.HookShotTimer;
+        _Anchor.GetComponent<Anchor>().AnchorShot(_weaponStatus.HookShotSpeed);
     }
 }
 
