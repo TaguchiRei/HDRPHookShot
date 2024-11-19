@@ -30,7 +30,10 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject _AnchorMuzzle;
     [SerializeField] MeshRenderer _anchorMesh;
     [SerializeField] LineRenderer _lineRenderer;
+    [SerializeField] int _hookShotPower = 10;
     GameObject _anchorInstance;
+    public bool _hookShotHit = false;
+    bool boost = false;
 
 
     public Vector3 _movePower = Vector3.zero;
@@ -123,6 +126,13 @@ public class PlayerMove : MonoBehaviour
         {
             _rigidbody.AddForce(new Vector3(0, _jumpPower, 0), ForceMode.Impulse);
             _canJump = false;
+        }
+        //フックショットが刺さっているときの処理
+        if (_hookShotHit)
+        {
+            Vector3 hookPower = _anchorInstance.transform.position - transform.position;
+            hookPower *= 9.81f * _gravityScale * _hookShotPower;
+            _rigidbody.AddForce(hookPower, ForceMode.Acceleration);
         }
     }
 
