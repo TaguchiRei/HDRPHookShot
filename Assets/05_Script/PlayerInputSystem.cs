@@ -5,7 +5,6 @@ public class PlayerInputSystem : MonoBehaviour
 {
     [SerializeField] PlayerMove _player;
     [SerializeField] float _moveSpeed = 1;
-    [SerializeField] GameObject _Anchor;
 
     private PlayerInput _playerInput;
     Mode _mode = Mode.submachineGun;
@@ -22,7 +21,7 @@ public class PlayerInputSystem : MonoBehaviour
         _playerInput.Player.Look.started += OnLook;
         _playerInput.Player.Look.canceled += OnLook;
 
-        _playerInput.Player.Jump.performed += OnJump;
+        _playerInput.Player.Jump.canceled += OnJump;
         _playerInput.Player.Jump.started += OnJump;
 
         _playerInput.Player.Shot.performed += OnShot;
@@ -114,7 +113,7 @@ public class PlayerInputSystem : MonoBehaviour
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
-            _player._jumping = false;
+            _player._jumping =false;
         }
     }
     /// <summary>
@@ -177,7 +176,7 @@ public class PlayerInputSystem : MonoBehaviour
             _player.AnimationChange("HookShotOrAim", false);
             if (_mode == Mode.submachineGun)
             {
-                _Anchor.GetComponent<Anchor>().AnchorReset();
+                _player.AncDestroy();
                 _player._canShotConvert = true;
             }
             else

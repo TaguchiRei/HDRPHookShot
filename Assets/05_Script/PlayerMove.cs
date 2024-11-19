@@ -14,8 +14,8 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _gravityScale = 1;
     [SerializeField] float _gravityScaleChangePoint;
     [SerializeField] GameObject _bullet;
-    [SerializeField] GameObject _Anchor;
     [SerializeField] GameObject _playerBody;
+    [SerializeField] GameObject _playerHead;
     [SerializeField] Animator _anim;
     [SerializeField] Rigidbody _rigidbody;
 
@@ -25,10 +25,18 @@ public class PlayerMove : MonoBehaviour
     float _shotIntervalTimer = 0.2f;
     float anchorTimer = 0;
 
+    //フックショットの変数
+    [SerializeField] GameObject _AnchorPrehab;
+    [SerializeField] GameObject _AnchorMuzzle;
+    [SerializeField] MeshRenderer _anchorMesh;
+    [SerializeField] LineRenderer _lineRenderer;
+    GameObject _anchorInstance;
+
+
     public Vector3 _movePower = Vector3.zero;
     public Vector2 look;
 
-    public bool _canShotConvert = true;//通常射撃、コンバート、レールガン射撃を管理
+    public bool _canShotConvert = true;
     public bool _canUseAbility = false;
     bool _canJump = false;
     private float _groundDistance = 0;
@@ -36,6 +44,7 @@ public class PlayerMove : MonoBehaviour
     //プレイヤーの状態を保存する変数
     public bool _moving = false;
     public bool _jumping = false;
+    bool _usingAnchor = false;
 
 
 
@@ -74,10 +83,17 @@ public class PlayerMove : MonoBehaviour
             anchorTimer -= Time.deltaTime;
             if (anchorTimer < 0)
             {
-                _Anchor.GetComponent<Anchor>().AnchorReset();
+                AncDestroy();
+                _anchorInstance = null;
                 _anim.SetBool("HookShotOrAim", false);
                 _canShotConvert = true;
+                _anchorMesh.enabled = true;
             }
+        }
+        if (_usingAnchor)
+        {
+            _lineRenderer.SetPosition(0, _AnchorMuzzle.transform.position);
+            _lineRenderer.SetPosition(1, _anchorInstance.transform.position);
         }
     }
     private void FixedUpdate()
@@ -121,8 +137,20 @@ public class PlayerMove : MonoBehaviour
     }
     public void AncShot()
     {
+        _lineRenderer.enabled = true;
+        _usingAnchor = true;
         anchorTimer = _weaponStatus.HookShotTimer;
-        _Anchor.GetComponent<Anchor>().AnchorShot(_weaponStatus.HookShotSpeed);
+        _anchorMesh.enabled = false;
+        _anchorInstance = Instantiate(_AnchorPrehab,_playerHead.transform.position,_playerHead.transform.rotation);
+        _anchorInstance.GetComponent<Anchor>()._moveDirection += _rigidbody.linearVelocity * 0.1f;
+    }
+    public void AncDestroy()
+    {
+        Destroy( _anchorInstance);
+        _anchorInstance = null;
+        _anchorMesh.enabled = true;
+        _usingAnchor = false;
+        _lineRenderer.enabled = false;
     }
 }
 
