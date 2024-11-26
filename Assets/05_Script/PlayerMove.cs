@@ -99,22 +99,9 @@ public class PlayerMove : MonoBehaviour
             _lineRenderer.SetPosition(1, _anchorInstance.transform.position);
         }
         //地面との距離を測るボックスキャスト
-        bool groundHit = Physics.BoxCast(
-            new Vector3(transform.position.x, transform.position.y+0.6f, transform.position.z),
-            new Vector3(0.5f, 0.5f, 0.5f),
-            Vector3.down,
-            Quaternion.identity,
-            0.8f);
-        if (groundHit)
-        {
-            _onGround = true;
-            Debug.Log("OnGround");
-        }
-        else
-        {
-            _onGround = false;
-            Debug.Log("NotGround");
-        }
+        bool groundHit = Physics.BoxCast(new Vector3(transform.position.x, transform.position.y + 0.6f, transform.position.z), new Vector3(0.5f, 0.5f, 0.5f), Vector3.down, Quaternion.identity, 0.8f);
+        if (groundHit) _onGround = true;
+        else _onGround = false;
     }
     private void FixedUpdate()
     {
@@ -182,15 +169,7 @@ public class PlayerMove : MonoBehaviour
         _anchorMesh.enabled = true;
         _usingAnchor = false;
         _lineRenderer.enabled = false;
-    }
 
-    private void OnDrawGizmos()
-    {
-        Vector3 origin = transform.position + new Vector3(0, 0.5f, 0);
-        Quaternion rotation = Quaternion.identity;
-        Gizmos.color = Color.yellow;
-        Gizmos.matrix = Matrix4x4.TRS(origin, rotation, Vector3.one);
-        Gizmos.DrawWireCube(Vector3.zero, new Vector3(0.5f, 0.5f, 0.5f));
     }
 }
 
