@@ -176,6 +176,7 @@ public class PlayerInputSystem : MonoBehaviour
             _player.AnimationChange("HookShotOrAim", false);
             if (_mode == Mode.submachineGun)
             {
+                _player._hookShotHit = false;
                 _player.AncDestroy();
                 _player._canShotConvert = true;
             }

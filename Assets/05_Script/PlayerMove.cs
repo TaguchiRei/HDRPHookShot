@@ -42,14 +42,13 @@ public class PlayerMove : MonoBehaviour
     public bool _canShotConvert = true;
     public bool _canUseAbility = false;
     bool _canJump = false;
-    private float _groundDistance = 0;
 
     //プレイヤーの状態を保存する変数
     public bool _moving = false;
     public bool _jumping = false;
     bool _usingAnchor = false;
-
-
+    bool _onGround = true;
+    RaycastHit hit;
 
     private void Start()
     {
@@ -72,7 +71,7 @@ public class PlayerMove : MonoBehaviour
         }
 
         //射撃プログラム
-        if (_shotting && _shotIntervalTimer <=0)
+        if (_shotting && _shotIntervalTimer <= 0)
         {
             _shot.Invoke();
             _shotIntervalTimer = 1 / _weaponStatus.RateOfFire;
@@ -81,11 +80,12 @@ public class PlayerMove : MonoBehaviour
         {
             _shotIntervalTimer -= Time.deltaTime;
         }
-        if (anchorTimer > 0)
+        if (anchorTimer > 0 && !_hookShotHit)
         {
             anchorTimer -= Time.deltaTime;
             if (anchorTimer < 0)
             {
+                _hookShotHit = false;
                 AncDestroy();
                 _anchorInstance = null;
                 _anim.SetBool("HookShotOrAim", false);
@@ -98,26 +98,46 @@ public class PlayerMove : MonoBehaviour
             _lineRenderer.SetPosition(0, _AnchorMuzzle.transform.position);
             _lineRenderer.SetPosition(1, _anchorInstance.transform.position);
         }
+        //地面との距離を測るボックスキャスト
+        bool groundHit = Physics.BoxCast(
+            new Vector3(transform.position.x, transform.position.y+0.6f, transform.position.z),
+            new Vector3(0.5f, 0.5f, 0.5f),
+            Vector3.down,
+            Quaternion.identity,
+            0.8f);
+        if (groundHit)
+        {
+            _onGround = true;
+            Debug.Log("OnGround");
+        }
+        else
+        {
+            _onGround = false;
+            Debug.Log("NotGround");
+        }
     }
     private void FixedUpdate()
     {
         //プレイヤーの動きを作る
-        if(_groundDistance < 0.1f && _moving && _movePower != Vector3.zero)
+        if (_moving && _movePower != Vector3.zero)
         {
-            Vector3 move = transform.TransformDirection(_movePower);
-            _rigidbody.linearVelocity = new Vector3(move.x,_rigidbody.linearVelocity.y,move.z);
+            if (!_hookShotHit && _onGround)
+            {
+                Vector3 move = transform.TransformDirection(_movePower);
+                _rigidbody.linearVelocity = new Vector3(move.x, _rigidbody.linearVelocity.y, move.z);
+            }
+            else
+            {
+                Vector3 move = transform.TransformDirection(_movePower);
+                _rigidbody.AddForce(move, ForceMode.Acceleration);
+            }
         }
 
-        //重力を作る
-        Physics.BoxCast(transform.position, new Vector3(transform.localScale.x,0.1f,transform.localScale.z), Vector3.down, out RaycastHit hit, Quaternion.identity);
-        _groundDistance = hit.distance;
-        //重力加速度に重力の強さをかけ、落ちる時はさらに重力を増加させる。地面に近づくとさらに強力に
-        Vector3 gravity = new Vector3(0, -9.81f, 0) * _gravityScale;
-        gravity = _rigidbody.linearVelocity.y < 0 ? gravity * 1.2f : gravity;
-        gravity = _groundDistance < _gravityScaleChangePoint ? gravity * 2f : gravity;
+        //重力加速度に重力の強さをかける。
+        Vector3 gravity = _rigidbody.linearVelocity.y <= 0 ? new Vector3(0, -20, 0) * _gravityScale : new Vector3(0, -9.81f, 0) * _gravityScale;
         _rigidbody.AddForce(gravity, ForceMode.Acceleration);
         //接地判定のために地面との距離とベロシティを測る
-        if (_groundDistance < 0.1f && _rigidbody.linearVelocity.y <= 0)
+        if (_onGround && _rigidbody.linearVelocity.y <= 0)
         {
             _canJump = true;
         }
@@ -131,7 +151,8 @@ public class PlayerMove : MonoBehaviour
         if (_hookShotHit)
         {
             Vector3 hookPower = _anchorInstance.transform.position - transform.position;
-            hookPower *= 9.81f * _gravityScale * _hookShotPower;
+            hookPower.Normalize();
+            hookPower *= 9.81f * _hookShotPower;
             _rigidbody.AddForce(hookPower, ForceMode.Acceleration);
         }
     }
@@ -141,7 +162,7 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     /// <param name="animName">変更するBool型変数の名前を入力</param>
     /// <param name="which">falseにする際のみfalseと入力</param>
-    public void AnimationChange(string animName , bool which = true)
+    public void AnimationChange(string animName, bool which = true)
     {
         _anim.SetBool(animName, which);
     }
@@ -151,16 +172,25 @@ public class PlayerMove : MonoBehaviour
         _usingAnchor = true;
         anchorTimer = _weaponStatus.HookShotTimer;
         _anchorMesh.enabled = false;
-        _anchorInstance = Instantiate(_AnchorPrehab,_playerHead.transform.position,_playerHead.transform.rotation);
+        _anchorInstance = Instantiate(_AnchorPrehab, _playerHead.transform.position, _playerHead.transform.rotation);
         _anchorInstance.GetComponent<Anchor>()._moveDirection += _rigidbody.linearVelocity * 0.1f;
     }
     public void AncDestroy()
     {
-        Destroy( _anchorInstance);
+        Destroy(_anchorInstance);
         _anchorInstance = null;
         _anchorMesh.enabled = true;
         _usingAnchor = false;
         _lineRenderer.enabled = false;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Vector3 origin = transform.position + new Vector3(0, 0.5f, 0);
+        Quaternion rotation = Quaternion.identity;
+        Gizmos.color = Color.yellow;
+        Gizmos.matrix = Matrix4x4.TRS(origin, rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, new Vector3(0.5f, 0.5f, 0.5f));
     }
 }
 

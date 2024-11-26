@@ -27,6 +27,7 @@ public class Anchor : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
+        FindAnyObjectByType<PlayerMove>()._hookShotHit = true;
         _hit = true;
         _rigidbody.linearVelocity = Vector3.zero;
         _meshRenderer.enabled = true;
