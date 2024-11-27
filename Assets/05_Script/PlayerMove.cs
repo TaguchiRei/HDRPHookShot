@@ -171,5 +171,10 @@ public class PlayerMove : MonoBehaviour
         _lineRenderer.enabled = false;
 
     }
+    public void UseAbility(int abilityNumber)
+    {
+        _anim.SetBool("UseAbility", true);
+        _anim.SetInteger("AbilityNumber",abilityNumber);
+    }
 }
 
