@@ -126,14 +126,14 @@ public class PlayerInputSystem : MonoBehaviour
         {
             if (_mode == Mode.submachineGun)
             {
-                if (_player._canShotConvert)
+                if (_player._canAction)
                 {
                     _player._shotting = true;
                 }
             }
             else
             {
-                if (_player._canShotConvert)
+                if (_player._canAction)
                 {
                     _player.AnimationChange("R_Shot");
                 }
@@ -163,12 +163,12 @@ public class PlayerInputSystem : MonoBehaviour
             _player.AnimationChange("HookShotOrAim");
             if (_mode == Mode.submachineGun)
             {
-                _player._canShotConvert = false;
+                _player._canAction = false;
                 _player.AncShot();
             }
             else
             {
-                _player._canShotConvert = true;
+                _player._canAction = true;
             }
         }
         else if (context.phase == InputActionPhase.Canceled)
@@ -178,11 +178,11 @@ public class PlayerInputSystem : MonoBehaviour
             {
                 _player._hookShotHit = false;
                 _player.AncDestroy();
-                _player._canShotConvert = true;
+                _player._canAction = true;
             }
             else
             {
-                _player._canShotConvert = false;
+                _player._canAction = false;
             }
         }
     }
@@ -192,11 +192,11 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnConvert(InputAction.CallbackContext context)
     {
-        if (_player._canShotConvert)
+        if (_player._canAction)
         {
             _player.AnimationChange("RailGunMode");
             _mode = Mode.railgun;
-            _player._canShotConvert = false;
+            _player._canAction = false;
             _player._shotting = false;
         }
     }
@@ -206,7 +206,10 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility1(InputAction.CallbackContext context)
     {
-        Debug.Log("UseAbility1");
+        if (_player._canAction)
+        {
+            _player._canAction = false;
+        }
     }
     /// <summary>
     /// アビリティ２を呼び出す処理
@@ -234,6 +237,10 @@ public class PlayerInputSystem : MonoBehaviour
     public void ModeReset()
     {
         _mode = Mode.submachineGun;
-        _player._canShotConvert = true;
+        _player._canAction = true;
+    }
+    void Ability()
+    {
+
     }
 }

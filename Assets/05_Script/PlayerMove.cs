@@ -39,7 +39,7 @@ public class PlayerMove : MonoBehaviour
     public Vector3 _movePower = Vector3.zero;
     public Vector2 look;
 
-    public bool _canShotConvert = true;
+    public bool _canAction = true;
     public bool _canUseAbility = false;
     bool _canJump = false;
 
@@ -47,8 +47,10 @@ public class PlayerMove : MonoBehaviour
     public bool _moving = false;
     public bool _jumping = false;
     bool _usingAnchor = false;
+    bool _usingAbility = false;
     bool _onGround = true;
     RaycastHit hit;
+    AbilitySet _abilitySet; 
 
     private void Start()
     {
@@ -89,7 +91,7 @@ public class PlayerMove : MonoBehaviour
                 AncDestroy();
                 _anchorInstance = null;
                 _anim.SetBool("HookShotOrAim", false);
-                _canShotConvert = true;
+                _canAction = true;
                 _anchorMesh.enabled = true;
             }
         }
@@ -175,6 +177,13 @@ public class PlayerMove : MonoBehaviour
     {
         _anim.SetBool("UseAbility", true);
         _anim.SetInteger("AbilityNumber",abilityNumber);
+    }
+
+    public struct AbilitySet
+    {
+        public int abilityNumber1;
+        public int abilityNumber2;
+        public int abilityNumber3;
     }
 }
 
