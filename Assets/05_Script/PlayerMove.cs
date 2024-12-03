@@ -50,7 +50,7 @@ public class PlayerMove : MonoBehaviour
     bool _usingAbility = false;
     bool _onGround = true;
     RaycastHit hit;
-    AbilitySet _abilitySet; 
+    AbilitySet _abilitySet;
 
     private void Start()
     {
@@ -178,6 +178,7 @@ public class PlayerMove : MonoBehaviour
         _anim.SetBool("UseAbility", true);
         _anim.SetInteger("AbilityNumber",abilityNumber);
     }
+
 
     public struct AbilitySet
     {

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -206,9 +207,11 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility1(InputAction.CallbackContext context)
     {
+        Debug.Log("UseAbility1");
         if (_player._canAction)
         {
             _player._canAction = false;
+            Ability(0);
         }
     }
     /// <summary>
@@ -239,8 +242,8 @@ public class PlayerInputSystem : MonoBehaviour
         _mode = Mode.submachineGun;
         _player._canAction = true;
     }
-    void Ability()
+    void Ability(int abilityNumber)
     {
-
+        _player.UseAbility(abilityNumber);
     }
 }

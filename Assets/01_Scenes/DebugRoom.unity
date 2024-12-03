@@ -1944,7 +1944,7 @@ Transform:
   m_GameObject: {fileID: 1823688464}
   serializedVersion: 2
   m_LocalRotation: {x: 0.0047498643, y: -0.00000002934354, z: 1.3937917e-10, w: 0.9999888}
-  m_LocalPosition: {x: 0.0024425294, y: 1.681, z: -0.53370005}
+  m_LocalPosition: {x: 0.0024425294, y: 44.551, z: -0.53370005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6574,7 +6574,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _anim: {fileID: 6610741421823307082}
-  _player: {fileID: 9176499206125890058}
+  _playerInputSystem: {fileID: 9176499206125890062}
+  _playerMove: {fileID: 9176499206125890061}
   _soundObject: {fileID: 4083821825300020882, guid: f0bb8edeb8efbe84c8c9a6c3b5a0f2a9, type: 3}
   _clips:
   - {fileID: 8300000, guid: 381f5e82486721a49b938fe7dd06691e, type: 3}
@@ -7463,7 +7464,7 @@ Transform:
   m_GameObject: {fileID: 9176499206125890058}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.493}
+  m_LocalPosition: {x: 0, y: 42.87, z: -0.493}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8104,7 +8105,7 @@ MonoBehaviour:
   _hookShotHit: 0
   _movePower: {x: 0, y: 0, z: 0}
   look: {x: 0, y: 0}
-  _canShotConvert: 1
+  _canAction: 1
   _canUseAbility: 0
   _moving: 0
   _jumping: 0
