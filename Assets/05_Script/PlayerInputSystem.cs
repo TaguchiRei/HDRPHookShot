@@ -1,11 +1,9 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInputSystem : MonoBehaviour
 {
     [SerializeField] PlayerMove _player;
-    [SerializeField] PlayerAbilityManager _playerAbilityManager;
     [SerializeField] float _moveSpeed = 1;
 
     private PlayerInput _playerInput;
@@ -80,10 +78,15 @@ public class PlayerInputSystem : MonoBehaviour
         if (context.phase == InputActionPhase.Started)
         {
             _player._moving = true;
+            if (_player._onGround)
+            {
+                _player.AnimationChange("Run", true);
+            }
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
             _player._moving = false;
+            _player.AnimationChange("Run", false);
         }
     }
     /// <summary>
@@ -115,7 +118,7 @@ public class PlayerInputSystem : MonoBehaviour
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
-            _player._jumping =false;
+            _player._jumping = false;
         }
     }
     /// <summary>
@@ -162,14 +165,18 @@ public class PlayerInputSystem : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Started)
         {
-            _player.AnimationChange("HookShotOrAim");
             if (_mode == Mode.submachineGun)
             {
-                _player._canAction = false;
-                _player.AncShot();
+                if (_player._canAction)
+                {
+                    _player.AnimationChange("HookShotOrAim");
+                    _player._canAction = false;
+                    _player.AncShot();
+                }
             }
             else
             {
+                _player.AnimationChange("HookShotOrAim");
                 _player._canAction = true;
             }
         }
@@ -186,6 +193,7 @@ public class PlayerInputSystem : MonoBehaviour
             {
                 _player._canAction = false;
             }
+
         }
     }
     /// <summary>
@@ -212,7 +220,8 @@ public class PlayerInputSystem : MonoBehaviour
         if (_player._canAction)
         {
             _player._canAction = false;
-            _player.UseAbility(_player.abilitySet.abilityNumber1);
+            Debug.Log(_player._abilitySet.abilityNumber1);
+            _player.UseAbility(_player._abilitySet.abilityNumber1);
         }
     }
     /// <summary>
@@ -225,7 +234,7 @@ public class PlayerInputSystem : MonoBehaviour
         if (_player._canAction)
         {
             _player._canAction = false;
-            _player.UseAbility(_player.abilitySet.abilityNumber2);
+            _player.UseAbility(_player._abilitySet.abilityNumber2);
         }
     }
     /// <summary>
@@ -238,8 +247,8 @@ public class PlayerInputSystem : MonoBehaviour
         if (_player._canAction)
         {
             _player._canAction = false;
-            _player.UseAbility(_player.abilitySet.abilityNumber3);
-            
+            _player.UseAbility(_player._abilitySet.abilityNumber3);
+
         }
     }
 

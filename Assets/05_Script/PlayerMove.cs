@@ -1,5 +1,4 @@
 using DG.Tweening;
-using NUnit.Framework;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
@@ -55,22 +54,33 @@ public class PlayerMove : MonoBehaviour
     float _maxEnergy = 100;
     float _energy = 100;
     [SerializeField] Image _hpImage;
-    [SerializeField] Image _EnergyImage;
+    [SerializeField] Image _energyImage;
 
 
     //プレイヤーの状態を保存する変数
     public bool _moving = false;
     public bool _jumping = false;
+    public bool _onGround = true;
     bool _usingAnchor = false;
     bool _usingAbility = false;
-    bool _onGround = true;
-    public AbilitySet abilitySet;
+    public AbilitySet _abilitySet;
     RaycastHit hit;
-    [SerializeField] AbilitySet _abilitySet;
+    [SerializeField] Vector3 _defaultAbilitySet;
 
     private void Start()
     {
         _gameManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
+        //戦闘開始時に初期化しなければいけないもの
+        //初期ステータス読み込み
+        //スキルセット読み込み
+        //全状態リセット
+        _abilitySet.abilityNumber1 = (int)_defaultAbilitySet.x;
+        _abilitySet.abilityNumber2 = (int)_defaultAbilitySet.y;
+        _abilitySet.abilityNumber3 = (int)_defaultAbilitySet.z;
+        Debug.Log(_abilitySet.abilityNumber1);
+        Debug.Log(_abilitySet.abilityNumber2);
+        Debug.Log(_abilitySet.abilityNumber3);
+
     }
 
     void Update()
@@ -192,7 +202,7 @@ public class PlayerMove : MonoBehaviour
     public void UseAbility(int abilityNumber)
     {
         _anim.SetBool("UseAbility", true);
-        _anim.SetInteger("AbilityNumber",abilityNumber);
+        _anim.SetInteger("AbilityNumber", abilityNumber);
     }
 
     public void GaugeChanger(float amount, bool hpChange = true)
@@ -200,16 +210,16 @@ public class PlayerMove : MonoBehaviour
         if (hpChange)
         {
             _hp -= amount;
-            if(_hp < 0) _hp = 0;
-            else if(_hp > _maxHp) _hp = _maxHp;
+            if (_hp < 0) _hp = 0;
+            else if (_hp > _maxHp) _hp = _maxHp;
             _hpImage.DOFillAmount(_hp / _maxHp, 0.1f);
         }
         else
         {
             _energy -= amount;
             if (_energy < 0) _energy = 0;
-            else if(_energy > _maxEnergy) _energy = _maxEnergy;
-            _EnergyImage.DOFillAmount(_energy / _maxEnergy, amount);
+            else if (_energy > _maxEnergy) _energy = _maxEnergy;
+            _energyImage.DOFillAmount(_energy / _maxEnergy, amount);
         }
     }
 

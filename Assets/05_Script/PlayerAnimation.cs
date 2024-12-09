@@ -32,4 +32,18 @@ public class PlayerAnimation : MonoBehaviour
         _playerMove._canAction = true;
         _anim.SetBool("UseAbility", false);
     }
+    void AbilityEffect(int abilityNumber)
+    {
+        switch (abilityNumber)
+        {
+            case 0:
+                _playerMove.GaugeChanger(30);
+                break;
+            case 1:
+
+                break;
+            default:
+                break;
+        }
+    }
 }

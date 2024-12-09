@@ -707,7 +707,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 348869276}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 6135f84716b16b740bbb4235f530a5a1, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 7386a0a8486494d4a8ad9c2dc135786d, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -6160,7 +6160,6 @@ GameObject:
   - component: {fileID: 6610741421823307082}
   - component: {fileID: 6610741421823307083}
   - component: {fileID: 6610741421823307084}
-  - component: {fileID: 6610741421823307085}
   m_Layer: 0
   m_Name: body
   m_TagString: Untagged
@@ -6901,19 +6900,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &6610741421823307085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5190584121416393652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b34643435cd3f2a4bb27179f7a2055ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _playerMove: {fileID: 9176499206125890061}
 --- !u!23 &6690251152635693516
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8287,7 +8273,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canMoveInput: 0
   _canJumpInput: 0
-  _jumpPower: 40
+  _jumpPower: 100
   _canUseWeaponInput: 0
   _weaponStatus:
     _power: 1
@@ -8298,7 +8284,7 @@ MonoBehaviour:
     _railgunAttackRange: 5
     _hookShotSpeed: 50
     _hookShotTimer: 5
-  _gravityScale: 1
+  _gravityScale: 3
   _gravityScaleChangePoint: 2
   _bullet: {fileID: 8085010932562034865, guid: a191192e7b4977b4da6e4a6a93d512c1, type: 3}
   _playerBody: {fileID: 5190584121416393652}
@@ -8344,10 +8330,12 @@ MonoBehaviour:
   look: {x: 0, y: 0}
   _canAction: 1
   _canUseAbility: 0
-  _hpImage: {fileID: 0}
-  _EnergyImage: {fileID: 0}
+  _hpImage: {fileID: 1183674353}
+  _energyImage: {fileID: 432397155}
   _moving: 0
   _jumping: 0
+  _onGround: 1
+  _defaultAbilitySet: {x: 0, y: 1, z: 0}
 --- !u!114 &9176499206125890062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8361,7 +8349,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 9176499206125890061}
-  _playerAbilityManager: {fileID: 0}
   _moveSpeed: 15
 --- !u!120 &9176499206125890063
 LineRenderer:
