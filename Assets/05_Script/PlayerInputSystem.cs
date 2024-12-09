@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class PlayerInputSystem : MonoBehaviour
 {
     [SerializeField] PlayerMove _player;
+    [SerializeField] PlayerAbilityManager _playerAbilityManager;
     [SerializeField] float _moveSpeed = 1;
 
     private PlayerInput _playerInput;
@@ -211,7 +212,7 @@ public class PlayerInputSystem : MonoBehaviour
         if (_player._canAction)
         {
             _player._canAction = false;
-            Ability(0);
+            _player.UseAbility(_player.abilitySet.abilityNumber1);
         }
     }
     /// <summary>
@@ -221,6 +222,11 @@ public class PlayerInputSystem : MonoBehaviour
     private void OnAbility2(InputAction.CallbackContext context)
     {
         Debug.Log("UseAbility2");
+        if (_player._canAction)
+        {
+            _player._canAction = false;
+            _player.UseAbility(_player.abilitySet.abilityNumber2);
+        }
     }
     /// <summary>
     /// アビリティ３を呼び出す処理
@@ -229,6 +235,12 @@ public class PlayerInputSystem : MonoBehaviour
     private void OnAbility3(InputAction.CallbackContext context)
     {
         Debug.Log("UseAbility3");
+        if (_player._canAction)
+        {
+            _player._canAction = false;
+            _player.UseAbility(_player.abilitySet.abilityNumber3);
+            
+        }
     }
 
     public enum Mode

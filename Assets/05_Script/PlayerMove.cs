@@ -1,5 +1,9 @@
+using DG.Tweening;
+using NUnit.Framework;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 
@@ -21,9 +25,11 @@ public class PlayerMove : MonoBehaviour
 
     //通常射撃のための変数
     [SerializeField] UnityEvent _shot;
+    [SerializeField] GameObject bullet;
     public bool _shotting = false;
     float _shotIntervalTimer = 0.2f;
     float anchorTimer = 0;
+    public Func<int> _buffList;
 
     //フックショットの変数
     [SerializeField] GameObject _AnchorPrehab;
@@ -43,14 +49,24 @@ public class PlayerMove : MonoBehaviour
     public bool _canUseAbility = false;
     bool _canJump = false;
 
+    //プレイヤーのステータスを保存する変数
+    float _maxHp = 100;
+    float _hp = 100;
+    float _maxEnergy = 100;
+    float _energy = 100;
+    [SerializeField] Image _hpImage;
+    [SerializeField] Image _EnergyImage;
+
+
     //プレイヤーの状態を保存する変数
     public bool _moving = false;
     public bool _jumping = false;
     bool _usingAnchor = false;
     bool _usingAbility = false;
     bool _onGround = true;
+    public AbilitySet abilitySet;
     RaycastHit hit;
-    AbilitySet _abilitySet;
+    [SerializeField] AbilitySet _abilitySet;
 
     private void Start()
     {
@@ -179,6 +195,23 @@ public class PlayerMove : MonoBehaviour
         _anim.SetInteger("AbilityNumber",abilityNumber);
     }
 
+    public void GaugeChanger(float amount, bool hpChange = true)
+    {
+        if (hpChange)
+        {
+            _hp -= amount;
+            if(_hp < 0) _hp = 0;
+            else if(_hp > _maxHp) _hp = _maxHp;
+            _hpImage.DOFillAmount(_hp / _maxHp, 0.1f);
+        }
+        else
+        {
+            _energy -= amount;
+            if (_energy < 0) _energy = 0;
+            else if(_energy > _maxEnergy) _energy = _maxEnergy;
+            _EnergyImage.DOFillAmount(_energy / _maxEnergy, amount);
+        }
+    }
 
     public struct AbilitySet
     {

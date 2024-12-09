@@ -6,6 +6,7 @@ public class Bullet : MonoBehaviour
     GameObject _playerEye;
     public bool _homing = false;
     public bool _railgun = false;
+    public float _dmg = 0;
     float _bulletSpeed = 1;
     float _railgunAttackRange = 1;
     [SerializeField] Rigidbody _rig;
