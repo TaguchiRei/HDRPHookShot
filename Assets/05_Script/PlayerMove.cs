@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class PlayerMove : MonoBehaviour
 {
-    GameManager _gameManager;
+    public GameManager _gameManager;
     public bool _canMoveInput = false;
     public bool _canJumpInput = false;
     [SerializeField] float _jumpPower = 1;
@@ -67,6 +67,9 @@ public class PlayerMove : MonoBehaviour
     RaycastHit hit;
     [SerializeField] Vector3 _defaultAbilitySet;
 
+    //一時停止処理用
+    Vector3 _velocity = Vector3.zero;
+
     private void Start()
     {
         _gameManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
@@ -80,96 +83,115 @@ public class PlayerMove : MonoBehaviour
         Debug.Log(_abilitySet.abilityNumber1);
         Debug.Log(_abilitySet.abilityNumber2);
         Debug.Log(_abilitySet.abilityNumber3);
-
+        _gameManager.InButtlePause += Pause;
+        _gameManager.InButtleReStart += ReStart;
     }
 
     void Update()
     {
-        //プレイヤーの動きを作る
-        //視点操作はここで行う。
-        transform.Rotate(0, look.x * _gameManager._horizontalCamera, 0);
-        //上下カメラの上限と下限を設定する。また、デフォルト値が反転操作なのでX軸回転(カメラの上下方向操作)は-1をかける
-        float verticalAngle = Mathf.Clamp(look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
-        float playerAngle = _playerBody.transform.rotation.eulerAngles.x;
-        //プレイヤーの角度をEulerAnglesで取得しているのでマイナスは360からその値を引いた数になるので360で引くことで正しい値に戻す。
-        if (playerAngle > 180) playerAngle -= 360;
-        if (verticalAngle + playerAngle < 80 && -80 < verticalAngle + playerAngle)
+        if (!_gameManager._pause)
         {
-            _playerBody.transform.Rotate(verticalAngle, 0, 0);
-        }
-
-        //射撃プログラム
-        if (_shotting && _shotIntervalTimer <= 0)
-        {
-            _shot.Invoke();
-            _shotIntervalTimer = 1 / _weaponStatus.RateOfFire;
-        }
-        if (_shotIntervalTimer > 0)
-        {
-            _shotIntervalTimer -= Time.deltaTime;
-        }
-        if (anchorTimer > 0 && !_hookShotHit)
-        {
-            anchorTimer -= Time.deltaTime;
-            if (anchorTimer < 0)
+            //プレイヤーの動きを作る
+            //視点操作はここで行う。
+            transform.Rotate(0, look.x * _gameManager._horizontalCamera, 0);
+            //上下カメラの上限と下限を設定する。また、デフォルト値が反転操作なのでX軸回転(カメラの上下方向操作)は-1をかける
+            float verticalAngle = Mathf.Clamp(look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
+            float playerAngle = _playerBody.transform.rotation.eulerAngles.x;
+            //プレイヤーの角度をEulerAnglesで取得しているのでマイナスは360からその値を引いた数になるので360で引くことで正しい値に戻す。
+            if (playerAngle > 180) playerAngle -= 360;
+            if (verticalAngle + playerAngle < 80 && -80 < verticalAngle + playerAngle)
             {
-                _hookShotHit = false;
-                AncDestroy();
-                _anchorInstance = null;
-                _anim.SetBool("HookShotOrAim", false);
-                _canAction = true;
-                _anchorMesh.enabled = true;
+                _playerBody.transform.Rotate(verticalAngle, 0, 0);
             }
+
+            //射撃プログラム
+            if (_shotting && _shotIntervalTimer <= 0)
+            {
+                _shot.Invoke();
+                _shotIntervalTimer = 1 / _weaponStatus.RateOfFire;
+            }
+            if (_shotIntervalTimer > 0)
+            {
+                _shotIntervalTimer -= Time.deltaTime;
+            }
+            if (anchorTimer > 0 && !_hookShotHit)
+            {
+                anchorTimer -= Time.deltaTime;
+                if (anchorTimer < 0)
+                {
+                    _hookShotHit = false;
+                    AncDestroy();
+                    _anchorInstance = null;
+                    _anim.SetBool("HookShotOrAim", false);
+                    _canAction = true;
+                    _anchorMesh.enabled = true;
+                }
+            }
+            if (_usingAnchor)
+            {
+                _lineRenderer.SetPosition(0, _AnchorMuzzle.transform.position);
+                _lineRenderer.SetPosition(1, _anchorInstance.transform.position);
+            }
+            //地面との距離を測るボックスキャスト
+            bool groundHit = Physics.BoxCast(new Vector3(transform.position.x, transform.position.y + 0.6f, transform.position.z), new Vector3(0.5f, 0.5f, 0.5f), Vector3.down, Quaternion.identity, 0.8f);
+            if (groundHit) _onGround = true;
+            else _onGround = false;
         }
-        if (_usingAnchor)
-        {
-            _lineRenderer.SetPosition(0, _AnchorMuzzle.transform.position);
-            _lineRenderer.SetPosition(1, _anchorInstance.transform.position);
-        }
-        //地面との距離を測るボックスキャスト
-        bool groundHit = Physics.BoxCast(new Vector3(transform.position.x, transform.position.y + 0.6f, transform.position.z), new Vector3(0.5f, 0.5f, 0.5f), Vector3.down, Quaternion.identity, 0.8f);
-        if (groundHit) _onGround = true;
-        else _onGround = false;
     }
     private void FixedUpdate()
     {
-        //プレイヤーの動きを作る
-        if (_moving && _movePower != Vector3.zero)
+        if (!_gameManager._pause)
         {
-            if (!_hookShotHit && _onGround)
+            //プレイヤーの動きを作る
+            if (_moving && _movePower != Vector3.zero)
             {
-                Vector3 move = transform.TransformDirection(_movePower);
-                _rigidbody.linearVelocity = new Vector3(move.x, _rigidbody.linearVelocity.y, move.z);
+                if (!_hookShotHit && _onGround)
+                {
+                    Vector3 move = transform.TransformDirection(_movePower);
+                    _rigidbody.linearVelocity = new Vector3(move.x, _rigidbody.linearVelocity.y, move.z);
+                }
+                else
+                {
+                    Vector3 move = transform.TransformDirection(_movePower);
+                    _rigidbody.AddForce(move, ForceMode.Acceleration);
+                }
             }
-            else
-            {
-                Vector3 move = transform.TransformDirection(_movePower);
-                _rigidbody.AddForce(move, ForceMode.Acceleration);
-            }
-        }
 
-        //重力加速度に重力の強さをかける。
-        Vector3 gravity = _rigidbody.linearVelocity.y <= 0 ? new Vector3(0, -20, 0) * _gravityScale : new Vector3(0, -9.81f, 0) * _gravityScale;
-        _rigidbody.AddForce(gravity, ForceMode.Acceleration);
-        //接地判定のために地面との距離とベロシティを測る
-        if (_onGround && _rigidbody.linearVelocity.y <= 0)
-        {
-            _canJump = true;
+            //重力加速度に重力の強さをかける。
+            Vector3 gravity = _rigidbody.linearVelocity.y <= 0 ? new Vector3(0, -20, 0) * _gravityScale : new Vector3(0, -9.81f, 0) * _gravityScale;
+            _rigidbody.AddForce(gravity, ForceMode.Acceleration);
+            //接地判定のために地面との距離とベロシティを測る
+            if (_onGround && _rigidbody.linearVelocity.y <= 0)
+            {
+                _canJump = true;
+            }
+            //ジャンプの処理
+            if (_canJump && _jumping)
+            {
+                _rigidbody.AddForce(new Vector3(0, _jumpPower, 0), ForceMode.Impulse);
+                _canJump = false;
+            }
+            //フックショットが刺さっているときの処理
+            if (_hookShotHit)
+            {
+                Vector3 hookPower = _anchorInstance.transform.position - transform.position;
+                hookPower.Normalize();
+                hookPower *= 9.81f * _hookShotPower;
+                _rigidbody.AddForce(hookPower, ForceMode.Acceleration);
+            }
         }
-        //ジャンプの処理
-        if (_canJump && _jumping)
-        {
-            _rigidbody.AddForce(new Vector3(0, _jumpPower, 0), ForceMode.Impulse);
-            _canJump = false;
-        }
-        //フックショットが刺さっているときの処理
-        if (_hookShotHit)
-        {
-            Vector3 hookPower = _anchorInstance.transform.position - transform.position;
-            hookPower.Normalize();
-            hookPower *= 9.81f * _hookShotPower;
-            _rigidbody.AddForce(hookPower, ForceMode.Acceleration);
-        }
+    }
+
+    void Pause()
+    {
+        _anim.speed = 0;
+        _velocity = _rigidbody.linearVelocity;
+        _rigidbody.linearVelocity = Vector3.zero;
+    }
+    void ReStart()
+    {
+        _anim.speed = 1;
+        _rigidbody.linearVelocity = _velocity;
     }
 
     /// <summary>

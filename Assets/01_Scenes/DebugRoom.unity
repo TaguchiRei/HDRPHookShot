@@ -2627,6 +2627,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _horizontalCamera: 1
   _verticalCamera: 1
+  _pause: 0
 --- !u!4 &1917081639
 Transform:
   m_ObjectHideFlags: 0
@@ -8271,6 +8272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68ce45210adb8cf4dbc1d4c12394934f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameManager: {fileID: 0}
   _canMoveInput: 0
   _canJumpInput: 0
   _jumpPower: 100

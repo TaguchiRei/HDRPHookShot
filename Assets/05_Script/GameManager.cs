@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,24 +14,37 @@ public class GameManager : SingletonMonoBehaviour<MonoBehaviour>
     /// </summary>
     [Range(-1, 1)] public int _verticalCamera = 1;
 
+    public bool _pause = false;
+
+    public Action InButtlePause;
+    public Action InButtleReStart;
+
+
     void Start()
     {
         //マウスを固定して隠す
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // Update is called once per frame
-    void Update()
+    //メニューを開くときの
+    public void Stop()
     {
+        InButtlePause.Invoke();
+        _pause = true;
+    }
 
+    public void ReStart()
+    {
+        InButtleReStart.Invoke();
+        _pause = false;
     }
 
     public override void OnSceneLoaded(Scene s, LoadSceneMode mode)
     {
         base.OnSceneLoaded(s, mode);
     }
-
 }
+
 
 [Serializable]
 public class WeaponStatus

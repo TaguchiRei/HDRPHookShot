@@ -1,3 +1,4 @@
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class Anchor : MonoBehaviour
@@ -8,15 +9,17 @@ public class Anchor : MonoBehaviour
     public float _speed = 50;
     [HideInInspector] public Vector3 _moveDirection = Vector3.zero;
     [HideInInspector] public Vector3 _hitPosition = Vector3.zero;
+    GameManager gameManager;
     private void Start()
     {
         _moveDirection += transform.forward * _speed;
         _meshRenderer.enabled = false;
+        gameManager = FindAnyObjectByType<GameManager>();
     }
 
     private void Update()
     {
-        if (!_hit)
+        if (!_hit && !gameManager._pause)
         {
             _rigidbody.linearVelocity = _moveDirection;
         }

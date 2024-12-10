@@ -51,6 +51,8 @@ public class PlayerInputSystem : MonoBehaviour
         _playerInput.Player.Ability3.started += OnAbility3;
         _playerInput.Player.Ability3.canceled += OnAbility3;
 
+        _playerInput.Player.menu.started += InMenu;
+
         // アクションを有効化
         _playerInput.Enable();
     }
@@ -73,6 +75,10 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnMove(InputAction.CallbackContext context)
     {
+        if (!_player._gameManager._pause)
+        {
+
+        }
         Vector2 vector2 = context.ReadValue<Vector2>() * _moveSpeed;
         _player._movePower = new Vector3(vector2.x, 0, vector2.y);
         if (context.phase == InputActionPhase.Started)
@@ -95,6 +101,10 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnLook(InputAction.CallbackContext context)
     {
+        if (!_player._gameManager._pause)
+        {
+
+        }
         //ゲームパッドとマウスで操作を分ける。キーボードマウスでは視点操作が早すぎるため、20で割っている。
         if (context.control.device is Gamepad)
         {
@@ -112,13 +122,16 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnJump(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Started)
+        if (!_player._gameManager._pause)
         {
-            _player._jumping = true;
-        }
-        else if (context.phase == InputActionPhase.Canceled)
-        {
-            _player._jumping = false;
+            if (context.phase == InputActionPhase.Started)
+            {
+                _player._jumping = true;
+            }
+            else if (context.phase == InputActionPhase.Canceled)
+            {
+                _player._jumping = false;
+            }
         }
     }
     /// <summary>
@@ -127,26 +140,29 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnShot(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Started)
+        if (!_player._gameManager._pause)
         {
-            if (_mode == Mode.submachineGun)
+            if (context.phase == InputActionPhase.Started)
             {
-                if (_player._canAction)
+                if (_mode == Mode.submachineGun)
                 {
-                    _player._shotting = true;
+                    if (_player._canAction)
+                    {
+                        _player._shotting = true;
+                    }
+                }
+                else
+                {
+                    if (_player._canAction)
+                    {
+                        _player.AnimationChange("R_Shot");
+                    }
                 }
             }
-            else
+            else if (context.phase == InputActionPhase.Canceled)
             {
-                if (_player._canAction)
-                {
-                    _player.AnimationChange("R_Shot");
-                }
+                _player._shotting = false;
             }
-        }
-        else if (context.phase == InputActionPhase.Canceled)
-        {
-            _player._shotting = false;
         }
     }
     /// <summary>
@@ -155,7 +171,10 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnInteract(InputAction.CallbackContext context)
     {
-        Debug.Log("InteractButton");
+        if (!_player._gameManager._pause)
+        {
+            Debug.Log("InteractButton");
+        }
     }
     /// <summary>
     /// エイムボタンを押した時の操作をここに書く。エイムの処理とフックショットを飛ばす処理。
@@ -163,37 +182,40 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAimAndHookShot(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Started)
+        if (!_player._gameManager._pause)
         {
-            if (_mode == Mode.submachineGun)
+            if (context.phase == InputActionPhase.Started)
             {
-                if (_player._canAction)
+                if (_mode == Mode.submachineGun)
+                {
+                    if (_player._canAction)
+                    {
+                        _player.AnimationChange("HookShotOrAim");
+                        _player._canAction = false;
+                        _player.AncShot();
+                    }
+                }
+                else
                 {
                     _player.AnimationChange("HookShotOrAim");
-                    _player._canAction = false;
-                    _player.AncShot();
+                    _player._canAction = true;
                 }
             }
-            else
+            else if (context.phase == InputActionPhase.Canceled)
             {
-                _player.AnimationChange("HookShotOrAim");
-                _player._canAction = true;
-            }
-        }
-        else if (context.phase == InputActionPhase.Canceled)
-        {
-            _player.AnimationChange("HookShotOrAim", false);
-            if (_mode == Mode.submachineGun)
-            {
-                _player._hookShotHit = false;
-                _player.AncDestroy();
-                _player._canAction = true;
-            }
-            else
-            {
-                _player._canAction = false;
-            }
+                _player.AnimationChange("HookShotOrAim", false);
+                if (_mode == Mode.submachineGun)
+                {
+                    _player._hookShotHit = false;
+                    _player.AncDestroy();
+                    _player._canAction = true;
+                }
+                else
+                {
+                    _player._canAction = false;
+                }
 
+            }
         }
     }
     /// <summary>
@@ -202,7 +224,7 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnConvert(InputAction.CallbackContext context)
     {
-        if (_player._canAction)
+        if (_player._canAction && !_player._gameManager._pause)
         {
             _player.AnimationChange("RailGunMode");
             _mode = Mode.railgun;
@@ -216,8 +238,7 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility1(InputAction.CallbackContext context)
     {
-        Debug.Log("UseAbility1");
-        if (_player._canAction)
+        if (_player._canAction && !_player._gameManager._pause)
         {
             _player._canAction = false;
             Debug.Log(_player._abilitySet.abilityNumber1);
@@ -230,8 +251,7 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility2(InputAction.CallbackContext context)
     {
-        Debug.Log("UseAbility2");
-        if (_player._canAction)
+        if (_player._canAction && !_player._gameManager._pause)
         {
             _player._canAction = false;
             _player.UseAbility(_player._abilitySet.abilityNumber2);
@@ -243,20 +263,34 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility3(InputAction.CallbackContext context)
     {
-        Debug.Log("UseAbility3");
-        if (_player._canAction)
+        if (!_player._gameManager._pause)
         {
-            _player._canAction = false;
-            _player.UseAbility(_player._abilitySet.abilityNumber3);
-
+            if (_player._canAction)
+            {
+                _player._canAction = false;
+                _player.UseAbility(_player._abilitySet.abilityNumber3);
+            }
         }
     }
+
+    private void InMenu(InputAction.CallbackContext context)
+    {
+        if (!_player._gameManager._pause)
+        {
+            _player._gameManager.Stop();
+        }
+        else
+        {
+            _player._gameManager.ReStart();
+        }
+    }
+
+
 
     public enum Mode
     {
         submachineGun,
         railgun,
-
     }
     public void ModeReset()
     {
