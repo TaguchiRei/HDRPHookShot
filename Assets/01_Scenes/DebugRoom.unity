@@ -451,7 +451,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &224194886
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1204,7 +1204,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &868381820
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3661,6 +3661,7 @@ GameObject:
   - component: {fileID: 543450651703223303}
   - component: {fileID: 919132147964051135}
   - component: {fileID: 919132147964051134}
+  - component: {fileID: 919132147964051136}
   m_Layer: 0
   m_Name: BookShelf
   m_TagString: Untagged
@@ -3710,6 +3711,27 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 25.890917, y: 20.839397, z: 12.715849}
   m_Center: {x: -0.06477642, y: 10.43362, z: 0}
+--- !u!65 &919132147964051136
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132147964051133}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 30.244833, y: 2.019346, z: 16.853718}
+  m_Center: {x: -0.016320229, y: 1.0419909, z: -0.041501522}
 --- !u!33 &921421667200459085
 MeshFilter:
   m_ObjectHideFlags: 0

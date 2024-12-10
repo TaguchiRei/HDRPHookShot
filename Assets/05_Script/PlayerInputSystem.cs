@@ -278,6 +278,7 @@ public class PlayerInputSystem : MonoBehaviour
         if (!_player._gameManager._pause)
         {
             _player._gameManager.Stop();
+            _player._gameManager.OpenMenu();
         }
         else
         {

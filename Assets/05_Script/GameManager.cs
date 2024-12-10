@@ -32,6 +32,11 @@ public class GameManager : SingletonMonoBehaviour<MonoBehaviour>
         _pause = true;
     }
 
+    public void OpenMenu()
+    {
+
+    }
+
     public void ReStart()
     {
         InButtleReStart.Invoke();
