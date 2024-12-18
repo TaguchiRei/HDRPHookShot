@@ -38,7 +38,6 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] int _hookShotPower = 10;
     GameObject _anchorInstance;
     public bool _hookShotHit = false;
-    bool boost = false;
 
 
     public Vector3 _movePower = Vector3.zero;
