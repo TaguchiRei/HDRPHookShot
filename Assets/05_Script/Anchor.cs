@@ -22,6 +22,7 @@ public class Anchor : MonoBehaviour
         if (!_hit && !gameManager._pause)
         {
             _rigidbody.linearVelocity = _moveDirection;
+            _moveDirection *= 1.01f;
         }
         else
         {
