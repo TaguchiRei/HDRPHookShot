@@ -17,10 +17,12 @@ public abstract class EnemyBace : MonoBehaviour
         }
         else
         {
-
             Agent.SetDestination(position + new Vector3(Random.Range(MoveEller.x * -1, MoveEller.x), 0, Random.Range(MoveEller.z * -1, MoveEller.z)));
         }
-
+    }
+    public virtual void Stop()
+    {
+        Agent.SetDestination(transform.position);
     }
     public virtual void HPChange(float defaultDmg)
     {

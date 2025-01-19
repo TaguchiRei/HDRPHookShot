@@ -5,6 +5,7 @@ public class AttackerEnemyController : EnemyBace
     [HideInInspector] public GameObject Player;
     [SerializeField] GameObject _eye;
     [SerializeField] EnemyStatus _enemyStatus;
+    [SerializeField] Animator _animator;
     float timer = 0;
 
     private void Start()
@@ -14,6 +15,10 @@ public class AttackerEnemyController : EnemyBace
     void Update()
     {
         Physics.Raycast(transform.position, (Player.transform.position - transform.position).normalized, out RaycastHit hit);
+        if (Agent.remainingDistance <= 0.5f && !Agent.hasPath)
+        {
+            _animator.SetBool("Walking", false);
+        }
         if (hit.collider != null && !hit.collider.gameObject.CompareTag("Player"))
         {
             if (Agent.velocity.magnitude < 0.05f)
@@ -24,7 +29,7 @@ public class AttackerEnemyController : EnemyBace
         else
         {
             if (!Agent.isStopped)
-                Invoke(nameof(Stop), Random.Range(4, 7));
+                Invoke(nameof(Stop), Random.Range(1, 5));
             timer = 3f;
         }
         if (timer <= 0)
@@ -80,11 +85,12 @@ public class AttackerEnemyController : EnemyBace
         else if (dis > 60)
             return Mathf.PI / 6;
         else
-            return (-3.75f * dis + 255) * Mathf.PI / 180;
+            return (-3.75f * dis + 255) * Mathf.PI / 180;// 60度から20度の間で変化する二次式を弧度法に変換
     }
 
-    void Stop()
+    public override void Move(Vector3 position)
     {
-        Agent.SetDestination(transform.position);
+        base.Move(position);
+        _animator.SetBool("Walking", true);
     }
 }
