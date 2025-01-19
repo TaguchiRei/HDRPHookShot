@@ -8,8 +8,8 @@ using UnityEngine.UI;
 
 public class PlayerMove : MonoBehaviour
 {
-    public GameManager _gameManager;
-    public bool _canMoveInput = false;
+    [HideInInspector] public GameManager _gameManager;
+     public bool _canMoveInput = false;
     public bool _canJumpInput = false;
     [SerializeField] float _jumpPower = 1;
     public bool _canUseWeaponInput = false;
@@ -24,7 +24,6 @@ public class PlayerMove : MonoBehaviour
 
     //’ÊíŽËŒ‚‚Ì‚½‚ß‚Ì•Ï”
     [SerializeField] UnityEvent _shot;
-    [SerializeField] GameObject bullet;
     public bool _shotting = false;
     float _shotIntervalTimer = 0.2f;
     float anchorTimer = 0;
@@ -61,9 +60,7 @@ public class PlayerMove : MonoBehaviour
     public bool _jumping = false;
     public bool _onGround = true;
     bool _usingAnchor = false;
-    bool _usingAbility = false;
     public AbilitySet _abilitySet;
-    RaycastHit hit;
     [SerializeField] Vector3 _defaultAbilitySet;
 
     //ˆêŽž’âŽ~ˆ——p
@@ -108,6 +105,11 @@ public class PlayerMove : MonoBehaviour
             {
                 _shot.Invoke();
                 _shotIntervalTimer = 1 / _weaponStatus.RateOfFire;
+                ;
+                if (Physics.Raycast(_playerHead.transform.position, _playerHead.transform.eulerAngles, out RaycastHit hit) && hit.collider.CompareTag("Enemy"))
+                {
+                    //‚±‚±‚ÉŽËŒ‚‚ª“–‚½‚Á‚½Žž‚Ìˆ—‚ð‘‚­B
+                }
             }
             if (_shotIntervalTimer > 0)
             {

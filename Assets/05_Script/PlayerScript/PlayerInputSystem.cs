@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -297,9 +299,5 @@ public class PlayerInputSystem : MonoBehaviour
     {
         _mode = Mode.submachineGun;
         _player._canAction = true;
-    }
-    void Ability(int abilityNumber)
-    {
-        _player.UseAbility(abilityNumber);
     }
 }

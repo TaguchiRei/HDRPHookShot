@@ -28,7 +28,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             ""id"": ""df70fa95-8a34-4494-b137-73ab6b9c7d37"",
             ""actions"": [
                 {
-                    ""name"": ""Move"",
+                    ""name"": ""LeaderMove"",
                     ""type"": ""Value"",
                     ""id"": ""351f2ccd-1f9f-44bf-9bec-d62ac5c5f408"",
                     ""expectedControlType"": ""Vector2"",
@@ -153,7 +153,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -164,7 +164,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -175,7 +175,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -186,7 +186,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -197,7 +197,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -208,7 +208,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -219,7 +219,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -230,7 +230,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -241,7 +241,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -252,7 +252,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -263,7 +263,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XR"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -274,7 +274,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Joystick"",
-                    ""action"": ""Move"",
+                    ""action"": ""LeaderMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1258,7 +1258,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
 }");
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
+        m_Player_Move = m_Player.FindAction("LeaderMove", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Shot = m_Player.FindAction("Shot", throwIfNotFound: true);

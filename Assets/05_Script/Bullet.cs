@@ -4,9 +4,9 @@ public class Bullet : MonoBehaviour
 {
     GameObject _player;
     GameObject _playerEye;
-    public bool _homing = false;
-    public bool _railgun = false;
-    public float _dmg = 0;
+    public bool Homing = false;
+    public bool Railgun = false;
+    public float Dmg = 0;
     float _bulletSpeed = 1;
     float _railgunAttackRange = 1;
     [SerializeField] Rigidbody _rig;
