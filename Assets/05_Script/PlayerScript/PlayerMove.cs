@@ -105,10 +105,10 @@ public class PlayerMove : MonoBehaviour
             {
                 _shot.Invoke();
                 _shotIntervalTimer = 1 / _weaponStatus.RateOfFire;
-                ;
-                if (Physics.Raycast(_playerHead.transform.position, _playerHead.transform.eulerAngles, out RaycastHit hit) && hit.collider.CompareTag("Enemy"))
+                if (Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit) && hit.collider.CompareTag("Enemy"))
                 {
                     //‚±‚±‚ÉŽËŒ‚‚ª“–‚½‚Á‚½Žž‚Ìˆ—‚ð‘‚­B
+                    Debug.Log("BurretHit");
                 }
             }
             if (_shotIntervalTimer > 0)

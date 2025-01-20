@@ -19,6 +19,10 @@ public class AttackerEnemyController : EnemyBace
         {
             _animator.SetBool("Walking", false);
         }
+        else
+        {
+            _animator.SetBool("Walking", true);
+        }
         if (hit.collider != null && !hit.collider.gameObject.CompareTag("Player"))
         {
             if (Agent.velocity.magnitude < 0.05f)
