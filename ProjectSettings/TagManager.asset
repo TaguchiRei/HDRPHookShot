@@ -8,6 +8,7 @@ TagManager:
   - Muzzle
   - Anchor
   - Enemy
+  - PlayerHead
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - UI
   - Anchor
   - Ground
-  - 
+  - Enemy
   - 
   - 
   - 
