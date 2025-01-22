@@ -1,3 +1,4 @@
+using GamesKeystoneFramework.PolarCoordinates;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,8 +37,6 @@ public class AttackerEnemyGun : MonoBehaviour
             {
                 //極座標を用いて見るべきプレイヤーの位置を調べる。
                 delayedPosition = positionHistory.Dequeue();
-                
-
             }
         }
     }

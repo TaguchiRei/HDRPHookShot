@@ -1,3 +1,4 @@
+using GamesKeystoneFramework.PolarCoordinates;
 using UnityEngine;
 
 public class AttackerEnemyController : EnemyBace
@@ -39,29 +40,39 @@ public class AttackerEnemyController : EnemyBace
         if (timer <= 0)
         {
             timer = 3;
-            //ƒvƒŒƒCƒ„[‚ð’†S‚Æ‚µ‚½‹ÉÀ•W‚É•ÏŠ·
-            //‹ÉÀ•WŒn‚Å‹——£‚ð‹ß‚Ã‚¯‚Â‚ÂŽü‚è‚ð‚Ü‚í‚é‚æ‚¤‚ÉˆÚ“®‚µ‚ÄŽËü‚ð’Ê‚·‚æ‚¤‚É‚·‚éB
-            Vector3 local = Player.transform.position - transform.position;
-            float dis = new Vector3(local.x, 0, local.z).magnitude;
-            float theta = Mathf.Atan2(local.z, local.x);
-            float checkTheta = theta + 0.8727f;
-            float theta2;
-            dis *= 0.8f;
-            //‰E‘¤—Dæ’T¸‚©¶‘¤—Dæ’T¸‚©‚ð’²‚×‚éB‚±‚ê‚Í‰EˆÚ“®‚Æ¶ˆÚ“®‚Ì‚Ç‚¿‚ç‚Å‚àŒ©‚¦‚È‚©‚Á‚½ê‡‚ÍŒã‚É’T¸‚µ‚½•û‚ÉˆÚ“®‚·‚é‚±‚Æ‚ðŽ¦‚·B
-            theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
-            Vector3 pointer = new(dis * Mathf.Cos(theta2), transform.position.y, dis * Mathf.Sin(theta2));
-            if (Physics.Raycast(pointer, (Player.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("Player"))
+            
+            if(Vector3.Distance(transform.position,Player.transform.position) < 80)
             {
-                theta2 = _enemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
+                //ƒvƒŒƒCƒ„[‚ð’†S‚Æ‚µ‚½‹ÉÀ•W‚É•ÏŠ·
+                //‹ÉÀ•WŒn‚Å‹——£‚ð‹ß‚Ã‚¯‚Â‚ÂŽü‚è‚ð‚Ü‚í‚é‚æ‚¤‚ÉˆÚ“®‚µ‚ÄŽËü‚ð’Ê‚·‚æ‚¤‚É‚·‚éB
+                Vector3 local = Player.transform.position - transform.position;
+                float dis = new Vector3(local.x, 0, local.z).magnitude;
+                float theta = Mathf.Atan2(local.z, local.x);
+                float checkTheta = theta + 0.8727f;
+                float theta2;
+                dis *= 0.8f;
+                //‰E‘¤—Dæ’T¸‚©¶‘¤—Dæ’T¸‚©‚ð’²‚×‚éB‚±‚ê‚Í‰EˆÚ“®‚Æ¶ˆÚ“®‚Ì‚Ç‚¿‚ç‚Å‚àŒ©‚¦‚È‚©‚Á‚½ê‡‚ÍŒã‚É’T¸‚µ‚½•û‚ÉˆÚ“®‚·‚é‚±‚Æ‚ðŽ¦‚·B
+                theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
+                Vector3 pointer = new(dis * Mathf.Cos(theta2), transform.position.y, dis * Mathf.Sin(theta2));
+                if (Physics.Raycast(pointer, (Player.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("Player"))
+                {
+                    theta2 = _enemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
+                }
+                else
+                {
+                    theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
+                }
+                pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
+                Move(new(pointer.x, 0.5f, pointer.z));
             }
             else
             {
-                theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
+                Vector3 local = Player.transform.position - transform.position;
+                PolarCoordinates p = PolarCoordinatesSupport.ToPolarCoordinates(local);
+                p.radius *= 0.5f;
+                Move(p.ToVector2());
             }
-            pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
-            Move(new(pointer.x, 0.5f, pointer.z));
         }
-
     }
     public override void UniqueAction()
     {
