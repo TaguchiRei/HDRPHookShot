@@ -9,9 +9,9 @@ public class EnemyStatus : MonoBehaviour,IEnemyInterface
     public bool Leader { get; set; }
 
     public GameObject LeaderObject;
-    [SerializeField] EnemyBace enemyBace;
+    [SerializeField] EnemyBase enemyBase;
 
-    public List<EnemyStatus> MemberStatusList;
+    public List<GameObject> MembersList;
     public void Initialization(int groupNumber, LR lr, bool leader, GameObject leaderObj)
     {
         GroupNumber = groupNumber;

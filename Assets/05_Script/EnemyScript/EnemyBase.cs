@@ -1,17 +1,18 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public abstract class EnemyBace : MonoBehaviour
+public abstract class EnemyBase : MonoBehaviour
 {
     public float Hp = 0;
     public float MoveSpeed = 1;
     public NavMeshAgent Agent;
     public bool Leader = false;
     public Vector3 MoveEller = new(5, 5, 5);
+    public EnemyStatus enemyStatus;
     public virtual void Move(Vector3 position)
     {
         Agent.speed = MoveSpeed;
-        if (Leader)
+        if (enemyStatus.Leader)
         {
             Agent.SetDestination(position);
         }

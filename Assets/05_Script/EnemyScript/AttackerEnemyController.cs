@@ -1,7 +1,6 @@
-using GamesKeystoneFramework.PolarCoordinates;
 using UnityEngine;
 
-public class AttackerEnemyController : EnemyBace
+public class AttackerEnemyController : EnemyBase
 {
     [HideInInspector] public GameObject Player;
     [SerializeField] GameObject _eye;
@@ -11,11 +10,13 @@ public class AttackerEnemyController : EnemyBace
 
     private void Start()
     {
-        Player = GameObject.FindGameObjectWithTag("Player");
+        Player = GameObject.FindGameObjectWithTag("PlayerHead");
+        Debug.Log("enemyStart");
     }
     void Update()
     {
-        Physics.Raycast(transform.position, (Player.transform.position - transform.position).normalized, out RaycastHit hit);
+        Physics.Raycast(transform.position, (Player.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default","Ground"));
+
         if (Agent.remainingDistance <= 0.5f && !Agent.hasPath)
         {
             _animator.SetBool("Walking", false);
@@ -24,25 +25,27 @@ public class AttackerEnemyController : EnemyBace
         {
             _animator.SetBool("Walking", true);
         }
-        if (hit.collider != null && !hit.collider.gameObject.CompareTag("Player"))
+
+        if (enemyStatus.Leader)
         {
-            if (Agent.velocity.magnitude < 0.05f)
+            if (hit.collider != null && !hit.collider.gameObject.CompareTag("PlayerHead"))
             {
-                timer -= Time.deltaTime;
+                if (Agent.velocity.magnitude < 0.05f)
+                {
+                    timer -= Time.deltaTime;
+                }
             }
-        }
-        else
-        {
-            if (!Agent.isStopped)
-                Invoke(nameof(Stop), Random.Range(1, 5));
-            timer = 3f;
-        }
-        if (timer <= 0)
-        {
-            timer = 3;
-            
-            if(Vector3.Distance(transform.position,Player.transform.position) < 80)
+            else
             {
+                if (!Agent.isStopped)
+                    Invoke(nameof(Stop), Random.Range(1, 5));
+                timer = 3f;
+            }
+
+            if (timer <= 0)
+            {
+                timer = 3;
+
                 //プレイヤーを中心とした極座標に変換
                 //極座標系で距離を近づけつつ周りをまわるように移動して射線を通すようにする。
                 Vector3 local = Player.transform.position - transform.position;
@@ -64,13 +67,10 @@ public class AttackerEnemyController : EnemyBace
                 }
                 pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
                 Move(new(pointer.x, 0.5f, pointer.z));
-            }
-            else
-            {
-                Vector3 local = Player.transform.position - transform.position;
-                PolarCoordinates p = PolarCoordinatesSupport.ToPolarCoordinates(local);
-                p.radius *= 0.5f;
-                Move(p.ToVector2());
+                foreach (GameObject m in _enemyStatus.MembersList)
+                {
+                    m.GetComponent<EnemyBase>().Move(pointer);
+                }
             }
         }
     }
@@ -107,5 +107,9 @@ public class AttackerEnemyController : EnemyBace
     {
         base.Move(position);
         _animator.SetBool("Walking", true);
+        if (Leader)
+        {
+            //foreach()
+        }
     }
 }

@@ -9,16 +9,21 @@ public class EnemyManager : MonoBehaviour
     List<EnemyGroup> enemyGroups = new();
     List<GameObject> allEnemyData = new();
     [SerializeField] EnemyData stageEnemyData;
-    [SerializeField] List<Vector3> spornPoint = new();
-    [SerializeField] float spornRange = 0;
-    [SerializeField] int groupNumber;
+    [SerializeField] List<Vector3> spawnPoint = new();
+    [SerializeField] float spawnRange = 0;
     [Tooltip("グループがそれぞれいくつあるかを入れる")]
     [SerializeField] GroupNumber group;
     [Tooltip("グループにそれぞれ何人入るかを入れる")]
     [SerializeField] GroupNumber groupNum;
 
-    public void ButtleStart(int Stage)
+    private void Start()
     {
+        StartCoroutine(ButtleStart(0));
+    }
+    IEnumerator ButtleStart(int Stage)
+    {
+        Debug.Log(group.Big + group.Middle + group.Small);
+        //自身のマップ番号のエネミーデータを取得
         foreach (EnemyDataFormat e in stageEnemyData.enemyAndNumbers[Stage].enemy)
         {
             for (int i = 0; i < e.number; i++)
@@ -26,63 +31,58 @@ public class EnemyManager : MonoBehaviour
                 allEnemyData.Add(e.enemy);
             }
         }
+        //取得したオブジェクトをシャッフルする
         allEnemyData = allEnemyData.OrderBy(d => Guid.NewGuid()).ToList();//ランダムにソートすることで出てくる順番をばらす
-        int groupSize = group.Small;
-        for (int i = 0; i < group.Big + group.Middle + group.Small; i++)
+
+        int groupMemberNum = groupNum.Big;
+        for (int i = 0; i < group.Small + group.Middle + group.Big; i++)
         {
-            if (i > group.Small + group.Middle)
-                groupSize = group.Big;
-            else if (i > group.Small)
-                groupSize = group.Middle;
-            enemyGroups.Add(new()
-            {
-                GroupNumber = i,
-                MaxMember = groupSize,
-                LR = (LR)UnityEngine.Random.Range(0, 2),
-                MemberList = new()
-            });
-            enemyGroups[i].MemberList = allEnemyData.GetRange(0, groupNum.Big);
-            allEnemyData.RemoveRange(0, groupNum.Big);
-        }
-    }
-    IEnumerator GenerateEnemyGroups(List<EnemyGroup> generateEnemyGroups)
-    {
-        GameObject groupLeader;
-        EnemyStatus LeaderStatus;
-        HashSet<GameObject> enemyType;
-        for (int i = 0; i < generateEnemyGroups.Count; i++)
-        {
-            //リーダーを作成
+            if (group.Big + group.Middle < i + 1)
+                groupMemberNum = groupNum.Small;
+            else if (group.Big < i + 1)
+                groupMemberNum = groupNum.Middle;
+
+
+            List<GameObject> enemyList = allEnemyData.GetRange(0, groupMemberNum);
+            allEnemyData.RemoveRange(0, groupMemberNum);
+            //リーダーとなるオブジェクトを生成と初期化
+            Vector3 spawnerPos = spawnPoint[UnityEngine.Random.Range(0, spawnPoint.Count)];//生成する座標をランダム決定
+            GameObject leaderObj = Instantiate(enemyList[0], spawnerPos, Quaternion.identity);
+            EnemyStatus leaderSta = leaderObj.GetComponent<EnemyStatus>();
             LR lR = (LR)UnityEngine.Random.Range(0, 2);
-            groupLeader = Instantiate(generateEnemyGroups[i].MemberList[0], spornPoint[i], Quaternion.identity);
-            generateEnemyGroups[i].MemberList.RemoveAt(0);
-            LeaderStatus = groupLeader.GetComponent<EnemyStatus>();
-            LeaderStatus.Initialization(i, lR, true, groupLeader);
-            LeaderStatus.MemberStatusList = new();
-            //グループを作成
-            enemyType = generateEnemyGroups[i].MemberList.ToHashSet();//ハッシュセットにしてタイプだけ取得
-            foreach (var member in enemyType)
+            leaderSta.Initialization(i,lR, true, leaderObj);
+            enemyList.RemoveAt(0);
+            HashSet<GameObject> enemyHashSet = enemyList.ToHashSet();
+            List<GameObject> resultGroup = new();//この回で生成したグループを保存する
+            //同一グループのエネミーを生成
+            foreach (GameObject enemy in enemyHashSet)
             {
-                var instantiateOperation = InstantiateAsync(member, generateEnemyGroups[i].MemberList.Count(countMember => countMember = member));
-                yield return instantiateOperation;
-                var resultArr = instantiateOperation.Result.Where(obj => obj != null).Select(obj => obj.GetComponent<EnemyStatus>());
-                foreach (var enemyInstance in instantiateOperation.Result)
-                {
-                    //初期位置を決定
-                    enemyInstance.GetComponent<EnemyStatus>().Initialization(i, lR, false, groupLeader);
-                    enemyInstance.transform.rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.up);
-                    enemyInstance.transform.position += enemyInstance.transform.position + transform.forward * UnityEngine.Random.Range(0.0f, spornRange);
-                }
+                var instantiateResult = InstantiateAsync(enemy, enemyList.Count(obj => obj == enemy));
+                yield return instantiateResult;
+                resultGroup.AddRange(instantiateResult.Result);
             }
+            Debug.Log("enemyGenerated");
+            foreach (var item in resultGroup)
+            {
+                item.transform.position = spawnerPos + new Vector3(1, 0, 1) * UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1);//位置を決定
+                EnemyStatus enemyStatus = item.GetComponent<EnemyStatus>();
+                enemyStatus.Initialization(i,lR,false,leaderObj);
+            }
+            Debug.Log("enemyInitialize");
+            leaderSta.MembersList = resultGroup;
+            leaderObj.name = "EnemyManagerTest[Leader]";
         }
     }
+
+
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        foreach (var v in spornPoint)
+        foreach (var v in spawnPoint)
         {
-            Gizmos.DrawWireSphere(v, spornRange);
+            Gizmos.DrawWireSphere(v, spawnRange);
         }
     }
 #endif
