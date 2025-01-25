@@ -22,7 +22,6 @@ public class EnemyManager : MonoBehaviour
     }
     IEnumerator ButtleStart(int Stage)
     {
-        Debug.Log(group.Big + group.Middle + group.Small);
         //自身のマップ番号のエネミーデータを取得
         foreach (EnemyDataFormat e in stageEnemyData.enemyAndNumbers[Stage].enemy)
         {
@@ -50,27 +49,32 @@ public class EnemyManager : MonoBehaviour
             GameObject leaderObj = Instantiate(enemyList[0], spawnerPos, Quaternion.identity);
             EnemyStatus leaderSta = leaderObj.GetComponent<EnemyStatus>();
             LR lR = (LR)UnityEngine.Random.Range(0, 2);
-            leaderSta.Initialization(i,lR, true, leaderObj);
+            leaderSta.Initialization(i, lR, true, leaderObj);
             enemyList.RemoveAt(0);
             HashSet<GameObject> enemyHashSet = enemyList.ToHashSet();
             List<GameObject> resultGroup = new();//この回で生成したグループを保存する
             //同一グループのエネミーを生成
             foreach (GameObject enemy in enemyHashSet)
             {
-                var instantiateResult = InstantiateAsync(enemy, enemyList.Count(obj => obj == enemy));
+                var instantiateResult = InstantiateAsync(
+                    enemy,
+                    enemyList.Count(obj => obj == enemy),
+                    leaderObj.transform.position,
+                    Quaternion.identity);
                 yield return instantiateResult;
+                Debug.Log(instantiateResult.Result.Count() + "count");
                 resultGroup.AddRange(instantiateResult.Result);
             }
             Debug.Log("enemyGenerated");
-            foreach (var item in resultGroup)
+            foreach (var obj in resultGroup)
             {
-                item.transform.position = spawnerPos + new Vector3(1, 0, 1) * UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1);//位置を決定
-                EnemyStatus enemyStatus = item.GetComponent<EnemyStatus>();
-                enemyStatus.Initialization(i,lR,false,leaderObj);
+                obj.transform.position = obj.transform.position + new Vector3(UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1), 0, UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1));//位置を決定
+                EnemyStatus enemyStatus = obj.GetComponent<EnemyStatus>();
+                enemyStatus.Initialization(i, lR, false, leaderObj);
             }
             Debug.Log("enemyInitialize");
             leaderSta.MembersList = resultGroup;
-            leaderObj.name = "EnemyManagerTest[Leader]";
+            leaderObj.name = "AttackerEnemyTest[Leader]";
         }
     }
 

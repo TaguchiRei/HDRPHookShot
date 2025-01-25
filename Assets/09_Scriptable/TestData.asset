@@ -15,4 +15,4 @@ MonoBehaviour:
   enemyAndNumbers:
   - enemy:
     - enemy: {fileID: 7489775083604676822, guid: fb430fa9a3210ab4485e6c256202d0fb, type: 3}
-      number: 110
+      number: 325

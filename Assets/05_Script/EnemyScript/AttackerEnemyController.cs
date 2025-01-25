@@ -6,16 +6,17 @@ public class AttackerEnemyController : EnemyBase
     [SerializeField] GameObject _eye;
     [SerializeField] EnemyStatus _enemyStatus;
     [SerializeField] Animator _animator;
-    float timer = 0;
+    float timer = 3;
 
     private void Start()
     {
         Player = GameObject.FindGameObjectWithTag("PlayerHead");
         Debug.Log("enemyStart");
+        timer = 5f;
     }
     void Update()
     {
-        Physics.Raycast(transform.position, (Player.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default","Ground"));
+        Physics.Raycast(transform.position, (Player.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground"));
 
         if (Agent.remainingDistance <= 0.5f && !Agent.hasPath)
         {
@@ -33,6 +34,13 @@ public class AttackerEnemyController : EnemyBase
                 if (Agent.velocity.magnitude < 0.05f)
                 {
                     timer -= Time.deltaTime;
+                }
+            }
+            else if (Vector3.Distance(transform.position, Player.transform.position) > 300)
+            {
+                if (Agent.velocity.magnitude < 0.05f)
+                {
+                    timer -= Time.deltaTime * 2;
                 }
             }
             else
@@ -53,10 +61,13 @@ public class AttackerEnemyController : EnemyBase
                 float theta = Mathf.Atan2(local.z, local.x);
                 float checkTheta = theta + 0.8727f;
                 float theta2;
-                dis *= 0.8f;
+                if (dis > 80)
+                    dis *= Random.Range(0.8f,0.9f);
+                else
+                    dis *= Random.Range(2.0f,2.8f);
                 //‰E‘¤—Dæ’T¸‚©¶‘¤—Dæ’T¸‚©‚ğ’²‚×‚éB‚±‚ê‚Í‰EˆÚ“®‚Æ¶ˆÚ“®‚Ì‚Ç‚¿‚ç‚Å‚àŒ©‚¦‚È‚©‚Á‚½ê‡‚ÍŒã‚É’T¸‚µ‚½•û‚ÉˆÚ“®‚·‚é‚±‚Æ‚ğ¦‚·B
                 theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
-                Vector3 pointer = new(dis * Mathf.Cos(theta2), transform.position.y, dis * Mathf.Sin(theta2));
+                Vector3 pointer = new(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2));
                 if (Physics.Raycast(pointer, (Player.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("Player"))
                 {
                     theta2 = _enemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
@@ -66,10 +77,11 @@ public class AttackerEnemyController : EnemyBase
                     theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
                 }
                 pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
+                Debug.Log(new Vector3(pointer.x, 0.5f, pointer.z));
                 Move(new(pointer.x, 0.5f, pointer.z));
                 foreach (GameObject m in _enemyStatus.MembersList)
                 {
-                    m.GetComponent<EnemyBase>().Move(pointer);
+                    m.GetComponent<EnemyBase>().Move(new(pointer.x, 0.5f, pointer.z));
                 }
             }
         }
@@ -107,9 +119,5 @@ public class AttackerEnemyController : EnemyBase
     {
         base.Move(position);
         _animator.SetBool("Walking", true);
-        if (Leader)
-        {
-            //foreach()
-        }
     }
 }

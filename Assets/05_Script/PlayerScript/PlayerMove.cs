@@ -233,15 +233,21 @@ public class PlayerMove : MonoBehaviour
         if (hpChange)
         {
             _hp -= amount;
-            if (_hp < 0) _hp = 0;
-            else if (_hp > _maxHp) _hp = _maxHp;
+            if (_hp < 0)
+                _hp = 0;
+            else if (_hp > _maxHp)
+                _hp = _maxHp;
+
             _hpImage.DOFillAmount(_hp / _maxHp, 0.1f);
         }
         else
         {
             _energy -= amount;
-            if (_energy < 0) _energy = 0;
-            else if (_energy > _maxEnergy) _energy = _maxEnergy;
+            if (_energy < 0)
+                _energy = 0;
+            else if (_energy > _maxEnergy)
+                _energy = _maxEnergy;
+
             _energyImage.DOFillAmount(_energy / _maxEnergy, amount);
         }
     }
