@@ -20,6 +20,7 @@ public class EnemyManager : MonoBehaviour
     public Queue<GameObject> AttackerQueue = new Queue<GameObject>();
     public Queue<GameObject> SupporterQueue = new Queue<GameObject>();
     public Queue<GameObject> DefenderQueue = new Queue<GameObject>();
+    public int WaitingForSpawn = 0;
 
 
     private void Start()
@@ -58,10 +59,12 @@ public class EnemyManager : MonoBehaviour
             LR lR = (LR)UnityEngine.Random.Range(0, 2);
             leaderSta.Initialization(i, lR, true, gameObject,leaderObj);
             enemyList.RemoveAt(0);
+
+
             HashSet<GameObject> enemyHashSet = enemyList.ToHashSet();
             List<GameObject> resultGroup = new();//この回で生成したグループを保存する
             
-            //同一グループのエネミーを一気に生成
+            //同一タイプのエネミーごとに一気に生成
             foreach (GameObject enemy in enemyHashSet)
             {
                 var instantiateResult = InstantiateAsync(
@@ -82,6 +85,14 @@ public class EnemyManager : MonoBehaviour
             }
             Debug.Log("enemyInitialize");
             leaderSta.MembersList = resultGroup;
+        }
+        if(allEnemyData.Count != 0)
+        {
+            HashSet<GameObject> enemyHashSet = allEnemyData.ToHashSet();
+            foreach (var obj in enemyHashSet)
+            {
+                
+            }
         }
     }
 

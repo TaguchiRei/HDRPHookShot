@@ -8,7 +8,7 @@ public class EnemyStatus : MonoBehaviour,IEnemyInterface
     public LR LR { get; set; }
     public bool Leader { get; set; }
 
-    [SerializeField] private EnemyStatus enemyStatus;
+    public EnemyStatus enemyStatus;
 
     [SerializeField] EnemyBase enemyBase;
     [SerializeField] int _maxHp;
