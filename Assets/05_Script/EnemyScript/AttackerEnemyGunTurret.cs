@@ -1,5 +1,6 @@
-using GamesKeystoneFramework.PolarCoordinates;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Unity.Burst;
 using UnityEngine;
 
 public class AttackerEnemyGun : MonoBehaviour
@@ -21,22 +22,14 @@ public class AttackerEnemyGun : MonoBehaviour
         elapsedTime += Time.deltaTime;
         if (elapsedTime >= delay)
         {
-            if (!x)
-            {
-                //Y軸を回転させる。delay秒前の位置を追従
-                delayedPosition = positionHistory.Dequeue();
-                direction = delayedPosition - transform.position;
-                direction.y = 0;
+            //Y軸を回転させる。delay秒前の位置を追従
+            delayedPosition = positionHistory.Dequeue();
+            direction = delayedPosition - transform.position;
+            direction.y = 0;
 
-                if (direction != Vector3.zero)
-                {
-                    transform.rotation = Quaternion.LookRotation(direction);
-                }
-            }
-            else
+            if (direction != Vector3.zero)
             {
-                //極座標を用いて見るべきプレイヤーの位置を調べる。
-                delayedPosition = positionHistory.Dequeue();
+                transform.rotation = Quaternion.LookRotation(direction);
             }
         }
     }

@@ -3,7 +3,6 @@ using UnityEngine.AI;
 
 public abstract class EnemyBase : MonoBehaviour
 {
-    public float Hp = 0;
     public float MoveSpeed = 1;
     public NavMeshAgent Agent;
     public bool Leader = false;
@@ -24,10 +23,6 @@ public abstract class EnemyBase : MonoBehaviour
     public virtual void Stop()
     {
         Agent.SetDestination(transform.position);
-    }
-    public virtual void HPChange(float defaultDmg)
-    {
-
     }
     public abstract void UniqueAction();
 }

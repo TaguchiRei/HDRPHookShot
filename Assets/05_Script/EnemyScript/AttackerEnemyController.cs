@@ -7,6 +7,7 @@ public class AttackerEnemyController : EnemyBase
     [SerializeField] EnemyStatus _enemyStatus;
     [SerializeField] Animator _animator;
     float timer = 3;
+    bool suvive = true;
 
     private void Start()
     {
@@ -16,79 +17,81 @@ public class AttackerEnemyController : EnemyBase
     }
     void Update()
     {
-        Physics.Raycast(transform.position, (Player.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground"));
+        if (suvive)
+        {
+            Physics.Raycast(transform.position, (Player.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground"));
 
-        if (Agent.remainingDistance <= 0.5f && !Agent.hasPath)
-        {
-            _animator.SetBool("Walking", false);
-        }
-        else
-        {
-            _animator.SetBool("Walking", true);
-        }
-
-        if (enemyStatus.Leader)
-        {
-            if (hit.collider != null && !hit.collider.gameObject.CompareTag("PlayerHead"))
+            if (Agent.remainingDistance <= 0.5f && !Agent.hasPath)
             {
-                if (Agent.velocity.magnitude < 0.05f)
-                {
-                    timer -= Time.deltaTime;
-                }
-            }
-            else if (Vector3.Distance(transform.position, Player.transform.position) > 300)
-            {
-                if (Agent.velocity.magnitude < 0.05f)
-                {
-                    timer -= Time.deltaTime * 2;
-                }
+                _animator.SetBool("Walking", false);
             }
             else
             {
-                if (!Agent.isStopped)
-                    Invoke(nameof(Stop), Random.Range(1, 5));
-                timer = 3f;
+                _animator.SetBool("Walking", true);
             }
 
-            if (timer <= 0)
+            if (enemyStatus.Leader)
             {
-                timer = 3;
+                if (hit.collider != null && !hit.collider.gameObject.CompareTag("PlayerHead"))
+                {
+                    if (Agent.velocity.magnitude < 0.05f)
+                    {
+                        timer -= Time.deltaTime;
+                    }
+                }
+                else if (Vector3.Distance(transform.position, Player.transform.position) > 300)
+                {
+                    if (Agent.velocity.magnitude < 0.05f)
+                    {
+                        timer -= Time.deltaTime * 2;
+                    }
+                }
+                else
+                {
+                    if (!Agent.isStopped)
+                        Invoke(nameof(Stop), Random.Range(1, 5));
+                    timer = 3f;
+                }
 
-                //プレイヤーを中心とした極座標に変換
-                //極座標系で距離を近づけつつ周りをまわるように移動して射線を通すようにする。
-                Vector3 local = Player.transform.position - transform.position;
-                float dis = new Vector3(local.x, 0, local.z).magnitude;
-                float theta = Mathf.Atan2(local.z, local.x);
-                float checkTheta = theta + 0.8727f;
-                float theta2;
-                if (dis > 80)
-                    dis *= Random.Range(0.8f,0.9f);
-                else
-                    dis *= Random.Range(2.0f,2.8f);
-                //右側優先探査か左側優先探査かを調べる。これは右移動と左移動のどちらでも見えなかった場合は後に探査した方に移動することを示す。
-                theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
-                Vector3 pointer = new(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2));
-                if (Physics.Raycast(pointer, (Player.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("Player"))
+                if (timer <= 0)
                 {
-                    theta2 = _enemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
-                }
-                else
-                {
+                    timer = 3;
+
+                    //プレイヤーを中心とした極座標に変換
+                    //極座標系で距離を近づけつつ周りをまわるように移動して射線を通すようにする。
+                    Vector3 local = Player.transform.position - transform.position;
+                    float dis = new Vector3(local.x, 0, local.z).magnitude;
+                    float theta = Mathf.Atan2(local.z, local.x);
+                    float checkTheta = theta + 0.8727f;
+                    float theta2;
+                    if (dis > 80)
+                        dis *= Random.Range(0.8f, 0.9f);
+                    else
+                        dis *= Random.Range(2.0f, 2.8f);
+                    //右側優先探査か左側優先探査かを調べる。これは右移動と左移動のどちらでも見えなかった場合は後に探査した方に移動することを示す。
                     theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
-                }
-                pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
-                Debug.Log(new Vector3(pointer.x, 0.5f, pointer.z));
-                Move(new(pointer.x, 0.5f, pointer.z));
-                foreach (GameObject m in _enemyStatus.MembersList)
-                {
-                    m.GetComponent<EnemyBase>().Move(new(pointer.x, 0.5f, pointer.z));
+                    Vector3 pointer = new(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2));
+                    if (Physics.Raycast(pointer, (Player.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("Player"))
+                    {
+                        theta2 = _enemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
+                    }
+                    else
+                    {
+                        theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
+                    }
+                    pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
+                    Move(new(pointer.x, 0.5f, pointer.z));
+                    foreach (GameObject m in _enemyStatus.MembersList)
+                    {
+                        m.GetComponent<EnemyBase>().Move(new(pointer.x, 0.5f, pointer.z));
+                    }
                 }
             }
         }
     }
     public override void UniqueAction()
     {
-        throw new System.NotImplementedException();
+
     }
 
     /// <summary>

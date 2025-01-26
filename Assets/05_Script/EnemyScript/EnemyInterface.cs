@@ -4,3 +4,9 @@ public interface IEnemyInterface
     public LR LR { get; set; }
     public bool Leader { get; set; }
 }
+public enum EnemyType
+{
+    attacker,
+    defender,
+    supporter,
+}
