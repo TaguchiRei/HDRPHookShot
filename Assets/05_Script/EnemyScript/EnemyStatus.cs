@@ -8,15 +8,43 @@ public class EnemyStatus : MonoBehaviour,IEnemyInterface
     public LR LR { get; set; }
     public bool Leader { get; set; }
 
-    public GameObject LeaderObject;
-    [SerializeField] EnemyBase enemyBase;
+    [SerializeField] private EnemyStatus enemyStatus;
 
+    [SerializeField] EnemyBase enemyBase;
+    [SerializeField] int _maxHp;
     public List<GameObject> MembersList;
-    public void Initialization(int groupNumber, LR lr, bool leader, GameObject leaderObj)
+    GameObject managerObj;
+    GameObject leaderObj;
+    public int Hp = 3;
+    
+    public void Initialization(int groupNumber, LR lr, bool isLeader, GameObject manager, GameObject leader)
     {
         GroupNumber = groupNumber;
         LR = lr;
-        Leader = leader;
-        LeaderObject = leaderObj;
+        Leader = isLeader;
+        managerObj = manager;
+        leaderObj = leader;
+    }
+
+    public void HPChanger(int changeNum)
+    {
+        Hp -= changeNum;
+        if (Hp > 0)
+        {
+            //Ž€–SŽžˆ—
+
+        }
+        else if (Hp > _maxHp)
+        {
+            Hp = _maxHp;
+        }
+    }
+    public void HookShotHit()
+    {
+
+    }
+    public void InQueue()
+    {
+
     }
 }

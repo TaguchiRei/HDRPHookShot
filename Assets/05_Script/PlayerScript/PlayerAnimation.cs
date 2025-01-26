@@ -29,7 +29,7 @@ public class PlayerAnimation : MonoBehaviour
     }
     void UsedAbility()
     {
-        _playerMove._canAction = true;
+        _playerMove.CanAction = true;
         _anim.SetBool("UseAbility", false);
     }
     void AbilityEffect(int abilityNumber)

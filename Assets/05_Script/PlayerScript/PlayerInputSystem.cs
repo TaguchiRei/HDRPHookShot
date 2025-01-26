@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class PlayerInputSystem : MonoBehaviour
@@ -10,6 +11,7 @@ public class PlayerInputSystem : MonoBehaviour
 
     private PlayerInput _playerInput;
     Mode _mode = Mode.submachineGun;
+
     void Start()
     {
         _playerInput = new();
@@ -82,18 +84,18 @@ public class PlayerInputSystem : MonoBehaviour
 
         }
         Vector2 vector2 = context.ReadValue<Vector2>() * _moveSpeed;
-        _player._movePower = new Vector3(vector2.x, 0, vector2.y);
+        _player.MovePower = new Vector3(vector2.x, 0, vector2.y);
         if (context.phase == InputActionPhase.Started)
         {
-            _player._moving = true;
-            if (_player._onGround)
+            _player.Moving = true;
+            if (_player.OnGround)
             {
                 _player.AnimationChange("Run", true);
             }
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
-            _player._moving = false;
+            _player.Moving = false;
             _player.AnimationChange("Run", false);
         }
     }
@@ -110,11 +112,11 @@ public class PlayerInputSystem : MonoBehaviour
         //ゲームパッドとマウスで操作を分ける。キーボードマウスでは視点操作が早すぎるため、20で割っている。
         if (context.control.device is Gamepad)
         {
-            _player.look = context.ReadValue<Vector2>() * 5;
+            _player.Look = context.ReadValue<Vector2>() * 5;
         }
         else
         {
-            _player.look = context.ReadValue<Vector2>() / 20f;
+            _player.Look = context.ReadValue<Vector2>() / 20f;
         }
         //実際に回す動きはUpdate内で行う。
     }
@@ -128,11 +130,11 @@ public class PlayerInputSystem : MonoBehaviour
         {
             if (context.phase == InputActionPhase.Started)
             {
-                _player._jumping = true;
+                _player.Jumping = true;
             }
             else if (context.phase == InputActionPhase.Canceled)
             {
-                _player._jumping = false;
+                _player.Jumping = false;
             }
         }
     }
@@ -148,22 +150,23 @@ public class PlayerInputSystem : MonoBehaviour
             {
                 if (_mode == Mode.submachineGun)
                 {
-                    if (_player._canAction)
+                    if (_player.CanAction)
                     {
-                        _player._shotting = true;
+                        _player.Shotting = true;
                     }
                 }
                 else
                 {
-                    if (_player._canAction)
+                    if (_player.CanAction)
                     {
                         _player.AnimationChange("R_Shot");
+                        StartCoroutine(_player.ShotRailGun());
                     }
                 }
             }
             else if (context.phase == InputActionPhase.Canceled)
             {
-                _player._shotting = false;
+                _player.Shotting = false;
             }
         }
     }
@@ -190,17 +193,17 @@ public class PlayerInputSystem : MonoBehaviour
             {
                 if (_mode == Mode.submachineGun)
                 {
-                    if (_player._canAction)
+                    if (_player.CanAction)
                     {
                         _player.AnimationChange("HookShotOrAim");
-                        _player._canAction = false;
+                        _player.CanAction = false;
                         _player.AncShot();
                     }
                 }
                 else
                 {
                     _player.AnimationChange("HookShotOrAim");
-                    _player._canAction = true;
+                    _player.CanAction = true;
                 }
             }
             else if (context.phase == InputActionPhase.Canceled)
@@ -208,13 +211,13 @@ public class PlayerInputSystem : MonoBehaviour
                 _player.AnimationChange("HookShotOrAim", false);
                 if (_mode == Mode.submachineGun)
                 {
-                    _player._hookShotHit = false;
+                    _player.HookShotHit = false;
                     _player.AncDestroy();
-                    _player._canAction = true;
+                    _player.CanAction = true;
                 }
                 else
                 {
-                    _player._canAction = false;
+                    _player.CanAction = false;
                 }
 
             }
@@ -226,12 +229,12 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnConvert(InputAction.CallbackContext context)
     {
-        if (_player._canAction && !_player._gameManager._pause)
+        if (_player.CanAction && !_player._gameManager._pause)
         {
             _player.AnimationChange("RailGunMode");
             _mode = Mode.railgun;
-            _player._canAction = false;
-            _player._shotting = false;
+            _player.CanAction = false;
+            _player.Shotting = false;
         }
     }
     /// <summary>
@@ -240,11 +243,11 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility1(InputAction.CallbackContext context)
     {
-        if (_player._canAction && !_player._gameManager._pause)
+        if (_player.CanAction && !_player._gameManager._pause)
         {
-            _player._canAction = false;
-            Debug.Log(_player._abilitySet.abilityNumber1);
-            _player.UseAbility(_player._abilitySet.abilityNumber1);
+            _player.CanAction = false;
+            Debug.Log(_player.AbilitySetting.abilityNumber1);
+            _player.UseAbility(_player.AbilitySetting.abilityNumber1);
         }
     }
     /// <summary>
@@ -253,10 +256,10 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility2(InputAction.CallbackContext context)
     {
-        if (_player._canAction && !_player._gameManager._pause)
+        if (_player.CanAction && !_player._gameManager._pause)
         {
-            _player._canAction = false;
-            _player.UseAbility(_player._abilitySet.abilityNumber2);
+            _player.CanAction = false;
+            _player.UseAbility(_player.AbilitySetting.abilityNumber2);
         }
     }
     /// <summary>
@@ -267,10 +270,10 @@ public class PlayerInputSystem : MonoBehaviour
     {
         if (!_player._gameManager._pause)
         {
-            if (_player._canAction)
+            if (_player.CanAction)
             {
-                _player._canAction = false;
-                _player.UseAbility(_player._abilitySet.abilityNumber3);
+                _player.CanAction = false;
+                _player.UseAbility(_player.AbilitySetting.abilityNumber3);
             }
         }
     }
@@ -298,6 +301,6 @@ public class PlayerInputSystem : MonoBehaviour
     public void ModeReset()
     {
         _mode = Mode.submachineGun;
-        _player._canAction = true;
+        _player.CanAction = true;
     }
 }

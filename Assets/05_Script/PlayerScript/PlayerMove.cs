@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -9,11 +10,11 @@ using UnityEngine.UI;
 public class PlayerMove : MonoBehaviour
 {
     [HideInInspector] public GameManager _gameManager;
-     public bool _canMoveInput = false;
-    public bool _canJumpInput = false;
+     public bool CanMoveInput = false;
+    public bool CanJumpInput = false;
     [SerializeField] float _jumpPower = 1;
-    public bool _canUseWeaponInput = false;
-    public WeaponStatus _weaponStatus;
+    public bool CanUseWeaponInput = false;
+    public WeaponStatus WeaponStatus;
     [SerializeField] float _gravityScale = 1;
     [SerializeField] float _gravityScaleChangePoint;
     [SerializeField] GameObject _bullet;
@@ -24,26 +25,30 @@ public class PlayerMove : MonoBehaviour
 
     //通常射撃のための変数
     [SerializeField] UnityEvent _shot;
-    public bool _shotting = false;
+    public bool Shotting = false;
     float _shotIntervalTimer = 0.2f;
     float anchorTimer = 0;
-    public Func<int> _buffList;
+    public Func<int> BuffList;
 
     //フックショットの変数
-    [SerializeField] GameObject _AnchorPrehab;
-    [SerializeField] GameObject _AnchorMuzzle;
+    [SerializeField] GameObject _anchorPrehab;
+    [SerializeField] GameObject _anchorMuzzle;
     [SerializeField] MeshRenderer _anchorMesh;
     [SerializeField] LineRenderer _lineRenderer;
     [SerializeField] int _hookShotPower = 10;
     GameObject _anchorInstance;
-    public bool _hookShotHit = false;
+    public bool HookShotHit = false;
+
+    //レールガンのための変数   
+    [SerializeField] GameObject crackObj;
+    [SerializeField] UnityEvent railGunShot;
 
 
-    public Vector3 _movePower = Vector3.zero;
-    public Vector2 look;
+    public Vector3 MovePower = Vector3.zero;
+    public Vector2 Look;
 
-    public bool _canAction = true;
-    public bool _canUseAbility = false;
+    public bool CanAction = true;
+    public bool CanUseAbility = false;
     bool _canJump = false;
 
     //プレイヤーのステータスを保存する変数
@@ -56,11 +61,11 @@ public class PlayerMove : MonoBehaviour
 
 
     //プレイヤーの状態を保存する変数
-    public bool _moving = false;
-    public bool _jumping = false;
-    public bool _onGround = true;
+    public bool Moving = false;
+    public bool Jumping = false;
+    public bool OnGround = true;
     bool _usingAnchor = false;
-    public AbilitySet _abilitySet;
+    public AbilitySet AbilitySetting;
     [SerializeField] Vector3 _defaultAbilitySet;
 
     //一時停止処理用
@@ -73,12 +78,12 @@ public class PlayerMove : MonoBehaviour
         //初期ステータス読み込み
         //スキルセット読み込み
         //全状態リセット
-        _abilitySet.abilityNumber1 = (int)_defaultAbilitySet.x;
-        _abilitySet.abilityNumber2 = (int)_defaultAbilitySet.y;
-        _abilitySet.abilityNumber3 = (int)_defaultAbilitySet.z;
-        Debug.Log(_abilitySet.abilityNumber1);
-        Debug.Log(_abilitySet.abilityNumber2);
-        Debug.Log(_abilitySet.abilityNumber3);
+        AbilitySetting.abilityNumber1 = (int)_defaultAbilitySet.x;
+        AbilitySetting.abilityNumber2 = (int)_defaultAbilitySet.y;
+        AbilitySetting.abilityNumber3 = (int)_defaultAbilitySet.z;
+        Debug.Log(AbilitySetting.abilityNumber1);
+        Debug.Log(AbilitySetting.abilityNumber2);
+        Debug.Log(AbilitySetting.abilityNumber3);
         _gameManager.InButtlePause += Pause;
         _gameManager.InButtleReStart += ReStart;
     }
@@ -89,9 +94,9 @@ public class PlayerMove : MonoBehaviour
         {
             //プレイヤーの動きを作る
             //視点操作はここで行う。
-            transform.Rotate(0, look.x * _gameManager._horizontalCamera, 0);
+            transform.Rotate(0, Look.x * _gameManager._horizontalCamera, 0);
             //上下カメラの上限と下限を設定する。また、デフォルト値が反転操作なのでX軸回転(カメラの上下方向操作)は-1をかける
-            float verticalAngle = Mathf.Clamp(look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
+            float verticalAngle = Mathf.Clamp(Look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
             float playerAngle = _playerBody.transform.rotation.eulerAngles.x;
             //プレイヤーの角度をEulerAnglesで取得しているのでマイナスは360からその値を引いた数になるので360で引くことで正しい値に戻す。
             if (playerAngle > 180) playerAngle -= 360;
@@ -101,42 +106,42 @@ public class PlayerMove : MonoBehaviour
             }
 
             //射撃プログラム
-            if (_shotting && _shotIntervalTimer <= 0)
+            if (Shotting && _shotIntervalTimer <= 0)
             {
                 _shot.Invoke();
-                _shotIntervalTimer = 1 / _weaponStatus.RateOfFire;
+                _shotIntervalTimer = 1 / WeaponStatus.RateOfFire;
                 if (Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit) && hit.collider.CompareTag("Enemy"))
                 {
                     //ここに射撃が当たった時の処理を書く。
-                    Debug.Log("BurretHit");
+                    Debug.Log("BulletHit");
                 }
             }
             if (_shotIntervalTimer > 0)
             {
                 _shotIntervalTimer -= Time.deltaTime;
             }
-            if (anchorTimer > 0 && !_hookShotHit)
+            if (anchorTimer > 0 && !HookShotHit)
             {
                 anchorTimer -= Time.deltaTime;
                 if (anchorTimer < 0)
                 {
-                    _hookShotHit = false;
+                    HookShotHit = false;
                     AncDestroy();
                     _anchorInstance = null;
                     _anim.SetBool("HookShotOrAim", false);
-                    _canAction = true;
+                    CanAction = true;
                     _anchorMesh.enabled = true;
                 }
             }
             if (_usingAnchor)
             {
-                _lineRenderer.SetPosition(0, _AnchorMuzzle.transform.position);
+                _lineRenderer.SetPosition(0, _anchorMuzzle.transform.position);
                 _lineRenderer.SetPosition(1, _anchorInstance.transform.position);
             }
             //地面との距離を測るボックスキャスト
             bool groundHit = Physics.BoxCast(new Vector3(transform.position.x, transform.position.y + 0.6f, transform.position.z), new Vector3(0.5f, 0.5f, 0.5f), Vector3.down, Quaternion.identity, 0.8f);
-            if (groundHit) _onGround = true;
-            else _onGround = false;
+            if (groundHit) OnGround = true;
+            else OnGround = false;
         }
     }
     private void FixedUpdate()
@@ -144,16 +149,16 @@ public class PlayerMove : MonoBehaviour
         if (!_gameManager._pause)
         {
             //プレイヤーの動きを作る
-            if (_moving && _movePower != Vector3.zero)
+            if (Moving && MovePower != Vector3.zero)
             {
-                if (!_hookShotHit && _onGround)
+                if (!HookShotHit && OnGround)
                 {
-                    Vector3 move = transform.TransformDirection(_movePower);
+                    Vector3 move = transform.TransformDirection(MovePower);
                     _rigidbody.linearVelocity = new Vector3(move.x, _rigidbody.linearVelocity.y, move.z);
                 }
                 else
                 {
-                    Vector3 move = transform.TransformDirection(_movePower);
+                    Vector3 move = transform.TransformDirection(MovePower);
                     _rigidbody.AddForce(move, ForceMode.Acceleration);
                 }
             }
@@ -162,18 +167,18 @@ public class PlayerMove : MonoBehaviour
             Vector3 gravity = _rigidbody.linearVelocity.y <= 0 ? new Vector3(0, -20, 0) * _gravityScale : new Vector3(0, -9.81f, 0) * _gravityScale;
             _rigidbody.AddForce(gravity, ForceMode.Acceleration);
             //接地判定のために地面との距離とベロシティを測る
-            if (_onGround && _rigidbody.linearVelocity.y <= 0)
+            if (OnGround && _rigidbody.linearVelocity.y <= 0)
             {
                 _canJump = true;
             }
             //ジャンプの処理
-            if (_canJump && _jumping)
+            if (_canJump && Jumping)
             {
                 _rigidbody.AddForce(new Vector3(0, _jumpPower, 0), ForceMode.Impulse);
                 _canJump = false;
             }
             //フックショットが刺さっているときの処理
-            if (_hookShotHit)
+            if (HookShotHit)
             {
                 Vector3 hookPower = _anchorInstance.transform.position - transform.position;
                 hookPower.Normalize();
@@ -181,6 +186,14 @@ public class PlayerMove : MonoBehaviour
                 _rigidbody.AddForce(hookPower, ForceMode.Acceleration);
             }
         }
+    }
+
+    public IEnumerator ShotRailGun()
+    {
+        railGunShot.Invoke();
+        var crackObjInstance = Instantiate(crackObj, _anchorMuzzle.transform.position ,_anchorMuzzle.transform.rotation);
+        yield return new WaitForSeconds(5f);
+        Destroy(crackObjInstance);
     }
 
     void Pause()
@@ -208,9 +221,9 @@ public class PlayerMove : MonoBehaviour
     {
         _lineRenderer.enabled = true;
         _usingAnchor = true;
-        anchorTimer = _weaponStatus.HookShotTimer;
+        anchorTimer = WeaponStatus.HookShotTimer;
         _anchorMesh.enabled = false;
-        _anchorInstance = Instantiate(_AnchorPrehab, _playerHead.transform.position, _playerHead.transform.rotation);
+        _anchorInstance = Instantiate(_anchorPrehab, _playerHead.transform.position, _playerHead.transform.rotation);
         _anchorInstance.GetComponent<Anchor>()._moveDirection += _rigidbody.linearVelocity * 0.1f;
     }
     public void AncDestroy()
