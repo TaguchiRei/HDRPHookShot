@@ -113,7 +113,7 @@ public class PlayerMove : MonoBehaviour
                 if (Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit) && hit.collider.CompareTag("Enemy"))
                 {
                     //‚±‚±‚ÉËŒ‚‚ª“–‚½‚Á‚½‚Ìˆ—‚ğ‘‚­B
-                    Debug.Log("BulletHit");
+                    hit.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(1);
                 }
             }
             if (_shotIntervalTimer > 0)

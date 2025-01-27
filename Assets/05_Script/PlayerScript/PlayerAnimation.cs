@@ -9,10 +9,7 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] AudioClip[] _clips;
     [SerializeField] float audioLate = 0;
     
-    private void Start()
-    {
 
-    }
     void RailGunShotted()
     {
         _anim.SetBool("RailGunMode", false);
