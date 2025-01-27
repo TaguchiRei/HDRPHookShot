@@ -24,6 +24,14 @@ public class PlayerAnimation : MonoBehaviour
         audioS.time = audioLate;
         audioS.Play();
     }
+    public void UseAudioObject(AudioClip audioClip)
+    {
+        var sound = Instantiate(_soundObject);
+        var audioS = sound.GetComponent<AudioSource>();
+        audioS.clip = audioClip;
+        audioS.time = 0.1f;
+        audioS.Play();
+    }
     void UsedAbility()
     {
         _playerMove.CanAction = true;
@@ -34,7 +42,7 @@ public class PlayerAnimation : MonoBehaviour
         switch (abilityNumber)
         {
             case 0:
-                _playerMove.GaugeChanger(30);
+                _playerMove.GaugeChanger(-30);
                 break;
             case 1:
 

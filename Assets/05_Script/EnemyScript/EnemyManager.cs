@@ -157,6 +157,11 @@ public class EnemyManager : MonoBehaviour
         else if (allEnemyData.Count != 0)
         {
             //スポーンさせる敵を最初に決めたランダムなスポーン順で決定
+            if(AttackerQueue.Count + DefenderQueue.Count + SupporterQueue.Count == 0)
+            {
+                Debug.Log("QueueIsEmpty");
+                return;
+            }
             spawnObj = allEnemyData.FirstOrDefault().GetComponent<EnemyStatus>().EnemyType switch
             {
                 EnemyType.attacker => AttackerQueue.Dequeue(),

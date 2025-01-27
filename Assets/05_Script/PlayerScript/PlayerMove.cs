@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 [RequireComponent(typeof(Rigidbody))]
 
@@ -24,6 +25,8 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] Rigidbody _rigidbody;
 
     //í èÌéÀåÇÇÃÇΩÇﬂÇÃïœêî
+    [SerializeField] GameObject _muzzlePos;
+    [SerializeField] VisualEffect _bulletEfect;
     [SerializeField] UnityEvent _shot;
     public bool Shotting = false;
     float _shotIntervalTimer = 0.2f;
@@ -109,8 +112,14 @@ public class PlayerMove : MonoBehaviour
             if (Shotting && _shotIntervalTimer <= 0)
             {
                 _shot.Invoke();
+                var ray = Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit);
+                _bulletEfect.SetBool("EnemyBullet",false);
+                _bulletEfect.SetVector3("StartPos", _muzzlePos.transform.position);
+                _bulletEfect.SetVector3("EndPos", hit.point);
+                _bulletEfect.SendEvent("NomalBullet");
+                Debug.Log($"{_muzzlePos.transform.position} {hit.point}");
                 _shotIntervalTimer = 1 / WeaponStatus.RateOfFire;
-                if (Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit) && hit.collider.CompareTag("Enemy"))
+                if (ray && hit.collider.CompareTag("Enemy"))
                 {
                     //Ç±Ç±Ç…éÀåÇÇ™ìñÇΩÇ¡ÇΩéûÇÃèàóùÇèëÇ≠ÅB
                     hit.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(1);
@@ -159,7 +168,7 @@ public class PlayerMove : MonoBehaviour
                 else
                 {
                     Vector3 move = transform.TransformDirection(MovePower);
-                    _rigidbody.AddForce(move, ForceMode.Acceleration);
+                    _rigidbody.AddForce(move * 3, ForceMode.Acceleration);
                 }
             }
 
