@@ -20,7 +20,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
 
     public void Initialization(int groupNumber, LR lr, bool isLeader, GameObject manager,GameObject leaderObj, bool summon = true)
     {
-        Hp = 3;
+        Hp = _maxHp;
         GroupNumber = groupNumber;
         LR = lr;
         Leader = isLeader;
