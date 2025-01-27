@@ -13,40 +13,52 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
     [SerializeField] int _maxHp;
     public EnemyType EnemyType;
     public List<GameObject> MembersList;
-    private GameObject managerObj;
+    private GameObject managerObject;
+    private GameObject leaderObject;
     private int Hp = 3;
+    bool suvive = true;
 
-    public void Initialization(int groupNumber, LR lr, bool isLeader, GameObject manager, bool summon = true)
+    public void Initialization(int groupNumber, LR lr, bool isLeader, GameObject manager,GameObject leaderObj, bool summon = true)
     {
         Hp = 3;
         GroupNumber = groupNumber;
         LR = lr;
         Leader = isLeader;
-        managerObj = manager;
+        enemyBase.Leader = isLeader;
+        managerObject = manager;
+        leaderObject = leaderObj;
+        suvive = true;
         enemyBase.Animator.SetBool("Delete", false);
-        if (summon)
+        agent.enabled = true;
+        enemyBase.enabled = true;
+        enemyBase.survive = true;
+        if (!Leader)
         {
-            agent.enabled = true;
-            enemyBase.enabled = true;
-            enemyBase.survive = true;
+            leaderObject.GetComponent<EnemyStatus>().MembersList.Add(gameObject);
+            enemyBase.Move(leaderObject.transform.position);
         }
     }
 
     public void HPChanger(int changeNum)
     {
-        Hp -= changeNum;
-        Debug.Log(changeNum + " " + Hp);
-        if (Hp <= 0)
+        if (suvive)
         {
-            //éÄñSéûèàóù
-            enemyBase.survive = false;
-            agent.enabled = false;
-            enemyBase.enabled = false;
-            enemyBase.Animator.SetBool("Delete", true);
-        }
-        else if (Hp > _maxHp)
-        {
-            Hp = _maxHp;
+            Hp -= changeNum;
+            if (Hp <= 0)
+            {
+                suvive = false;
+                leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
+                //éÄñSéûèàóù
+                enemyBase.survive = false;
+                agent.enabled = false;
+                enemyBase.enabled = false;
+                enemyBase.Animator.SetBool("Delete", true);
+                managerObject.GetComponent<EnemyManager>().EnemySpawn(GroupNumber, LR, Leader,leaderObject, MembersList);
+            }
+            else if (Hp > _maxHp)
+            {
+                Hp = _maxHp;
+            }
         }
     }
     public void HookShotHit()
@@ -56,7 +68,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
 
     void Deleted()
     {
-        var managerC = managerObj.GetComponent<EnemyManager>();
+        var managerC = managerObject.GetComponent<EnemyManager>();
         switch (EnemyType)
         {
             case EnemyType.attacker:

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class PlayerMove : MonoBehaviour
 {
     [HideInInspector] public GameManager _gameManager;
-     public bool CanMoveInput = false;
+    public bool CanMoveInput = false;
     public bool CanJumpInput = false;
     [SerializeField] float _jumpPower = 1;
     public bool CanUseWeaponInput = false;
@@ -42,7 +42,6 @@ public class PlayerMove : MonoBehaviour
     //レールガンのための変数   
     [SerializeField] GameObject crackObj;
     [SerializeField] UnityEvent railGunShot;
-
 
     public Vector3 MovePower = Vector3.zero;
     public Vector2 Look;
@@ -86,6 +85,7 @@ public class PlayerMove : MonoBehaviour
         Debug.Log(AbilitySetting.abilityNumber3);
         _gameManager.InButtlePause += Pause;
         _gameManager.InButtleReStart += ReStart;
+        GaugeChanger(50);
     }
 
     void Update()
@@ -191,7 +191,17 @@ public class PlayerMove : MonoBehaviour
     public IEnumerator ShotRailGun()
     {
         railGunShot.Invoke();
-        var crackObjInstance = Instantiate(crackObj, _anchorMuzzle.transform.position ,_anchorMuzzle.transform.rotation);
+        var railgunHit = Physics.SphereCastAll(_playerHead.transform.position, 2f, _playerHead.transform.forward, Mathf.Infinity, LayerMask.GetMask("Enemy"));
+        if (railgunHit != null)
+        {
+            foreach (var ray in railgunHit)
+            {
+                ray.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(2);
+            }
+            GaugeChanger(railgunHit.Length * -5);
+        }
+        railgunHit = null;
+        var crackObjInstance = Instantiate(crackObj, _anchorMuzzle.transform.position, _anchorMuzzle.transform.rotation);
         yield return new WaitForSeconds(5f);
         Destroy(crackObjInstance);
     }
@@ -241,6 +251,11 @@ public class PlayerMove : MonoBehaviour
         _anim.SetInteger("AbilityNumber", abilityNumber);
     }
 
+    /// <summary>
+    /// プレイヤーのゲージを変更させる。
+    /// </summary>
+    /// <param name="amount"></param>
+    /// <param name="hpChange">falseにするとエネルギーゲージを変更できる</param>
     public void GaugeChanger(float amount, bool hpChange = true)
     {
         if (hpChange)

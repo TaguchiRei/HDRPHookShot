@@ -36,7 +36,7 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
-    void LeaderMove(ColliderHit hit)
+    public void LeaderMove(RaycastHit hit)
     {
         if (hit.collider != null && !hit.collider.gameObject.CompareTag("PlayerHead"))
         {
@@ -63,29 +63,49 @@ public abstract class EnemyBase : MonoBehaviour
         {
             timer = 3;
 
-            //プレイヤーを中心とした極座標に変換
-            //極座標系で距離を近づけつつ周りをまわるように移動して射線を通すようにする。
+            Vector3 pointer;
             Vector3 local = Player.transform.position - transform.position;
             float dis = new Vector3(local.x, 0, local.z).magnitude;
             float theta = Mathf.Atan2(local.z, local.x);
             float checkTheta = theta + 0.8727f;
             float theta2;
-            if (dis > 80)
-                dis *= Random.Range(0.8f, 0.9f);
-            else
-                dis *= Random.Range(2.0f, 2.8f);
-            //右側優先探査か左側優先探査かを調べる。これは右移動と左移動のどちらでも見えなかった場合は後に探査した方に移動することを示す。
-            theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
-            Vector3 pointer = new(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2));
-            if (Physics.Raycast(pointer, (Player.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("Player"))
+            if (Vector3.Distance(transform.position, Player.transform.position) > 300)
             {
-                theta2 = _enemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
-            }
-            else
-            {
+                //プレイヤーを中心とした極座標に変換
+                //極座標系で距離を近づけつつ周りをまわるように移動して射線を通すようにする。
+                if (dis > 80)
+                    dis *= Random.Range(0.8f, 0.9f);
+                else
+                    dis *= Random.Range(2.0f, 2.8f);
+                //右側優先探査か左側優先探査かを調べる。これは右移動と左移動のどちらでも見えなかった場合は後に探査した方に移動することを示す。
                 theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
+                pointer = new(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2));
+                if (Physics.Raycast(pointer, (Player.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("Player"))
+                {
+                    theta2 = _enemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
+                }
+                else
+                {
+                    theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
+                }
+                pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
             }
-            pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
+            else
+            {
+                dis *= 0.5f;
+                pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta), 0f, dis * Mathf.Sin(theta)));
+            }
+            //選択された範囲が外に出すぎているときはエリア内に丸める
+            if (pointer.x < -500)
+                pointer.x = -495f;
+            else if (pointer.x > 500)
+                pointer.x = 495f;
+
+            if (pointer.z < -500)
+                pointer.z = -495f;
+            else if (pointer.z > 500)
+                pointer.z = 495f;
+
             Move(new(pointer.x, 0.5f, pointer.z));
             foreach (GameObject m in _enemyStatus.MembersList)
             {

@@ -58,7 +58,7 @@ public class EnemyManager : MonoBehaviour
             leaderObj.name = Guid.NewGuid().ToString();
             EnemyStatus leaderSta = leaderObj.GetComponent<EnemyStatus>();
             LR lR = (LR)UnityEngine.Random.Range(0, 2);
-            leaderSta.Initialization(i, lR, true, gameObject);
+            leaderSta.Initialization(i, lR, true, gameObject,leaderObj);
             enemyList.RemoveAt(0);
 
 
@@ -81,7 +81,7 @@ public class EnemyManager : MonoBehaviour
                 obj.name = Guid.NewGuid().ToString();
                 obj.transform.position = obj.transform.position + new Vector3(UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1), 0, UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1));//位置を決定
                 EnemyStatus enemyStatus = obj.GetComponent<EnemyStatus>();
-                enemyStatus.Initialization(i, lR, false, gameObject);
+                enemyStatus.Initialization(i, lR, false, gameObject, leaderObj);
             }
             leaderSta.MembersList = resultGroup;
         }
@@ -106,6 +106,7 @@ public class EnemyManager : MonoBehaviour
                 {
                     foreach (var r in instantiateResult.Result)
                     {
+                        r.SetActive(false);
                         AttackerQueue.Enqueue(r);
                     }
                 }
@@ -113,6 +114,7 @@ public class EnemyManager : MonoBehaviour
                 {
                     foreach (var r in instantiateResult.Result)
                     {
+                        r.SetActive(false);
                         SupporterQueue.Enqueue(r);
                     }
                 }
@@ -120,6 +122,7 @@ public class EnemyManager : MonoBehaviour
                 {
                     foreach (var r in instantiateResult.Result)
                     {
+                        r.SetActive(false);
                         DefenderQueue.Enqueue(r);
                     }
                 }
@@ -127,7 +130,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public void EnemySpawn(int teamNumber, LR lR, bool leader = false)
+    public void EnemySpawn(int teamNumber, LR lR, bool leader,GameObject leaderObj,List<GameObject> memberList = null)
     {
         GameObject spawnObj;
         if (infiniteEnemySpawn)
@@ -170,13 +173,16 @@ public class EnemyManager : MonoBehaviour
         if (spawnObj != null)
         {
             //スポーンさせる敵の初期化を行う
+            var spawnStatus = spawnObj.GetComponent<EnemyStatus>();
             spawnObj.transform.position = spawnPoint[UnityEngine.Random.Range(0, spawnPoint.Length)];
-            spawnObj.GetComponent<EnemyStatus>().Initialization(
+            spawnStatus.Initialization(
                 teamNumber,
                 lR,
                 leader,
-                gameObject
+                gameObject,
+                leaderObj
                 );
+            spawnStatus.MembersList = memberList;
         }
         else
         {

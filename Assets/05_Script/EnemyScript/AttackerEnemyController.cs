@@ -9,7 +9,6 @@ public class AttackerEnemyController : EnemyBase
     private void Start()
     {
         Player = GameObject.FindGameObjectWithTag("PlayerHead");
-        Debug.Log("enemyStart");
         timer = 5;
     }
     void Update()
@@ -29,7 +28,7 @@ public class AttackerEnemyController : EnemyBase
 
             if (enemyStatus.Leader)
             {
-
+                LeaderMove(hit);
             }
         }
     }
