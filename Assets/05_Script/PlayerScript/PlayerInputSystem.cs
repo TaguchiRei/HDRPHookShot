@@ -9,6 +9,7 @@ public class PlayerInputSystem : MonoBehaviour
     [SerializeField] PlayerMove _player;
     [SerializeField] float _moveSpeed = 1;
 
+    private bool railGunShotted = false;
     private PlayerInput _playerInput;
     Mode _mode = Mode.submachineGun;
 
@@ -159,6 +160,8 @@ public class PlayerInputSystem : MonoBehaviour
                 {
                     if (_player.CanAction)
                     {
+                        _player.CanAction = false;
+                        railGunShotted = true;
                         _player.AnimationChange("R_Shot");
                         StartCoroutine(_player.ShotRailGun());
                     }
@@ -200,8 +203,9 @@ public class PlayerInputSystem : MonoBehaviour
                         _player.AncShot();
                     }
                 }
-                else
+                else if(!railGunShotted)
                 {
+                    
                     _player.AnimationChange("HookShotOrAim");
                     _player.CanAction = true;
                 }
@@ -233,6 +237,7 @@ public class PlayerInputSystem : MonoBehaviour
         {
             _player.AnimationChange("RailGunMode");
             _mode = Mode.railgun;
+            railGunShotted = false;
             _player.CanAction = false;
             _player.Shotting = false;
         }
