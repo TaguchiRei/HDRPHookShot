@@ -13,7 +13,7 @@ public class PlayerMove : MonoBehaviour
     [HideInInspector] public GameManager _gameManager;
     public bool CanMoveInput = false;
     public bool CanJumpInput = false;
-    [SerializeField] float _jumpPower = 1;
+    [SerializeField] Vector3 _jumpPower = new Vector3(0, 100, 0);
     public bool CanUseWeaponInput = false;
     public WeaponStatus WeaponStatus;
     [SerializeField] float _gravityScale = 1;
@@ -113,16 +113,18 @@ public class PlayerMove : MonoBehaviour
             {
                 _shot.Invoke();
                 var ray = Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit);
-                _bulletEfect.SetBool("EnemyBullet",false);
+                _bulletEfect.SetBool("PlayerBullet", false);
                 _bulletEfect.SetVector3("StartPos", _muzzlePos.transform.position);
-                _bulletEfect.SetVector3("EndPos", hit.point);
+                _bulletEfect.SetVector3("EndVector", (_playerHead.transform.forward * 2000) - _muzzlePos.transform.forward);
                 _bulletEfect.SendEvent("NomalBullet");
-                Debug.Log($"{_muzzlePos.transform.position} {hit.point}");
                 _shotIntervalTimer = 1 / WeaponStatus.RateOfFire;
-                if (ray && hit.collider.CompareTag("Enemy"))
+                if (ray)
                 {
-                    //ここに射撃が当たった時の処理を書く。
-                    hit.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(1);
+                    if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barrier"))
+                    {
+                        //ここに射撃が当たった時の処理を書く。
+                        hit.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(1);
+                    }
                 }
             }
             if (_shotIntervalTimer > 0)
@@ -181,10 +183,17 @@ public class PlayerMove : MonoBehaviour
                 _canJump = true;
             }
             //ジャンプの処理
-            if (_canJump && Jumping)
+            if (Jumping)
             {
-                _rigidbody.AddForce(new Vector3(0, _jumpPower, 0), ForceMode.Impulse);
-                _canJump = false;
+                if (_canJump)
+                {
+                    _rigidbody.AddForce(_jumpPower, ForceMode.Impulse);
+                    _canJump = false;
+                }
+                else if (HookShotHit)
+                {
+                    _rigidbody.AddForce(_jumpPower / 10);
+                }
             }
             //フックショットが刺さっているときの処理
             if (HookShotHit)
