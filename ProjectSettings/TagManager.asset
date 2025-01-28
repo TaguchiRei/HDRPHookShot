@@ -9,6 +9,7 @@ TagManager:
   - Anchor
   - Enemy
   - PlayerHead
+  - Barrier
   layers:
   - Default
   - TransparentFX
