@@ -17,8 +17,9 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
     private GameObject leaderObject;
     private int Hp = 3;
     bool suvive = true;
+    [HideInInspector] public List<EnemyBase> EnemyBaseList = new();
 
-    public void Initialization(int groupNumber, LR lr, bool isLeader, GameObject manager,GameObject leaderObj, bool summon = true)
+    public void Initialization(int groupNumber, LR lr, bool isLeader, GameObject manager, GameObject leaderObj, bool summon = true)
     {
         Hp = _maxHp;
         GroupNumber = groupNumber;
@@ -34,9 +35,13 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
         enemyBase.survive = true;
         if (!Leader)
         {
-            leaderObject.GetComponent<EnemyStatus>().MembersList.Add(gameObject);
+            EnemyStatus enemyStatus = leaderObject.GetComponent<EnemyStatus>();
+            enemyStatus.MembersList.Add(gameObject);
+            enemyStatus.EnemyBaseList.Add(enemyBase);
             enemyBase.Move(leaderObject.transform.position);
+
         }
+        enemyBase.UniqueInitialization();
     }
 
     public void HPChanger(int changeNum)
@@ -53,7 +58,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
                 agent.enabled = false;
                 enemyBase.enabled = false;
                 enemyBase.Animator.SetBool("Delete", true);
-                managerObject.GetComponent<EnemyManager>().EnemySpawn(GroupNumber, LR, Leader,leaderObject, MembersList);
+                managerObject.GetComponent<EnemyManager>().EnemySpawn(GroupNumber, LR, Leader, leaderObject, MembersList);
             }
             else if (Hp > _maxHp)
             {

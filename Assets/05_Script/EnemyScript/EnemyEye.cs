@@ -5,7 +5,7 @@ public class EnemyEye : MonoBehaviour
     [SerializeField] GameObject player;
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.FindGameObjectWithTag("PlayerHead");
     }
 
     // Update is called once per frame

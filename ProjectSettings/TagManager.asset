@@ -10,6 +10,8 @@ TagManager:
   - Enemy
   - PlayerHead
   - Barrier
+  - New tag
+  - VFX
   layers:
   - Default
   - TransparentFX

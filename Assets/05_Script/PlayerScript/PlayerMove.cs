@@ -113,7 +113,7 @@ public class PlayerMove : MonoBehaviour
             {
                 _shot.Invoke();
                 var ray = Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit);
-                _bulletEfect.SetBool("PlayerBullet", false);
+                _bulletEfect.SetInt("BulletType", 0);
                 _bulletEfect.SetVector3("StartPos", _muzzlePos.transform.position);
                 _bulletEfect.SetVector3("EndVector", (_playerHead.transform.forward * 10000) - _muzzlePos.transform.forward);
                 _bulletEfect.SendEvent("NomalBullet");

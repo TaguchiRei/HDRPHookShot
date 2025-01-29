@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,9 +11,10 @@ public abstract class EnemyBase : MonoBehaviour
     public EnemyStatus enemyStatus;
     public Animator Animator;
     [HideInInspector] public bool survive = true;
-    [HideInInspector] public GameObject Player;
+    [HideInInspector] public GameObject PlayerHead;
     [SerializeField] EnemyStatus _enemyStatus;
     [HideInInspector] public float timer = 3;
+
     public virtual void Move(Vector3 position)
     {
         if (survive)
@@ -45,7 +47,7 @@ public abstract class EnemyBase : MonoBehaviour
                 timer -= Time.deltaTime;
             }
         }
-        else if (Vector3.Distance(transform.position, Player.transform.position) > 300)
+        else if (Vector3.Distance(transform.position, PlayerHead.transform.position) > 300)
         {
             if (Agent.velocity.magnitude < 0.05f)
             {
@@ -64,12 +66,12 @@ public abstract class EnemyBase : MonoBehaviour
             timer = 3;
 
             Vector3 pointer;
-            Vector3 local = Player.transform.position - transform.position;
+            Vector3 local = PlayerHead.transform.position - transform.position;
             float dis = new Vector3(local.x, 0, local.z).magnitude;
             float theta = Mathf.Atan2(local.z, local.x);
             float checkTheta = theta + 0.8727f;
             float theta2;
-            if (Vector3.Distance(transform.position, Player.transform.position) > 300)
+            if (Vector3.Distance(transform.position, PlayerHead.transform.position) > 300)
             {
                 //プレイヤーを中心とした極座標に変換
                 //極座標系で距離を近づけつつ周りをまわるように移動して射線を通すようにする。
@@ -80,7 +82,7 @@ public abstract class EnemyBase : MonoBehaviour
                 //右側優先探査か左側優先探査かを調べる。これは右移動と左移動のどちらでも見えなかった場合は後に探査した方に移動することを示す。
                 theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
                 pointer = new(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2));
-                if (Physics.Raycast(pointer, (Player.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("Player"))
+                if (Physics.Raycast(pointer, (PlayerHead.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("PlayerHead"))
                 {
                     theta2 = _enemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
                 }
@@ -88,12 +90,12 @@ public abstract class EnemyBase : MonoBehaviour
                 {
                     theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
                 }
-                pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
+                pointer = PlayerHead.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
             }
             else
             {
                 dis *= 0.5f;
-                pointer = Player.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta), 0f, dis * Mathf.Sin(theta)));
+                pointer = PlayerHead.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta), 0f, dis * Mathf.Sin(theta)));
             }
             //選択された範囲が外に出すぎているときはエリア内に丸める
             if (pointer.x < -500)
@@ -107,9 +109,9 @@ public abstract class EnemyBase : MonoBehaviour
                 pointer.z = 495f;
 
             Move(new(pointer.x, 0.5f, pointer.z));
-            foreach (GameObject m in _enemyStatus.MembersList)
+            foreach (EnemyBase eb in _enemyStatus.EnemyBaseList)
             {
-                m.GetComponent<EnemyBase>().Move(new(pointer.x, 0.5f, pointer.z));
+                eb.Move(new(pointer.x, 0.5f, pointer.z));
             }
         }
     }
@@ -122,14 +124,6 @@ public abstract class EnemyBase : MonoBehaviour
     /// <returns></returns>
     float ScalingRotate(float dis)
     {
-        /*
-        if (dis < 20)
-            return Mathf.PI / 3;//60度
-        else if (dis > 40)
-            return Mathf.PI / 9;//20度
-        else
-            return (-1.6f * dis + 92) * Mathf.PI / 180; //60度から20度の間で変化する二次式を弧度法に変換
-        */
         if (dis < 20)
             return Mathf.PI;
         else if (dis > 60)
@@ -138,5 +132,5 @@ public abstract class EnemyBase : MonoBehaviour
             return (-3.75f * dis + 255) * Mathf.PI / 180;// 60度から20度の間で変化する二次式を弧度法に変換
     }
 
-    public abstract void UniqueAction();
+    public abstract void UniqueInitialization();
 }
