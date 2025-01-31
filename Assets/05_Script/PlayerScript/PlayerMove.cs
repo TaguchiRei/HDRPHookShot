@@ -70,6 +70,9 @@ public class PlayerMove : MonoBehaviour
     public AbilitySet AbilitySetting;
     [SerializeField] Vector3 _defaultAbilitySet;
 
+    //アビリティ用
+    [SerializeField] AbilityData abilityData;
+
     //一時停止処理用
     Vector3 _velocity = Vector3.zero;
 
@@ -124,6 +127,7 @@ public class PlayerMove : MonoBehaviour
                     {
                         //ここに射撃が当たった時の処理を書く。
                         hit.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(1);
+                        GaugeChanger(-1,false);
                     }
                 }
             }
@@ -263,10 +267,20 @@ public class PlayerMove : MonoBehaviour
         _lineRenderer.enabled = false;
 
     }
+    
     public void UseAbility(int abilityNumber)
     {
-        _anim.SetBool("UseAbility", true);
-        _anim.SetInteger("AbilityNumber", abilityNumber);
+        var useEnergy = abilityData.abilityData[abilityNumber].abilityCost;
+        if (useEnergy <= _energy)
+        {
+            GaugeChanger(useEnergy,false);
+            _anim.SetBool("UseAbility", true);
+            _anim.SetInteger("AbilityNumber", abilityNumber);
+        }
+        else
+        {
+            CanAction = true;
+        }
     }
 
     /// <summary>
@@ -294,7 +308,7 @@ public class PlayerMove : MonoBehaviour
             else if (_energy > _maxEnergy)
                 _energy = _maxEnergy;
 
-            _energyImage.DOFillAmount(_energy / _maxEnergy, amount);
+            _energyImage.DOFillAmount(_energy / _maxEnergy, 0.1f);
         }
     }
 

@@ -23,7 +23,6 @@ public class EnemyManager : MonoBehaviour
     public Queue<GameObject> DefenderQueue = new();
     public int WaitingForSpawn = 0;
 
-
     private void Start()
     {
         StartCoroutine(ButtleStart(0));
@@ -49,8 +48,6 @@ public class EnemyManager : MonoBehaviour
                 groupMemberNum = groupNum.Small;
             else if (group.Big < i + 1)
                 groupMemberNum = groupNum.Middle;
-
-
             List<GameObject> enemyList = allEnemyData.GetRange(0, groupMemberNum);
             allEnemyData.RemoveRange(0, groupMemberNum);
             //リーダーとなるオブジェクトを生成と初期化
