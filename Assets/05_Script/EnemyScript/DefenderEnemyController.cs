@@ -7,7 +7,7 @@ public class DefenderEnemyController : EnemyBase
     
     public override void UniqueAction(Vector3 delayedPosition)
     {
-
+        Animator.SetBool("", true);
     }
 
     public override void UniqueInitialization()
@@ -28,7 +28,14 @@ public class DefenderEnemyController : EnemyBase
     }
     public override void Move(Vector3 position)
     {
-        base.Move(position);
-        Animator.SetBool("Walking", true);
+        if (!garding)
+        {
+            base.Move(position);
+            Animator.SetBool("Walking", true);
+        }
+        else
+        {
+            movePoint = position;
+        }
     }
 }
