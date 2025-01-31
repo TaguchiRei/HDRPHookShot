@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -20,7 +21,13 @@ public abstract class EnemyBase : MonoBehaviour
     [SerializeField] float delay = 1f;
     Queue<Vector3> positionHistory = new();
     float elapsedTime = 1;
-    bool DelayedUniqueAction;
+    bool DelayedUniqueAction = false;
+    Coroutine movingCoroutine;
+    public PlayerMove PlayerMoveI;
+    public virtual void Start()
+    {
+        PlayerMoveI = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMove>();
+    }
     public virtual void Update()
     {
         if (survive)
@@ -36,19 +43,19 @@ public abstract class EnemyBase : MonoBehaviour
             if (EnemyStatus.Leader)
             {
                 LeaderMove();
-            }
-            positionHistory.Enqueue(PlayerHead.transform.position);
-            elapsedTime += Time.deltaTime;
-            actionInterval -= Time.deltaTime;
-            if (elapsedTime >= delay)
-            {
-                delayedPosition = positionHistory.Dequeue();
-                if (actionInterval < 0 && !DelayedUniqueAction)
+                positionHistory.Enqueue(PlayerHead.transform.position);
+                elapsedTime += Time.deltaTime;
+                actionInterval -= Time.deltaTime;
+                if (elapsedTime >= delay)
                 {
-                    actionInterval = Random.Range(0.5f, 1.0f);
-                    UniqueAction(delayedPosition);
-                    StartCoroutine(DelayUniqueAction(delayedPosition));
-                    DelayUniqueAction(delayedPosition);
+                    delayedPosition = positionHistory.Dequeue();
+                    if (actionInterval < 0 && !DelayedUniqueAction)
+                    {
+                        actionInterval = Random.Range(2.0f, 3.0f);
+                        DelayedUniqueAction = true;
+                        UniqueAction(delayedPosition);
+                        movingCoroutine = StartCoroutine(DelayUniqueAction(delayedPosition));
+                    }
                 }
             }
         }
@@ -66,6 +73,14 @@ public abstract class EnemyBase : MonoBehaviour
             {
                 Agent.SetDestination(position + new Vector3(Random.Range(MoveEller.x * -1, MoveEller.x), 0, Random.Range(MoveEller.z * -1, MoveEller.z)));
             }
+        }
+    }
+    public void Delete()
+    {
+        if (DelayedUniqueAction)
+        {
+            DelayedUniqueAction = false;
+            StopCoroutine(movingCoroutine);
         }
     }
     public virtual void Stop()
@@ -175,10 +190,11 @@ public abstract class EnemyBase : MonoBehaviour
     public abstract void UniqueAction(Vector3 delayedPosition);
     public IEnumerator DelayUniqueAction(Vector3 delayedPos)
     {
-        foreach (var item in EnemyStatus.EnemyBaseList)
+        for (int i = 0; i < EnemyStatus.EnemyBaseList.Count; i++)
         {
             yield return new WaitForEndOfFrame();
-            item.UniqueAction(delayedPos);
+            EnemyStatus.EnemyBaseList[i].UniqueAction(delayedPos);
         }
+        DelayedUniqueAction = false;
     }
 }
