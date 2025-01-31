@@ -39,7 +39,6 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
             enemyStatus.MembersList.Add(gameObject);
             enemyStatus.EnemyBaseList.Add(enemyBase);
             enemyBase.Move(leaderObject.transform.position);
-
         }
         enemyBase.UniqueInitialization();
     }
@@ -52,7 +51,8 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
             if (Hp <= 0)
             {
                 suvive = false;
-                leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
+                if (!Leader)
+                    leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
                 //€–Sˆ—
                 enemyBase.survive = false;
                 agent.enabled = false;
@@ -68,7 +68,15 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
     }
     public void HookShotHit()
     {
-
+        suvive = false;
+        if (!Leader)
+            leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
+        //€–Sˆ—
+        enemyBase.survive = false;
+        agent.enabled = false;
+        enemyBase.enabled = false;
+        managerObject.GetComponent<EnemyManager>().EnemySpawn(GroupNumber, LR, Leader, leaderObject, MembersList);
+        Deleted();
     }
 
     void Deleted()

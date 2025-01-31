@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,19 +9,56 @@ public abstract class EnemyBase : MonoBehaviour
     public NavMeshAgent Agent;
     public bool Leader = false;
     public Vector3 MoveEller = new(5, 5, 5);
-    public EnemyStatus enemyStatus;
+    public EnemyStatus EnemyStatus;
     public Animator Animator;
     [HideInInspector] public bool survive = true;
     [HideInInspector] public GameObject PlayerHead;
-    [SerializeField] EnemyStatus _enemyStatus;
     [HideInInspector] public float timer = 3;
-
+    float actionInterval;
+    Vector3 delayedPosition = Vector3.zero;
+    Vector3 direction;
+    [SerializeField] float delay = 1f;
+    Queue<Vector3> positionHistory = new();
+    float elapsedTime = 1;
+    bool DelayedUniqueAction;
+    public virtual void Update()
+    {
+        if (survive)
+        {
+            if (Agent.remainingDistance <= 0.5f && !Agent.hasPath)
+            {
+                Animator.SetBool("Walking", false);
+            }
+            else
+            {
+                Animator.SetBool("Walking", true);
+            }
+            if (EnemyStatus.Leader)
+            {
+                LeaderMove();
+            }
+            positionHistory.Enqueue(PlayerHead.transform.position);
+            elapsedTime += Time.deltaTime;
+            actionInterval -= Time.deltaTime;
+            if (elapsedTime >= delay)
+            {
+                delayedPosition = positionHistory.Dequeue();
+                if (actionInterval < 0 && !DelayedUniqueAction)
+                {
+                    actionInterval = Random.Range(0.5f, 1.0f);
+                    UniqueAction(delayedPosition);
+                    StartCoroutine(DelayUniqueAction(delayedPosition));
+                    DelayUniqueAction(delayedPosition);
+                }
+            }
+        }
+    }
     public virtual void Move(Vector3 position)
     {
         if (survive)
         {
             Agent.speed = MoveSpeed;
-            if (enemyStatus.Leader)
+            if (EnemyStatus.Leader)
             {
                 Agent.SetDestination(position);
             }
@@ -38,8 +76,9 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
-    public void LeaderMove(RaycastHit hit)
+    public void LeaderMove()
     {
+        Physics.Raycast(transform.position, (PlayerHead.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground"));
         if (hit.collider != null && !hit.collider.gameObject.CompareTag("PlayerHead"))
         {
             if (Agent.velocity.magnitude < 0.05f)
@@ -80,15 +119,15 @@ public abstract class EnemyBase : MonoBehaviour
                 else
                     dis *= Random.Range(2.0f, 2.8f);
                 //‰E‘¤—Dæ’T¸‚©¶‘¤—Dæ’T¸‚©‚ð’²‚×‚éB‚±‚ê‚Í‰EˆÚ“®‚Æ¶ˆÚ“®‚Ì‚Ç‚¿‚ç‚Å‚àŒ©‚¦‚È‚©‚Á‚½ê‡‚ÍŒã‚É’T¸‚µ‚½•û‚ÉˆÚ“®‚·‚é‚±‚Æ‚ðŽ¦‚·B
-                theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
+                theta2 = EnemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
                 pointer = new(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2));
                 if (Physics.Raycast(pointer, (PlayerHead.transform.position - pointer).normalized, out RaycastHit hit2) && hit2.collider.gameObject.CompareTag("PlayerHead"))
                 {
-                    theta2 = _enemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
+                    theta2 = EnemyStatus.LR == LR.left ? theta - ScalingRotate(dis) : theta + ScalingRotate(dis);
                 }
                 else
                 {
-                    theta2 = _enemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
+                    theta2 = EnemyStatus.LR == LR.left ? theta + ScalingRotate(dis) : theta - ScalingRotate(dis);
                 }
                 pointer = PlayerHead.transform.TransformPoint(new Vector3(dis * Mathf.Cos(theta2), 0f, dis * Mathf.Sin(theta2)));
             }
@@ -109,7 +148,7 @@ public abstract class EnemyBase : MonoBehaviour
                 pointer.z = 495f;
 
             Move(new(pointer.x, 0.5f, pointer.z));
-            foreach (EnemyBase eb in _enemyStatus.EnemyBaseList)
+            foreach (EnemyBase eb in EnemyStatus.EnemyBaseList)
             {
                 eb.Move(new(pointer.x, 0.5f, pointer.z));
             }
@@ -133,4 +172,13 @@ public abstract class EnemyBase : MonoBehaviour
     }
 
     public abstract void UniqueInitialization();
+    public abstract void UniqueAction(Vector3 delayedPosition);
+    public IEnumerator DelayUniqueAction(Vector3 delayedPos)
+    {
+        foreach (var item in EnemyStatus.EnemyBaseList)
+        {
+            yield return new WaitForEndOfFrame();
+            item.UniqueAction(delayedPos);
+        }
+    }
 }

@@ -42,6 +42,7 @@ public class EnemyManager : MonoBehaviour
         allEnemyData = allEnemyData.OrderBy(d => Guid.NewGuid()).ToList();//ランダムにソートすることで出てくる順番をばらす
 
         int groupMemberNum = groupNum.Big;
+        List<AttackerEnemyController> leader = new();
         for (int i = 0; i < group.Small + group.Middle + group.Big; i++)
         {
             if (group.Big + group.Middle < i + 1)
@@ -60,8 +61,6 @@ public class EnemyManager : MonoBehaviour
             LR lR = (LR)UnityEngine.Random.Range(0, 2);
             leaderSta.Initialization(i, lR, true, gameObject,leaderObj);
             enemyList.RemoveAt(0);
-
-
             HashSet<GameObject> enemyHashSet = enemyList.ToHashSet();
             List<GameObject> resultGroup = new();//この回で生成したグループを保存する
 
