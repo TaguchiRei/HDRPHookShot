@@ -123,11 +123,15 @@ public class PlayerMove : MonoBehaviour
                 _shotIntervalTimer = 1 / WeaponStatus.RateOfFire;
                 if (ray)
                 {
-                    if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barrier"))
+                    if (hit.collider.CompareTag("Enemy"))
                     {
                         //‚±‚±‚ÉËŒ‚‚ª“–‚½‚Á‚½‚Ìˆ—‚ğ‘‚­B
                         hit.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(1);
                         GaugeChanger(-1,false);
+                    }
+                    else if (hit.collider.CompareTag("Barrier"))
+                    {
+                        hit.collider.gameObject.GetComponent<DefenderEnemyShield>().HPChanger(1);
                     }
                 }
             }
@@ -218,7 +222,15 @@ public class PlayerMove : MonoBehaviour
         {
             foreach (var ray in railgunHit)
             {
-                ray.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(2);
+                if (ray.collider.CompareTag("Enemy"))
+                {
+                    ray.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(2);
+                }
+                else if (ray.collider.CompareTag("Barrier"))
+                {
+                    ray.collider.gameObject.GetComponent<DefenderEnemyShield>().HPChanger(2);
+                    break;
+                }
             }
             GaugeChanger(railgunHit.Length * -5);
         }

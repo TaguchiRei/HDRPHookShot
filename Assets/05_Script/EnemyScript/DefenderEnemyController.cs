@@ -4,7 +4,7 @@ public class DefenderEnemyController : EnemyBase
 {
     bool garding = false;
     Vector3 movePoint = Vector3.zero;
-    
+    [SerializeField] GameObject ShieldObject;
     public override void UniqueAction(Vector3 delayedPosition)
     {
         Animator.SetBool("", true);
