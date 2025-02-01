@@ -76,10 +76,10 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
         agent.enabled = false;
         enemyBase.enabled = false;
         managerObject.GetComponent<EnemyManager>().EnemySpawn(GroupNumber, LR, Leader, leaderObject, MembersList);
-        Deleted();
+        DeletedEnemy();
     }
 
-    void Deleted()
+    public void DeletedEnemy()
     {
         var managerC = managerObject.GetComponent<EnemyManager>();
         switch (EnemyType)
