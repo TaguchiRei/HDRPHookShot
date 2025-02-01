@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering.HighDefinition;
 
 public abstract class EnemyBase : MonoBehaviour
 {
@@ -12,13 +13,13 @@ public abstract class EnemyBase : MonoBehaviour
     public Vector3 MoveEller = new(5, 5, 5);
     public EnemyStatus EnemyStatus;
     public Animator Animator;
-    [HideInInspector] public bool survive = true;
+    [HideInInspector] public bool Survive = true;
     [HideInInspector] public GameObject PlayerHead;
-    [HideInInspector] public float timer = 3;
+    [HideInInspector] public float Timer = 3;
     float actionInterval;
-    [HideInInspector] public Vector3 delayedPosition = Vector3.zero;
+    [HideInInspector] public Vector3 DelayedPosition = Vector3.zero;
     Vector3 direction;
-    [SerializeField] float delay = 1f;
+    [SerializeField] float _delay = 1f;
     Queue<Vector3> positionHistory = new();
     float elapsedTime = 1;
     bool DelayedUniqueAction = false;
@@ -31,7 +32,7 @@ public abstract class EnemyBase : MonoBehaviour
     }
     public virtual void Update()
     {
-        if (survive)
+        if (Survive)
         {
             if (Agent.remainingDistance <= 0.5f && !Agent.hasPath)
             {
@@ -47,15 +48,15 @@ public abstract class EnemyBase : MonoBehaviour
                 positionHistory.Enqueue(PlayerHead.transform.position);
                 elapsedTime += Time.deltaTime;
                 actionInterval -= Time.deltaTime;
-                if (elapsedTime >= delay)
+                if (elapsedTime >= _delay)
                 {
-                    delayedPosition = positionHistory.Dequeue();
+                    DelayedPosition = positionHistory.Dequeue();
                     if (actionInterval < 0 && !DelayedUniqueAction)
                     {
                         actionInterval = Random.Range(2.0f, 3.0f);
                         DelayedUniqueAction = true;
-                        UniqueAction(delayedPosition);
-                        movingCoroutine = StartCoroutine(DelayUniqueAction(delayedPosition));
+                        UniqueAction(DelayedPosition);
+                        movingCoroutine = StartCoroutine(DelayUniqueAction(DelayedPosition));
                     }
                 }
             }
@@ -63,7 +64,7 @@ public abstract class EnemyBase : MonoBehaviour
     }
     public virtual void Move(Vector3 position)
     {
-        if (survive)
+        if (Survive)
         {
             Agent.speed = MoveSpeed;
             if (EnemyStatus.Leader)
@@ -86,7 +87,7 @@ public abstract class EnemyBase : MonoBehaviour
     }
     public virtual void Stop()
     {
-        if (survive)
+        if (Survive)
         {
             Agent.SetDestination(transform.position);
         }
@@ -99,26 +100,26 @@ public abstract class EnemyBase : MonoBehaviour
         {
             if (Agent.velocity.magnitude < 0.05f)
             {
-                timer -= Time.deltaTime;
+                Timer -= Time.deltaTime;
             }
         }
         else if (Vector3.Distance(transform.position, PlayerHead.transform.position) > 300)
         {
             if (Agent.velocity.magnitude < 0.05f)
             {
-                timer -= Time.deltaTime * 2;
+                Timer -= Time.deltaTime * 2;
             }
         }
         else
         {
             if (!Agent.isStopped)
                 Invoke(nameof(Stop), Random.Range(1, 5));
-            timer = 3f;
+            Timer = 3f;
         }
 
-        if (timer <= 0)
+        if (Timer <= 0)
         {
-            timer = 3;
+            Timer = 3;
 
             Vector3 pointer;
             Vector3 local = PlayerHead.transform.position - transform.position;

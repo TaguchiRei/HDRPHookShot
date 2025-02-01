@@ -12,7 +12,7 @@ public class AttackerEnemyController : EnemyBase
     {
         base.Start();
         _bulletEfect = GameObject.FindGameObjectWithTag("VFX").GetComponent<VisualEffect>();
-        timer = 5;
+        Timer = 5;
     }
     public override void Update()
     {

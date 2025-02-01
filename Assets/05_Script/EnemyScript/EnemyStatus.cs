@@ -32,7 +32,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
         enemyBase.Animator.SetBool("Delete", false);
         agent.enabled = true;
         enemyBase.enabled = true;
-        enemyBase.survive = true;
+        enemyBase.Survive = true;
         if (!Leader)
         {
             EnemyStatus enemyStatus = leaderObject.GetComponent<EnemyStatus>();
@@ -54,7 +54,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
                 if (!Leader)
                     leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
                 //€–Sˆ—
-                enemyBase.survive = false;
+                enemyBase.Survive = false;
                 agent.enabled = false;
                 enemyBase.enabled = false;
                 enemyBase.Animator.SetBool("Delete", true);
@@ -72,7 +72,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
         if (!Leader)
             leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
         //€–Sˆ—
-        enemyBase.survive = false;
+        enemyBase.Survive = false;
         agent.enabled = false;
         enemyBase.enabled = false;
         managerObject.GetComponent<EnemyManager>().EnemySpawn(GroupNumber, LR, Leader, leaderObject, MembersList);

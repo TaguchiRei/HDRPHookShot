@@ -10,11 +10,14 @@ public class DefenderEnemyController : EnemyBase
     bool _guard = false;
     public override void UniqueAction(Vector3 delayedPosition)
     {
-        if (!Agent.pathPending && Agent.remainingDistance <= Agent.stoppingDistance)
+        if (Agent.velocity.magnitude < 0.5f)
         {
             if (_recastTimer <= 0)
             {
-                Animator.SetBool("Defense", true);
+                if (!Animator.GetBool("Walking"))
+                {
+                    Animator.SetBool("Defense", true);
+                }
                 DefenderEnemyShield.SummonShield();
                 _guard = true;
             }
@@ -36,7 +39,7 @@ public class DefenderEnemyController : EnemyBase
         base.Update();
         if (_guard)
         {
-            ShieldObjedt.transform.LookAt(delayedPosition);
+            ShieldObjedt.transform.LookAt(PlayerHead.transform.position);
         }
         if (_recastTimer > 0)
         {
