@@ -184,6 +184,7 @@ public class EnemyManager : MonoBehaviour
                 leaderObj
                 );
             spawnStatus.MembersList = memberList;
+            spawnObj.GetComponent<EnemyBase>().UniqueInitialization();
         }
         else
         {

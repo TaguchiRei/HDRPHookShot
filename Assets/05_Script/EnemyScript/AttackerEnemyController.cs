@@ -11,7 +11,6 @@ public class AttackerEnemyController : EnemyBase
     public override void Start()
     {
         base.Start();
-        PlayerHead = GameObject.FindGameObjectWithTag("PlayerHead");
         _bulletEfect = GameObject.FindGameObjectWithTag("VFX").GetComponent<VisualEffect>();
         timer = 5;
     }

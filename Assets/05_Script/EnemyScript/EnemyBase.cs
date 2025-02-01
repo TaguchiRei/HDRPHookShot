@@ -16,7 +16,7 @@ public abstract class EnemyBase : MonoBehaviour
     [HideInInspector] public GameObject PlayerHead;
     [HideInInspector] public float timer = 3;
     float actionInterval;
-    Vector3 delayedPosition = Vector3.zero;
+    [HideInInspector] public Vector3 delayedPosition = Vector3.zero;
     Vector3 direction;
     [SerializeField] float delay = 1f;
     Queue<Vector3> positionHistory = new();
@@ -27,6 +27,7 @@ public abstract class EnemyBase : MonoBehaviour
     public virtual void Start()
     {
         PlayerMoveI = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMove>();
+        PlayerHead = GameObject.FindGameObjectWithTag("PlayerHead");
     }
     public virtual void Update()
     {
