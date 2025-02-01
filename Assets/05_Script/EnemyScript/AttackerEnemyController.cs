@@ -26,7 +26,7 @@ public class AttackerEnemyController : EnemyBase
 
     public override void UniqueAction(Vector3 delayedPosition)
     {
-        Physics.Raycast(_muzzlePos.position, (delayedPosition - _muzzlePos.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground"));
+        Physics.Raycast(_muzzlePos.position, (delayedPosition - _muzzlePos.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground","PlayerHead"));
         _bulletEfect.SetInt("BulletType", 2);
         _bulletEfect.SetVector3("StartPos", _muzzlePos.transform.position);
         if (hit.collider != null && hit.collider.CompareTag("PlayerHead"))

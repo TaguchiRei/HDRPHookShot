@@ -106,10 +106,6 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnLook(InputAction.CallbackContext context)
     {
-        if (!_player._gameManager._pause)
-        {
-
-        }
         //ゲームパッドとマウスで操作を分ける。キーボードマウスでは視点操作が早すぎるため、20で割っている。
         if (context.control.device is Gamepad)
         {
@@ -205,7 +201,7 @@ public class PlayerInputSystem : MonoBehaviour
                 }
                 else if(!railGunShotted)
                 {
-                    
+                    _player.SensitivityCorrection = 0.3f;
                     _player.AnimationChange("HookShotOrAim");
                     _player.CanAction = true;
                 }
@@ -213,6 +209,7 @@ public class PlayerInputSystem : MonoBehaviour
             else if (context.phase == InputActionPhase.Canceled)
             {
                 _player.AnimationChange("HookShotOrAim", false);
+                _player.SensitivityCorrection = 1;
                 if (_mode == Mode.submachineGun)
                 {
                     _player.HookShotHit = false;

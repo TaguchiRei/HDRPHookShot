@@ -93,7 +93,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     public void LeaderMove()
     {
-        Physics.Raycast(transform.position, (PlayerHead.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground"));
+        Physics.Raycast(transform.position, (PlayerHead.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground","PlayerHead"));
         if (hit.collider != null && !hit.collider.gameObject.CompareTag("PlayerHead"))
         {
             if (Agent.velocity.magnitude < 0.05f)

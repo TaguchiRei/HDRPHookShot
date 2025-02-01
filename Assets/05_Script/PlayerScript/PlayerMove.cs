@@ -23,6 +23,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject _playerHead;
     [SerializeField] Animator _anim;
     [SerializeField] Rigidbody _rigidbody;
+    public float SensitivityCorrection = 1;
 
     //通常射撃のための変数
     [SerializeField] GameObject _muzzlePos;
@@ -100,9 +101,9 @@ public class PlayerMove : MonoBehaviour
         {
             //プレイヤーの動きを作る
             //視点操作はここで行う。
-            transform.Rotate(0, Look.x * _gameManager._horizontalCamera, 0);
+            transform.Rotate(0, Look.x * _gameManager._horizontalCamera * SensitivityCorrection, 0);
             //上下カメラの上限と下限を設定する。また、デフォルト値が反転操作なのでX軸回転(カメラの上下方向操作)は-1をかける
-            float verticalAngle = Mathf.Clamp(Look.y * _gameManager._verticalCamera * -1f, -80f, 80f);
+            float verticalAngle = Mathf.Clamp(Look.y * _gameManager._verticalCamera * -1f * SensitivityCorrection, -80f, 80f);
             float playerAngle = _playerBody.transform.rotation.eulerAngles.x;
             //プレイヤーの角度をEulerAnglesで取得しているのでマイナスは360からその値を引いた数になるので360で引くことで正しい値に戻す。
             if (playerAngle > 180) playerAngle -= 360;
@@ -115,10 +116,10 @@ public class PlayerMove : MonoBehaviour
             if (Shotting && _shotIntervalTimer <= 0)
             {
                 _shot.Invoke();
-                var ray = Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit);
+                var ray = Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Enemy", "Ground", "Default"));
                 _bulletEfect.SetInt("BulletType", 0);
                 _bulletEfect.SetVector3("StartPos", _muzzlePos.transform.position);
-                _bulletEfect.SetVector3("EndVector", (_playerHead.transform.forward * 10000) - _muzzlePos.transform.forward);
+                _bulletEfect.SetVector3("EndVector", hit.point - _muzzlePos.transform.position);
                 _bulletEfect.SendEvent("NomalBullet");
                 _shotIntervalTimer = 1 / WeaponStatus.RateOfFire;
                 if (ray)
@@ -217,7 +218,7 @@ public class PlayerMove : MonoBehaviour
     public IEnumerator ShotRailGun()
     {
         railGunShot.Invoke();
-        var railgunHit = Physics.SphereCastAll(_playerHead.transform.position, 2f, _playerHead.transform.forward, Mathf.Infinity, LayerMask.GetMask("Enemy"));
+        var railgunHit = Physics.SphereCastAll(_playerHead.transform.position, 2f, _playerHead.transform.forward, Mathf.Infinity, LayerMask.GetMask("Enemy", "Ground", "Default"));
         if (railgunHit != null)
         {
             foreach (var ray in railgunHit)
