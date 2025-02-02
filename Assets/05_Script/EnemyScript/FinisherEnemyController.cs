@@ -1,4 +1,3 @@
-using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +11,7 @@ public class FinisherEnemyController : EnemyBase
     [SerializeField] float _defaultRecastTime = 10;
     Collider[] _colliders;
     GameObject _feed;
+    EnemyStatus _feedStatus;
     int beamPhase = 0;
     [SerializeField] GameObject _mainBody;
     [SerializeField] GameObject _beamObject;
@@ -31,20 +31,30 @@ public class FinisherEnemyController : EnemyBase
         _beamStart = true;
         foreach (Collider collider in _colliders)
         {
-            
-            if (collider.CompareTag("Enemy")&&collider.gameObject.GetComponent<EnemyStatus>().EnemyType == EnemyType.attacker)
+
+            if (collider.CompareTag("Enemy") && collider.gameObject.GetComponent<EnemyStatus>().EnemyType == EnemyType.attacker)
             {
-                _feed = collider.gameObject;
-                break;
+                if (!collider.gameObject.GetComponent<EnemyStatus>().Leader)
+                {
+                    _feed = collider.gameObject;
+                    break;
+                }
             }
         }
-        var feedController = _feed.GetComponent<AttackerEnemyController>();
-        feedController.Stop();
-        feedController.CanMove = false;
-        Agent.SetDestination(_feed.transform.position);
-        beamPhase = 0;
         _timer = _maxTimer;
-        _beamObject.transform.eulerAngles = new(0,0,180);
+        var feedController = _feed.GetComponent<AttackerEnemyController>();
+        _feedStatus = _feed.GetComponent<EnemyStatus>();
+        if (feedController != null)
+        {
+            feedController.Stop();
+            feedController.CanMove = false;
+            Agent.SetDestination(_feed.transform.position);
+            beamPhase = 0;
+        }
+        else
+        {
+            _beamStart = false;
+        }
     }
 
     public override void Move(Vector3 position)
@@ -69,6 +79,10 @@ public class FinisherEnemyController : EnemyBase
     // Update is called once per frame
     public override void Update()
     {
+        if (!Survive)
+        {
+            Animator.SetBool("grab",false);
+        }
         base.Update();
         beamPositionHistory.Enqueue(PlayerHead.transform.position);
         beamElapsedTime += Time.deltaTime;
@@ -82,6 +96,11 @@ public class FinisherEnemyController : EnemyBase
             switch (beamPhase)
             {
                 case 0:
+                    if (!_feedStatus.survive)
+                    {
+                        _beamStart=false;
+                        break;
+                    }
                     if (Vector3.Distance(Agent.transform.position, Agent.destination) < 0.5f || Agent.isStopped)
                     {
                         beamPhase++;
@@ -111,10 +130,12 @@ public class FinisherEnemyController : EnemyBase
                     if (_moveTimer < 0f)
                     {
                         beamPhase = 0;
-                        _dangerAreaObject.transform.rotation = Quaternion.identity;
+                        _mainBody.transform.rotation = Quaternion.identity;
                         _recastTime = _defaultRecastTime;
                         _beamStart = false;
                         Animator.SetBool("grab", false);
+                        _beamObject.SetActive(false);
+                        Move(EnemyStatus.leaderObject.GetComponent<EnemyBase>().Agent.destination);
                     }
                     else
                     {
@@ -130,11 +151,9 @@ public class FinisherEnemyController : EnemyBase
     {
         beamPhase++;
         _feed.GetComponent<EnemyStatus>().HPChanger(100);
-        Debug.Log("100");
     }
     public void AimStart()
     {
         beamPhase = 2;
-        EnemyStatus.Invincible = true;
     }
 }

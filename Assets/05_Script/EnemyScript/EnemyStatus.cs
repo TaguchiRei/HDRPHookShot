@@ -14,9 +14,9 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
     public EnemyType EnemyType;
     public List<GameObject> MembersList;
     private GameObject managerObject;
-    private GameObject leaderObject;
+    public GameObject leaderObject;
     private int Hp = 3;
-    bool survive = true;
+    public bool survive = true;
     [HideInInspector] public List<EnemyBase> EnemyBaseList = new();
     [HideInInspector] public bool Invincible = false;
 
@@ -42,6 +42,14 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
             enemyStatus.MembersList.Add(gameObject);
             enemyStatus.EnemyBaseList.Add(enemyBase);
             enemyBase.Move(leaderObject.transform.position);
+        }
+        else
+        {
+            for (int i = 0; i < MembersList.Count; i++)
+            {
+                MembersList[i].GetComponent<EnemyStatus>().leaderObject = gameObject;
+            }
+
         }
         enemyBase.UniqueInitialization();
     }

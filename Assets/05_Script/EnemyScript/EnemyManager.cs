@@ -53,7 +53,6 @@ public class EnemyManager : MonoBehaviour
             //リーダーとなるオブジェクトを生成と初期化
             Vector3 spawnerPos = spawnPoint[UnityEngine.Random.Range(0, spawnPoint.Length)];//生成する座標をランダム決定
             GameObject leaderObj = Instantiate(enemyList[0], spawnerPos, Quaternion.identity);
-            leaderObj.name = Guid.NewGuid().ToString();
             EnemyStatus leaderSta = leaderObj.GetComponent<EnemyStatus>();
             LR lR = (LR)UnityEngine.Random.Range(0, 2);
             leaderSta.Initialization(i, lR, true, gameObject,leaderObj);
@@ -74,7 +73,6 @@ public class EnemyManager : MonoBehaviour
             }
             foreach (var obj in resultGroup)
             {
-                obj.name = Guid.NewGuid().ToString();
                 obj.transform.position = obj.transform.position + new Vector3(UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1), 0, UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1));//位置を決定
                 EnemyStatus enemyStatus = obj.GetComponent<EnemyStatus>();
                 enemyStatus.Initialization(i, lR, false, gameObject, leaderObj);

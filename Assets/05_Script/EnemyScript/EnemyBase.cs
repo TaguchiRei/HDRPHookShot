@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Rendering.HighDefinition;
 
 public abstract class EnemyBase : MonoBehaviour
 {
@@ -51,13 +49,16 @@ public abstract class EnemyBase : MonoBehaviour
                 actionInterval -= Time.deltaTime;
                 if (elapsedTime >= _delay)
                 {
-                    DelayedPosition = positionHistory.Dequeue();
-                    if (actionInterval < 0 && !DelayedUniqueAction)
+                    if (positionHistory.Count != 0)
                     {
-                        actionInterval = Random.Range(2.0f, 3.0f);
-                        DelayedUniqueAction = true;
-                        UniqueAction(DelayedPosition);
-                        movingCoroutine = StartCoroutine(DelayUniqueAction(DelayedPosition));
+                        DelayedPosition = positionHistory.Dequeue();
+                        if (actionInterval < 0 && !DelayedUniqueAction)
+                        {
+                            actionInterval = Random.Range(2.0f, 3.0f);
+                            DelayedUniqueAction = true;
+                            UniqueAction(DelayedPosition);
+                            movingCoroutine = StartCoroutine(DelayUniqueAction(DelayedPosition));
+                        }
                     }
                 }
             }
@@ -100,7 +101,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     public void LeaderMove()
     {
-        Physics.Raycast(transform.position, (PlayerHead.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground","PlayerHead"));
+        Physics.Raycast(transform.position, (PlayerHead.transform.position - transform.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground", "PlayerHead"));
         if (hit.collider != null && !hit.collider.gameObject.CompareTag("PlayerHead"))
         {
             if (Agent.velocity.magnitude < 0.05f)
