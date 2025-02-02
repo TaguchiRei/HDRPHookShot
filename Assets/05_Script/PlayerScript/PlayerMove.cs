@@ -120,7 +120,7 @@ public class PlayerMove : MonoBehaviour
                 _bulletEfect.SetInt("BulletType", 0);
                 _bulletEfect.SetVector3("StartPos", _muzzlePos.transform.position);
                 _bulletEfect.SetVector3("EndVector", hit.point - _muzzlePos.transform.position);
-                _bulletEfect.SendEvent("NomalBullet");
+                _bulletEfect.SendEvent("NormalBullet");
                 _shotIntervalTimer = 1 / WeaponStatus.RateOfFire;
                 if (ray)
                 {

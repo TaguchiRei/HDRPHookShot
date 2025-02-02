@@ -38,6 +38,7 @@ public class AttackerEnemyController : EnemyBase
         {
             _bulletEffect.SetVector3("EndVector", hit.point - _muzzlePos.position);
         }
+        _bulletEffect.SendEvent("NormalBullet");
     }
     public override void Move(Vector3 position)
     {

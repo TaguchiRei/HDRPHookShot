@@ -33,6 +33,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
         enemyBase.Animator.SetBool("Delete", false);
         agent.enabled = true;
         enemyBase.enabled = true;
+        enemyBase.Animator.enabled = true;
         enemyBase.Survive = true;
         enemyBase.CanMove = true;
         if (!Leader)
