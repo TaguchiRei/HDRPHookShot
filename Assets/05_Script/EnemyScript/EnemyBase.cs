@@ -20,11 +20,12 @@ public abstract class EnemyBase : MonoBehaviour
     [HideInInspector] public Vector3 DelayedPosition = Vector3.zero;
     Vector3 direction;
     [SerializeField] float _delay = 1f;
-    Queue<Vector3> positionHistory = new();
+    private Queue<Vector3> positionHistory = new();
     float elapsedTime = 1;
     bool DelayedUniqueAction = false;
     Coroutine movingCoroutine;
     public PlayerMove PlayerMoveI;
+    public bool CanMove = false;
     public virtual void Start()
     {
         PlayerMoveI = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMove>();
@@ -60,11 +61,15 @@ public abstract class EnemyBase : MonoBehaviour
                     }
                 }
             }
+            else
+            {
+
+            }
         }
     }
     public virtual void Move(Vector3 position)
     {
-        if (Survive)
+        if (Survive && CanMove)
         {
             Agent.speed = MoveSpeed;
             if (EnemyStatus.Leader)

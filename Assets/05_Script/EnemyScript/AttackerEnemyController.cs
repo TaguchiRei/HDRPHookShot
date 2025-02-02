@@ -7,11 +7,12 @@ public class AttackerEnemyController : EnemyBase
 
     [SerializeField] GameObject _eye;
     [SerializeField] Transform _muzzlePos;
-    VisualEffect _bulletEfect;
+    VisualEffect _bulletEffect;
+    
     public override void Start()
     {
         base.Start();
-        _bulletEfect = GameObject.FindGameObjectWithTag("VFX").GetComponent<VisualEffect>();
+        _bulletEffect = GameObject.FindGameObjectWithTag("VFX").GetComponent<VisualEffect>();
         Timer = 5;
     }
     public override void Update()
@@ -26,19 +27,17 @@ public class AttackerEnemyController : EnemyBase
     public override void UniqueAction(Vector3 delayedPosition)
     {
         Physics.Raycast(_muzzlePos.position, (delayedPosition - _muzzlePos.position).normalized, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Default", "Ground","PlayerHead"));
-        _bulletEfect.SetInt("BulletType", 2);
-        _bulletEfect.SetVector3("StartPos", _muzzlePos.transform.position);
+        _bulletEffect.SetInt("BulletType", 2);
+        _bulletEffect.SetVector3("StartPos", _muzzlePos.transform.position);
         if (hit.collider != null && hit.collider.CompareTag("PlayerHead"))
         {
-            _bulletEfect.SetVector3("EndVector", (hit.point - _muzzlePos.position) * 1000);
+            _bulletEffect.SetVector3("EndVector", (hit.point - _muzzlePos.position) * 1000);
             PlayerMoveI.GaugeChanger(1);
         }
         else
         {
-            _bulletEfect.SetVector3("EndVector", hit.point - _muzzlePos.position);
+            _bulletEffect.SetVector3("EndVector", hit.point - _muzzlePos.position);
         }
-        _bulletEfect.SendEvent("NomalBullet");
-        
     }
     public override void Move(Vector3 position)
     {

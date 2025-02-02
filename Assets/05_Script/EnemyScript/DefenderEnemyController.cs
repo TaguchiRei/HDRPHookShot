@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DefenderEnemyController : EnemyBase
 {
-    [SerializeField] GameObject ShieldObjedt;
+    [SerializeField] GameObject ShieldObject;
     [SerializeField] DefenderEnemyShield DefenderEnemyShield;
     float _recastTimer = 0;
     [SerializeField] float _moveSpeedChange = 30f;
@@ -39,7 +39,7 @@ public class DefenderEnemyController : EnemyBase
         base.Update();
         if (_guard)
         {
-            ShieldObjedt.transform.LookAt(PlayerHead.transform.position);
+            ShieldObject.transform.LookAt(PlayerHead.transform.position);
         }
         if (_recastTimer > 0)
         {
@@ -50,6 +50,10 @@ public class DefenderEnemyController : EnemyBase
     public void BreakShield()
     {
         _recastTimer = _recastTime;
+    }
+    public void ShieldOpened()
+    {
+        Animator.SetBool("Defense",false);
     }
     public override void Move(Vector3 position)
     {

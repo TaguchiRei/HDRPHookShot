@@ -16,10 +16,11 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
     private GameObject managerObject;
     private GameObject leaderObject;
     private int Hp = 3;
-    bool suvive = true;
+    bool survive = true;
     [HideInInspector] public List<EnemyBase> EnemyBaseList = new();
+    [HideInInspector] public bool Invincible = false;
 
-    public void Initialization(int groupNumber, LR lr, bool isLeader, GameObject manager, GameObject leaderObj, bool summon = true)
+    public void Initialization(int groupNumber, LR lr, bool isLeader, GameObject manager, GameObject leaderObj)
     {
         Hp = _maxHp;
         GroupNumber = groupNumber;
@@ -28,11 +29,12 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
         enemyBase.Leader = isLeader;
         managerObject = manager;
         leaderObject = leaderObj;
-        suvive = true;
+        survive = true;
         enemyBase.Animator.SetBool("Delete", false);
         agent.enabled = true;
         enemyBase.enabled = true;
         enemyBase.Survive = true;
+        enemyBase.CanMove = true;
         if (!Leader)
         {
             EnemyStatus enemyStatus = leaderObject.GetComponent<EnemyStatus>();
@@ -45,12 +47,12 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
 
     public void HPChanger(int changeNum)
     {
-        if (suvive)
+        if (survive && !Invincible)
         {
             Hp -= changeNum;
             if (Hp <= 0)
             {
-                suvive = false;
+                survive = false;
                 if (!Leader)
                     leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
                 //éÄñSéûèàóù
@@ -68,7 +70,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
     }
     public void HookShotHit()
     {
-        suvive = false;
+        survive = false;
         if (!Leader)
             leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
         //éÄñSéûèàóù
