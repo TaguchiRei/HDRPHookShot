@@ -42,7 +42,7 @@ public class PlayerAnimation : MonoBehaviour
         switch (abilityNumber)
         {
             case 0:
-                _playerMove.GaugeChanger(-30);
+                _playerMove.GaugeChanger(-45);
                 break;
             case 1:
 

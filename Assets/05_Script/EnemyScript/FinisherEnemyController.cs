@@ -41,6 +41,11 @@ public class FinisherEnemyController : EnemyBase
                 }
             }
         }
+        if (_feed == null)
+        {
+            _beamStart = false;
+            return;
+        }
         _timer = _maxTimer;
         var feedController = _feed.GetComponent<AttackerEnemyController>();
         _feedStatus = _feed.GetComponent<EnemyStatus>();
@@ -67,7 +72,7 @@ public class FinisherEnemyController : EnemyBase
 
     public override void UniqueInitialization()
     {
-
+        _recastTime = Random.Range(10f,15f);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -79,10 +84,6 @@ public class FinisherEnemyController : EnemyBase
     // Update is called once per frame
     public override void Update()
     {
-        if (!Survive)
-        {
-            Animator.SetBool("grab",false);
-        }
         base.Update();
         beamPositionHistory.Enqueue(PlayerHead.transform.position);
         beamElapsedTime += Time.deltaTime;
@@ -98,7 +99,7 @@ public class FinisherEnemyController : EnemyBase
                 case 0:
                     if (!_feedStatus.survive)
                     {
-                        _beamStart=false;
+                        _beamStart = false;
                         break;
                     }
                     if (Vector3.Distance(Agent.transform.position, Agent.destination) < 0.5f || Agent.isStopped)
@@ -108,6 +109,7 @@ public class FinisherEnemyController : EnemyBase
                     }
                     break;
                 case 2:
+                    _feed = null;
                     if (_timer > 1f)
                     {
                         _mainBody.transform.up = -(beamDelayedPosition - _mainBody.transform.position);
@@ -151,6 +153,13 @@ public class FinisherEnemyController : EnemyBase
     {
         beamPhase++;
         _feed.GetComponent<EnemyStatus>().HPChanger(100);
+    }
+    public override void Delete()
+    {
+        _feed = null;
+        Animator.SetBool("grab", false);
+        _mainBody.transform.rotation = Quaternion.identity;
+        base.Delete();
     }
     public void AimStart()
     {

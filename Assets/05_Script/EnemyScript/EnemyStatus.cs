@@ -63,12 +63,18 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
             {
                 survive = false;
                 if (!Leader)
-                    leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
+                {
+                    var sta = leaderObject.GetComponent<EnemyStatus>();
+                    sta.MembersList.Remove(gameObject); 
+                    sta.EnemyBaseList.Remove(enemyBase);
+                   
+                }
                 //€–Sˆ—
                 enemyBase.Survive = false;
                 agent.enabled = false;
                 enemyBase.enabled = false;
                 enemyBase.Animator.SetBool("Delete", true);
+                enemyBase.Delete();
                 managerObject.GetComponent<EnemyManager>().EnemySpawn(GroupNumber, LR, Leader, leaderObject, MembersList);
             }
             else if (Hp > _maxHp)

@@ -83,7 +83,7 @@ public abstract class EnemyBase : MonoBehaviour
             }
         }
     }
-    public void Delete()
+    public virtual void Delete()
     {
         if (DelayedUniqueAction)
         {

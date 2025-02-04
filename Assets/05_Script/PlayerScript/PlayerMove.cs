@@ -92,7 +92,6 @@ public class PlayerMove : MonoBehaviour
         Debug.Log(AbilitySetting.abilityNumber3);
         _gameManager.InButtlePause += Pause;
         _gameManager.InButtleReStart += ReStart;
-        GaugeChanger(50);
     }
 
     void Update()
