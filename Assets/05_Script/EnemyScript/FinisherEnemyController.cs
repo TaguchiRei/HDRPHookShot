@@ -72,7 +72,7 @@ public class FinisherEnemyController : EnemyBase
 
     public override void UniqueInitialization()
     {
-        _recastTime = Random.Range(10f,15f);
+        _recastTime = Random.Range(10f, 15f);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -152,8 +152,8 @@ public class FinisherEnemyController : EnemyBase
     public void AttackForEat()
     {
         beamPhase++;
-        if(_feed != null)
-        _feed.GetComponent<EnemyStatus>().HPChanger(100);
+        if (_feed != null)
+            _feed.GetComponent<EnemyStatus>().HPChanger(100);
     }
     public override void Delete()
     {
