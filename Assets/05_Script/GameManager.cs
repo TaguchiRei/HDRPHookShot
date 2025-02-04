@@ -59,13 +59,12 @@ public class GameManager : SingletonMonoBehaviour<MonoBehaviour>, IHaveSaveData<
         {
             case "Start":
                 break;
-            case "Bace":
+            case "Base":
                 break;
             case "Buttle":
                 break;
             default:
                 break;
-
         }
     }
 
