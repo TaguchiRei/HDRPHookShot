@@ -45,11 +45,12 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
         }
         else
         {
-            for (int i = 0; i < MembersList.Count; i++)
+            EnemyBaseList.Clear();
+            foreach (var member in MembersList)
             {
-                MembersList[i].GetComponent<EnemyStatus>().leaderObject = gameObject;
+                member.GetComponent<EnemyStatus>().leaderObject = gameObject;
+                EnemyBaseList.Add(member.GetComponent<EnemyBase>());
             }
-
         }
         enemyBase.UniqueInitialization();
     }
@@ -70,11 +71,11 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
 
                 }
                 //€–Sˆ—
-                enemyBase.Survive = false;
                 agent.enabled = false;
-                enemyBase.enabled = false;
+                enemyBase.Survive = false;
                 enemyBase.Animator.SetBool("Delete", true);
                 enemyBase.Delete();
+                enemyBase.enabled = false;
                 managerObject.GetComponent<EnemyManager>().EnemySpawn(GroupNumber, LR, Leader, leaderObject, MembersList);
             }
             else if (Hp > _maxHp)

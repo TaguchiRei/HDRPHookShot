@@ -152,6 +152,7 @@ public class FinisherEnemyController : EnemyBase
     public void AttackForEat()
     {
         beamPhase++;
+        if(_feed != null)
         _feed.GetComponent<EnemyStatus>().HPChanger(100);
     }
     public override void Delete()
