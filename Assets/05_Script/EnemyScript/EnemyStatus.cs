@@ -67,7 +67,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
                     var sta = leaderObject.GetComponent<EnemyStatus>();
                     sta.MembersList.Remove(gameObject); 
                     sta.EnemyBaseList.Remove(enemyBase);
-                   
+
                 }
                 //€–Sˆ—
                 enemyBase.Survive = false;

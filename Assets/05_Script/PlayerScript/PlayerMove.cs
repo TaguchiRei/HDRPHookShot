@@ -324,6 +324,11 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("DMGZone"))
+            GaugeChanger(50);
+    }
     public struct AbilitySet
     {
         public int abilityNumber1;

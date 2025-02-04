@@ -57,7 +57,7 @@ public class EnemyManager : MonoBehaviour
             GameObject leaderObj = Instantiate(enemyList[0], spawnerPos, Quaternion.identity);
             EnemyStatus leaderSta = leaderObj.GetComponent<EnemyStatus>();
             LR lR = (LR)UnityEngine.Random.Range(0, 2);
-            leaderSta.Initialization(i, lR, true, gameObject,leaderObj);
+            leaderSta.Initialization(i, lR, true, gameObject, leaderObj);
             enemyList.RemoveAt(0);
             HashSet<GameObject> enemyHashSet = enemyList.ToHashSet();
             List<GameObject> resultGroup = new();//この回で生成したグループを保存する
@@ -75,6 +75,9 @@ public class EnemyManager : MonoBehaviour
             }
             foreach (var obj in resultGroup)
             {
+                //
+                obj.name = Guid.NewGuid().ToString();
+                //
                 obj.transform.position = obj.transform.position + new Vector3(UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1), 0, UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1));//位置を決定
                 EnemyStatus enemyStatus = obj.GetComponent<EnemyStatus>();
                 enemyStatus.Initialization(i, lR, false, gameObject, leaderObj);
@@ -126,7 +129,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public void EnemySpawn(int teamNumber, LR lR, bool leader,GameObject leaderObj,List<GameObject> memberList = null)
+    public void EnemySpawn(int teamNumber, LR lR, bool leader, GameObject leaderObj, List<GameObject> memberList = null)
     {
         GameObject spawnObj;
         if (infiniteEnemySpawn)
@@ -153,7 +156,7 @@ public class EnemyManager : MonoBehaviour
         else if (allEnemyData.Count != 0)
         {
             //スポーンさせる敵を最初に決めたランダムなスポーン順で決定
-            if(AttackerQueue.Count + DefenderQueue.Count + SupporterQueue.Count == 0)
+            if (AttackerQueue.Count + DefenderQueue.Count + SupporterQueue.Count == 0)
             {
                 Debug.Log("QueueIsEmpty");
                 return;
@@ -176,6 +179,7 @@ public class EnemyManager : MonoBehaviour
             //スポーンさせる敵の初期化を行う
             var spawnStatus = spawnObj.GetComponent<EnemyStatus>();
             spawnObj.transform.position = spawnPoint[UnityEngine.Random.Range(0, spawnPoint.Length)];
+            spawnStatus.MembersList = memberList;
             spawnStatus.Initialization(
                 teamNumber,
                 lR,
@@ -183,7 +187,6 @@ public class EnemyManager : MonoBehaviour
                 gameObject,
                 leaderObj
                 );
-            spawnStatus.MembersList = memberList;
             spawnObj.GetComponent<EnemyBase>().UniqueInitialization();
         }
         else

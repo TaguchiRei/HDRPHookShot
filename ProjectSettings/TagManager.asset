@@ -12,6 +12,7 @@ TagManager:
   - Barrier
   - New tag
   - VFX
+  - DMGZone
   layers:
   - Default
   - TransparentFX
