@@ -2,9 +2,8 @@ using GamesKeystoneFramework.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class GameManager : SingletonMonoBehaviour<MonoBehaviour>, IHaveSaveData<Data>
+public class GameManager : MonoBehaviour, IHaveSaveData<Data>
 {
     /// <summary>
     /// カメラの水平方向の反転の可否を行う。単に数値を下げればカメラの感度が変わる
@@ -25,7 +24,6 @@ public class GameManager : SingletonMonoBehaviour<MonoBehaviour>, IHaveSaveData<
 
     void Start()
     {
-        //マウスを固定して隠す
         DataContents = new List<Data>();
         Cursor.lockState = CursorLockMode.Locked;
         _saveDataManager.CalledData.Add(Send);
@@ -53,20 +51,6 @@ public class GameManager : SingletonMonoBehaviour<MonoBehaviour>, IHaveSaveData<
         _pause = false;
     }
 
-    public override void OnSceneLoaded(Scene s, LoadSceneMode mode)
-    {
-        switch (s.name)
-        {
-            case "Start":
-                break;
-            case "Base":
-                break;
-            case "Buttle":
-                break;
-            default:
-                break;
-        }
-    }
 
     void ButtleSceneStart(int sceneNumber)
     {
