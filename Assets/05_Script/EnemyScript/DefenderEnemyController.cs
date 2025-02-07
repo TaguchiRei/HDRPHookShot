@@ -5,7 +5,6 @@ public class DefenderEnemyController : EnemyBase
     [SerializeField] GameObject ShieldObject;
     [SerializeField] DefenderEnemyShield DefenderEnemyShield;
     float _recastTimer = 0;
-    [SerializeField] float _moveSpeedChange = 30f;
     [SerializeField] float _recastTime = 10;
     bool _guard = false;
     public override void UniqueAction(Vector3 delayedPosition)

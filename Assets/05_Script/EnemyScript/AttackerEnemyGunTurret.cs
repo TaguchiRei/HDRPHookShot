@@ -9,7 +9,6 @@ public class AttackerEnemyGun : MonoBehaviour
     [SerializeField] float delay = 0.5f;
     private readonly Queue<Vector3> positionHistory = new();
     private float elapsedTime = 0f;
-    [SerializeField] bool x = false;
     Vector3 delayedPosition;
     Vector3 direction;
     void Start()
