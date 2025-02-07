@@ -1,4 +1,3 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +9,7 @@ public class StartScript : MonoBehaviour
     [SerializeField] Animator _animator2;
     [SerializeField] StageData _storyStageData;
     [SerializeField] StageData _ChallengeStageData;
+    [SerializeField] TextMeshProUGUI _questTitle;
     [SerializeField] TextMeshProUGUI _questDescription;
     int _selectedIndex = 0;
     int _storyQuestNumber = 0;
@@ -20,21 +20,32 @@ public class StartScript : MonoBehaviour
         _selectedIndex = phase;
         _animator.SetInteger("phase", phase);
         _animator2.SetInteger("phase", phase);
+        if (phase == 2)
+        {
+            _storyMode = true;
+        }
+        else if (phase == 3)
+        {
+            _storyMode = false;
+        }
+        TextChange();
     }
 
     public void NextQuest()
     {
         if (_storyMode)
         {
-            if (_storyQuestNumber < _storyStageData.template.Length)
+            if (_storyQuestNumber < _storyStageData.template.Length - 1)
                 _storyQuestNumber++;
         }
         else
         {
-            if(_challengeQuestNumber < _ChallengeStageData.template.Length)
+            if (_challengeQuestNumber < _ChallengeStageData.template.Length - 1)
                 _challengeQuestNumber++;
         }
+        TextChange();
     }
+
     public void PrevQuest()
     {
         if (_storyMode)
@@ -44,10 +55,12 @@ public class StartScript : MonoBehaviour
         }
         else
         {
-            if(_challengeQuestNumber != 0)
+            if (_challengeQuestNumber != 0)
                 _challengeQuestNumber--;
         }
+        TextChange();
     }
+
     public void PhaseDown()
     {
         if (_selectedIndex > 1)
@@ -63,9 +76,21 @@ public class StartScript : MonoBehaviour
             _animator2.SetInteger("phase", 0);
         }
     }
-    public IEnumerator ShowModeSelect()
+    public void Decision()
     {
-        yield return new WaitForSeconds(3f);
 
+    }
+    void TextChange()
+    {
+        if (_storyMode)
+        {
+            _questDescription.text = _storyStageData.template[_storyQuestNumber].StageDescription;
+            _questTitle.text = _storyStageData.template[_storyQuestNumber].StageName;
+        }
+        else
+        {
+            _questDescription.text = _ChallengeStageData.template[_challengeQuestNumber].StageDescription;
+            _questTitle.text = _ChallengeStageData.template[_challengeQuestNumber].StageName;
+        }
     }
 }
