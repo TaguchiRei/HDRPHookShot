@@ -68,7 +68,6 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
                     var sta = leaderObject.GetComponent<EnemyStatus>();
                     sta.MembersList.Remove(gameObject); 
                     sta.EnemyBaseList.Remove(enemyBase);
-
                 }
                 //€–Sˆ—
                 agent.enabled = false;
@@ -88,10 +87,15 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
     {
         survive = false;
         if (!Leader)
-            leaderObject.GetComponent<EnemyStatus>().MembersList.Remove(gameObject);
+        {
+            var sta = leaderObject.GetComponent<EnemyStatus>();
+            sta.MembersList.Remove(gameObject);
+            sta.EnemyBaseList.Remove(enemyBase);
+        }
         //€–Sˆ—
-        enemyBase.Survive = false;
         agent.enabled = false;
+        enemyBase.Survive = false;
+        enemyBase.Delete();
         enemyBase.enabled = false;
         managerObject.GetComponent<EnemyManager>().EnemySpawn(GroupNumber, LR, Leader, leaderObject, MembersList);
         DeletedEnemy();

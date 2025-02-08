@@ -1,23 +1,21 @@
 using GamesKeystoneFramework.TextSystem;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class TextManager : TextManagerBase
 {
-    [SerializeField] string[] _textDataName;
+    public string[] _textDataName;
     public int textPhase = 0;
-    public virtual void Start()
-    {
-        StartText(_textDataName[0],true);
-    }
 
-    public IEnumerator NextText(Action action)
+    public IEnumerator NextText(Action action,int _textDataNum)
     {
+        StartText(_textDataName[0], true);
         while (true)
         {
             var next = Next();
-            yield return new WaitForSeconds(2.0f);
+            yield return new WaitForSeconds(1.0f);
             if (!next)
                 break;
         }
