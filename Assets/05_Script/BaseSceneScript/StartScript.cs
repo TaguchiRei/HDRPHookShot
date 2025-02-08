@@ -1,3 +1,4 @@
+using GamesKeystoneFramework.Core;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +17,7 @@ public class StartScript : MonoBehaviour
     int _challengeQuestNumber = 0;
     bool _storyMode = false;
     SceneChangeManager _sceneChangeManager = new();
+
     public void Phase(int phase)
     {
         _selectedIndex = phase;
