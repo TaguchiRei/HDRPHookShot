@@ -15,8 +15,6 @@ public class StartScript : MonoBehaviour
     int _storyQuestNumber = 0;
     int _challengeQuestNumber = 0;
     bool _storyMode = false;
-    [SerializeField] string[] StoryScenesName;
-    [SerializeField] string[] ChallengeScenesName;
     SceneChangeManager _sceneChangeManager = new();
     public void Phase(int phase)
     {
@@ -83,11 +81,11 @@ public class StartScript : MonoBehaviour
     {
         if (_storyMode)
         {
-            _sceneChangeManager.SceneChange(StoryScenesName[_selectedIndex]);
+            _sceneChangeManager.SceneChange($"Story{_storyQuestNumber}");
         }
         else
         {
-            _sceneChangeManager.SceneChange(ChallengeScenesName[_selectedIndex]);
+            _sceneChangeManager.SceneChange($"Challenge{_challengeQuestNumber}");
         }
     }
     void TextChange()

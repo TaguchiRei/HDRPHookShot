@@ -6,8 +6,35 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Editor/DebugRoom.unity
-    guid: 8124e5870f4fd4c779e7a5f994e84ad1
+    path: Assets/01_Scenes/Base.unity
+    guid: 448133c0e5d033540abe63590e38c52b
+  - enabled: 1
+    path: Assets/01_Scenes/ButtleScenes/Story/Story0.unity
+    guid: f14052a28a4526849a08bd9245badff5
+  - enabled: 1
+    path: Assets/01_Scenes/ButtleScenes/Story/Story1.unity
+    guid: 632265f22b8291846b92da4b759d196b
+  - enabled: 1
+    path: Assets/01_Scenes/ButtleScenes/Story/Story2.unity
+    guid: 3471fcd0667244345987340a34699ae3
+  - enabled: 1
+    path: Assets/01_Scenes/ButtleScenes/Story/Story3.unity
+    guid: 15d2850ee219b414cbd715e856428707
+  - enabled: 1
+    path: Assets/01_Scenes/ButtleScenes/Story/Story4.unity
+    guid: aaf676e77a263d14e9bdd90b5272d9a6
+  - enabled: 1
+    path: Assets/01_Scenes/ButtleScenes/Challenge/Challenge0.unity
+    guid: 4f8128b1cfacb464e8d3292d2e39f1c0
+  - enabled: 1
+    path: Assets/01_Scenes/ButtleScenes/Challenge/Challenge1.unity
+    guid: 4e809cac5d2d05b4eaed36e407013868
+  - enabled: 1
+    path: Assets/01_Scenes/ButtleScenes/Challenge/Challenge2.unity
+    guid: 202fbdd98b62de44eb6a2028f01a71af
+  - enabled: 1
+    path: Assets/01_Scenes/ButtleScenes/Challenge/Challenge3.unity
+    guid: 16a35d27ce2c4c641b4eb481f5a71342
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: c94cad036d688dd4e86c6e1e09c08f0e, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 0951bf676ccc26f438adef3bfb19f8bf, type: 3}
