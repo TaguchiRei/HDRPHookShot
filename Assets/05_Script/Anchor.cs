@@ -5,11 +5,13 @@ public class Anchor : MonoBehaviour
 {
     [SerializeField] MeshRenderer _meshRenderer;
     [SerializeField] Rigidbody _rigidbody;
+    [SerializeField] GameObject BlastObj;
     bool _hit = false;
     bool enemyHit = false;
     public float _speed = 50;
     [HideInInspector] public Vector3 _moveDirection = Vector3.zero;
     [HideInInspector] public Vector3 _hitPosition = Vector3.zero;
+    [HideInInspector] public PlayerMove _playerMove;
     GameManager gameManager;
     GameObject player;
     private void Start()
@@ -56,6 +58,14 @@ public class Anchor : MonoBehaviour
             _hit = true;
             _rigidbody.linearVelocity = Vector3.zero;
             _meshRenderer.enabled = true;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (enemyHit)
+        {
+            Instantiate(BlastObj, transform.position, Quaternion.identity);
         }
     }
 }

@@ -31,7 +31,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] UnityEvent _shot;
     public bool Shotting = false;
     float _shotIntervalTimer = 0.2f;
-    float anchorTimer = 0;
+    [HideInInspector] public float anchorTimer = 0;
     public Func<int> BuffList;
 
     //フックショットの変数
@@ -142,7 +142,7 @@ public class PlayerMove : MonoBehaviour
             {
                 _shotIntervalTimer -= Time.deltaTime;
             }
-            if (anchorTimer > 0 && !HookShotHit)
+            if (!HookShotHit)
             {
                 anchorTimer -= Time.deltaTime;
                 if (anchorTimer < 0)
@@ -271,7 +271,9 @@ public class PlayerMove : MonoBehaviour
         anchorTimer = WeaponStatus.HookShotTimer;
         _anchorMesh.enabled = false;
         _anchorInstance = Instantiate(_anchorPrehab, _playerHead.transform.position, _playerHead.transform.rotation);
-        _anchorInstance.GetComponent<Anchor>()._moveDirection += _rigidbody.linearVelocity * 0.1f;
+        var anc = _anchorInstance.GetComponent<Anchor>();
+        anc._moveDirection += _rigidbody.linearVelocity * 0.1f;
+        anc._playerMove = this;
     }
     public void AncDestroy()
     {
