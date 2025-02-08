@@ -1,9 +1,7 @@
-using GamesKeystoneFramework.Core;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour, IHaveSaveData<Data>
+public class GameManager : MonoBehaviour
 {
     /// <summary>
     /// カメラの水平方向の反転の可否を行う。単に数値を下げればカメラの感度が変わる
@@ -18,26 +16,18 @@ public class GameManager : MonoBehaviour, IHaveSaveData<Data>
     public string _playerName = string.Empty;
     public Action InButtlePause;
     public Action InButtleReStart;
-    [SerializeField] SaveDataManager _saveDataManager;
 
-    public List<Data> DataContents { get; set; }
 
     void Start()
     {
-        DataContents = new List<Data>();
         Cursor.lockState = CursorLockMode.Locked;
-        _saveDataManager.CalledData.Add(Send);
     }
 
-    public List<Data> Send()
-    {
-        return DataContents;
-    }
     //メニューを開くときのプログラム
     public void Stop()
     {
-        InButtlePause.Invoke();
-        _pause = true;
+        //InButtlePause.Invoke();
+        //_pause = true;
     }
 
     public void OpenMenu()
@@ -49,12 +39,6 @@ public class GameManager : MonoBehaviour, IHaveSaveData<Data>
     {
         InButtleReStart.Invoke();
         _pause = false;
-    }
-
-
-    void ButtleSceneStart(int sceneNumber)
-    {
-
     }
 }
 
