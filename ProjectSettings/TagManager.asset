@@ -13,6 +13,7 @@ TagManager:
   - New tag
   - VFX
   - DMGZone
+  - Target
   layers:
   - Default
   - TransparentFX

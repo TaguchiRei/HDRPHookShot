@@ -132,6 +132,9 @@ public class PlayerMove : MonoBehaviour
                     else if (hit.collider.CompareTag("Barrier"))
                     {
                         hit.collider.gameObject.GetComponent<DefenderEnemyShield>().HPChanger(1);
+                    }else if (hit.collider.CompareTag("Target"))
+                    {
+                        Destroy(hit.collider.gameObject);
                     }
                 }
             }

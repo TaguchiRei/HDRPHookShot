@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class TextManager : TextManagerBase
 {
     [SerializeField] string[] _textDataName;
-    int textPhase = 0;
+    public int textPhase = 0;
     public virtual void Start()
     {
         StartText(_textDataName[0],true);
