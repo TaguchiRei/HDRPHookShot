@@ -15,7 +15,7 @@ public class BallBlast : MonoBehaviour
                 case "Player":
                     var pm = c.gameObject.GetComponent<PlayerMove>();
                     pm.GaugeChanger(20);
-                    pm.GaugeChanger(5,false);
+                    pm.GaugeChanger(12,false);
                     break;
                 case "Barrier":
                     c.GetComponent<DefenderEnemyShield>().HPChanger(10);
@@ -25,7 +25,7 @@ public class BallBlast : MonoBehaviour
             }
         }
     }
-    void BlastDestroy()
+    public void BlastDestroy()
     {
         Destroy(gameObject);
     }

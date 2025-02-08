@@ -62,12 +62,6 @@ public class PlayerInputSystem : MonoBehaviour
         _playerInput.Enable();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void OnDestroy()
     {
         _playerInput?.Dispose();

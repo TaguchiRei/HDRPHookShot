@@ -201,7 +201,8 @@ public abstract class EnemyBase : MonoBehaviour
         for (int i = 0; i < EnemyStatus.EnemyBaseList.Count; i++)
         {
             yield return new WaitForEndOfFrame();
-            EnemyStatus.EnemyBaseList[i].UniqueAction(delayedPos);
+            if (i < EnemyStatus.EnemyBaseList.Count)
+                EnemyStatus.EnemyBaseList[i].UniqueAction(delayedPos);
         }
         DelayedUniqueAction = false;
     }

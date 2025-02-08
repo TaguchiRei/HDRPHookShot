@@ -13,7 +13,7 @@ public class PlayerMove : MonoBehaviour
     [HideInInspector] public GameManager _gameManager;
     public bool CanMoveInput = false;
     public bool CanJumpInput = false;
-    [SerializeField] Vector3 _jumpPower = new Vector3(0, 100, 0);
+    [SerializeField] Vector3 _jumpPower = new(0, 100, 0);
     public bool CanUseWeaponInput = false;
     public WeaponStatus WeaponStatus;
     [SerializeField] float _gravityScale = 1;
@@ -27,7 +27,7 @@ public class PlayerMove : MonoBehaviour
 
     //通常射撃のための変数
     [SerializeField] GameObject _muzzlePos;
-    [SerializeField] VisualEffect _bulletEfect;
+    [SerializeField] VisualEffect _bulletEffect;
     [SerializeField] UnityEvent _shot;
     public bool Shotting = false;
     float _shotIntervalTimer = 0.2f;
@@ -68,6 +68,7 @@ public class PlayerMove : MonoBehaviour
     public bool Jumping = false;
     public bool OnGround = true;
     bool _usingAnchor = false;
+    int _beamDmg = 10;
     public AbilitySet AbilitySetting;
     [SerializeField] Vector3 _defaultAbilitySet;
 
@@ -116,17 +117,17 @@ public class PlayerMove : MonoBehaviour
             {
                 _shot.Invoke();
                 var ray = Physics.Raycast(_playerHead.transform.position, _playerHead.transform.forward, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Enemy", "Ground", "Default"));
-                _bulletEfect.SetInt("BulletType", 0);
-                _bulletEfect.SetVector3("StartPos", _muzzlePos.transform.position);
-                _bulletEfect.SetVector3("EndVector", hit.point - _muzzlePos.transform.position);
-                _bulletEfect.SendEvent("NormalBullet");
+                _bulletEffect.SetInt("BulletType", 0);
+                _bulletEffect.SetVector3("StartPos", _muzzlePos.transform.position);
+                _bulletEffect.SetVector3("EndVector", hit.point - _muzzlePos.transform.position);
+                _bulletEffect.SendEvent("NormalBullet");
                 _shotIntervalTimer = 1 / WeaponStatus.RateOfFire;
                 if (ray)
                 {
                     if (hit.collider.CompareTag("Enemy"))
                     {
                         //ここに射撃が当たった時の処理を書く。
-                        hit.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(1);
+                        hit.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(2);
                         GaugeChanger(-1,false);
                     }
                     else if (hit.collider.CompareTag("Barrier"))
@@ -142,7 +143,7 @@ public class PlayerMove : MonoBehaviour
             {
                 _shotIntervalTimer -= Time.deltaTime;
             }
-            if (!HookShotHit)
+            if (!HookShotHit && anchorTimer >= 0)
             {
                 anchorTimer -= Time.deltaTime;
                 if (anchorTimer < 0)
@@ -168,6 +169,7 @@ public class PlayerMove : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        _beamDmg++;
         if (!_gameManager._pause)
         {
             //プレイヤーの動きを作る
@@ -237,7 +239,6 @@ public class PlayerMove : MonoBehaviour
             }
             GaugeChanger(railgunHit.Length * -5);
         }
-        railgunHit = null;
         var crackObjInstance = Instantiate(crackObj, _anchorMuzzle.transform.position, _anchorMuzzle.transform.rotation);
         yield return new WaitForSeconds(5f);
         Destroy(crackObjInstance);
@@ -331,8 +332,11 @@ public class PlayerMove : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DMGZone"))
-            GaugeChanger(50);
+        if (other.CompareTag("DMGZone") && _beamDmg > 5)
+        {
+            GaugeChanger(40);
+            _beamDmg = 0;        
+        }
     }
     public struct AbilitySet
     {

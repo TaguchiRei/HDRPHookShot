@@ -1,4 +1,3 @@
-using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class Anchor : MonoBehaviour
@@ -14,6 +13,7 @@ public class Anchor : MonoBehaviour
     [HideInInspector] public PlayerMove _playerMove;
     GameManager gameManager;
     GameObject player;
+    [SerializeField] GameObject[] enemy;
     private void Start()
     {
         _moveDirection += transform.forward * _speed;
@@ -33,10 +33,11 @@ public class Anchor : MonoBehaviour
             }
             else
             {
-                _rigidbody.linearVelocity = (player.transform.position - transform.position).normalized * _speed;
-                if(Vector3.Distance(transform.position, player.transform.position) < 10)
+                transform.LookAt(player.transform.position);
+                _rigidbody.linearVelocity = (_playerMove.transform.position - transform.position).normalized * _speed / 2;
+                if (Vector3.Distance(transform.position, player.transform.position) < 10)
                 {
-
+                    _playerMove.anchorTimer = 0;
                 }
             }
         }
@@ -50,9 +51,24 @@ public class Anchor : MonoBehaviour
         if (collision.collider.CompareTag("Enemy"))
         {
             collision.gameObject.GetComponent<EnemyStatus>().HookShotHit();
-            //FindAnyObjectByType<PlayerMove>().
+            enemyHit = true;
+            var type = collision.gameObject.GetComponent<EnemyStatus>().EnemyType;
+            switch (type)
+            {
+                case EnemyType.attacker:
+                    enemy[0].SetActive(true);
+                    break;
+                case EnemyType.defender:
+                    enemy[1].SetActive(true);
+                    break;
+                case EnemyType.supporter:
+                    enemy[2].SetActive(true);
+                    break;
+                default:
+                    break;
+            }
         }
-        else
+        else if (!enemyHit)
         {
             FindAnyObjectByType<PlayerMove>().HookShotHit = true;
             _hit = true;
