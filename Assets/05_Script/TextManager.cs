@@ -8,6 +8,7 @@ public abstract class TextManager : TextManagerBase
 {
     public string[] _textDataName;
     public int textPhase = 0;
+    public EnemyManager enemyManager;
 
     public IEnumerator NextText(Action action,int _textDataNum)
     {

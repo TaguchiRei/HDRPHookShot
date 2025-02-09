@@ -11,20 +11,22 @@ public class Anchor : MonoBehaviour
     [HideInInspector] public Vector3 _moveDirection = Vector3.zero;
     [HideInInspector] public Vector3 _hitPosition = Vector3.zero;
     [HideInInspector] public PlayerMove _playerMove;
-    GameManager gameManager;
-    GameObject player;
+    GameManager _gameManager;
+    GameObject _player;
+    PlayerInputSystem _playerInputSystem;
     [SerializeField] GameObject[] enemy;
     private void Start()
     {
         _moveDirection += transform.forward * _speed;
         _meshRenderer.enabled = false;
-        gameManager = FindAnyObjectByType<GameManager>();
-        player = FindAnyObjectByType<GameObject>();
+        _gameManager = FindAnyObjectByType<GameManager>();
+        _player = FindAnyObjectByType<GameObject>();
+        _playerInputSystem = _player.GetComponent<PlayerInputSystem>();
     }
 
     private void Update()
     {
-        if (!_hit && !gameManager._pause)
+        if (!_hit && !_gameManager._pause)
         {
             if (!enemyHit)
             {
@@ -33,9 +35,9 @@ public class Anchor : MonoBehaviour
             }
             else
             {
-                transform.LookAt(player.transform.position);
+                transform.LookAt(_player.transform.position);
                 _rigidbody.linearVelocity = (_playerMove.transform.position - transform.position).normalized * _speed / 2;
-                if (Vector3.Distance(transform.position, player.transform.position) < 10)
+                if (Vector3.Distance(transform.position, _player.transform.position) < 10)
                 {
                     _playerMove.anchorTimer = 0;
                 }
@@ -70,10 +72,17 @@ public class Anchor : MonoBehaviour
         }
         else if (!enemyHit)
         {
-            FindAnyObjectByType<PlayerMove>().HookShotHit = true;
-            _hit = true;
-            _rigidbody.linearVelocity = Vector3.zero;
-            _meshRenderer.enabled = true;
+            if (collision.gameObject.CompareTag("Hard"))
+            {
+                _playerMove.anchorTimer = 0;
+            }
+            else
+            {
+                FindAnyObjectByType<PlayerMove>().HookShotHit = true;
+                _hit = true;
+                _rigidbody.linearVelocity = Vector3.zero;
+                _meshRenderer.enabled = true;
+            }
         }
     }
 

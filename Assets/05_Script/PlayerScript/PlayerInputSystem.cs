@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class PlayerInputSystem : MonoBehaviour
@@ -12,6 +9,7 @@ public class PlayerInputSystem : MonoBehaviour
     private bool railGunShotted = false;
     private PlayerInput _playerInput;
     Mode _mode = Mode.submachineGun;
+    public float _catch = 0;
 
     void Start()
     {
@@ -32,10 +30,6 @@ public class PlayerInputSystem : MonoBehaviour
         _playerInput.Player.Shot.performed += OnShot;
         _playerInput.Player.Shot.started += OnShot;
         _playerInput.Player.Shot.canceled += OnShot;
-
-        _playerInput.Player.Interact.performed += OnInteract;
-        _playerInput.Player.Interact.started += OnInteract;
-        _playerInput.Player.Interact.canceled += OnInteract;
 
         _playerInput.Player.Aim.started += OnAimAndHookShot;
         _playerInput.Player.Aim.canceled += OnAimAndHookShot;
@@ -60,6 +54,14 @@ public class PlayerInputSystem : MonoBehaviour
 
         // アクションを有効化
         _playerInput.Enable();
+    }
+
+    private void Update()
+    {
+        if (_catch >= 0)
+        {
+            _catch -= Time.deltaTime;
+        }
     }
 
     private void OnDestroy()
@@ -163,17 +165,7 @@ public class PlayerInputSystem : MonoBehaviour
             }
         }
     }
-    /// <summary>
-    /// インタラクトの操作をここに書く。
-    /// </summary>
-    /// <param name="context"></param>
-    private void OnInteract(InputAction.CallbackContext context)
-    {
-        if (!_player._gameManager._pause)
-        {
-            Debug.Log("InteractButton");
-        }
-    }
+
     /// <summary>
     /// エイムボタンを押した時の操作をここに書く。エイムの処理とフックショットを飛ばす処理。
     /// </summary>
@@ -193,7 +185,7 @@ public class PlayerInputSystem : MonoBehaviour
                         _player.AncShot();
                     }
                 }
-                else if(!railGunShotted)
+                else if (!railGunShotted)
                 {
                     _player.SensitivityCorrection = 0.3f;
                     _player.AnimationChange("HookShotOrAim");

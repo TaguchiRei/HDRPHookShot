@@ -18,7 +18,6 @@ public class PlayerMove : MonoBehaviour
     public WeaponStatus WeaponStatus;
     [SerializeField] float _gravityScale = 1;
     [SerializeField] float _gravityScaleChangePoint;
-    [SerializeField] GameObject _bullet;
     [SerializeField] GameObject _playerBody;
     [SerializeField] GameObject _playerHead;
     [SerializeField] Animator _anim;
@@ -128,12 +127,13 @@ public class PlayerMove : MonoBehaviour
                     {
                         //‚±‚±‚ÉËŒ‚‚ª“–‚½‚Á‚½‚Ìˆ—‚ğ‘‚­B
                         hit.collider.gameObject.GetComponent<EnemyStatus>().HPChanger(2);
-                        GaugeChanger(-1,false);
+                        GaugeChanger(-1, false);
                     }
                     else if (hit.collider.CompareTag("Barrier"))
                     {
                         hit.collider.gameObject.GetComponent<DefenderEnemyShield>().HPChanger(1);
-                    }else if (hit.collider.CompareTag("Target"))
+                    }
+                    else if (hit.collider.CompareTag("Target"))
                     {
                         Destroy(hit.collider.gameObject);
                     }
@@ -285,13 +285,13 @@ public class PlayerMove : MonoBehaviour
         _lineRenderer.enabled = false;
 
     }
-    
+
     public void UseAbility(int abilityNumber)
     {
         var useEnergy = abilityData.abilityData[abilityNumber].abilityCost;
         if (useEnergy <= _energy)
         {
-            GaugeChanger(useEnergy,false);
+            GaugeChanger(useEnergy, false);
             _anim.SetBool("UseAbility", true);
             _anim.SetInteger("AbilityNumber", abilityNumber);
         }
@@ -335,7 +335,7 @@ public class PlayerMove : MonoBehaviour
         if (other.CompareTag("DMGZone") && _beamDmg > 5)
         {
             GaugeChanger(40);
-            _beamDmg = 0;        
+            _beamDmg = 0;
         }
     }
     public struct AbilitySet

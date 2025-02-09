@@ -23,12 +23,6 @@ public class EnemyManager : MonoBehaviour
     public Queue<GameObject> DefenderQueue = new();
     public int WaitingForSpawn = 0;
 
-
-    private void Start()
-    {
-        StartCoroutine(ButtleStart(0));
-    }
-
     public IEnumerator ButtleStart(int Stage)
     {
         //自身のマップ番号のエネミーデータを取得

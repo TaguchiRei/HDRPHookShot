@@ -1,6 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 
 public class Story0TextManager : TextManager
@@ -10,49 +10,28 @@ public class Story0TextManager : TextManager
     [SerializeField] List<GameObject> _wallObjects;
     List<GameObject> _targetGroupList = new();
     public bool CheckNext = false;
+    public Vector3 checkPoint = Vector3.zero;
+    IEnumerator coroutine;
+    int phase = 0;
     private void Start()
     {
-        StartCoroutine(NextText(ShotTutorial,0));
+        coroutine = Tutorial();
+        StartCoroutine(NextText(ShotTutorial, 0));
     }
 
     private void Update()
     {
-        switch (textPhase)
+        if (_targetGroupList.Count(a => a == null) == 4 && textPhase == 1)
         {
-            case 0:
-                break;
-            case 1:
-                if (_targetGroupList.Count(a => a == null) == 4)
-                {
-                    textPhase = 0;
-                    StartCoroutine(NextText(HookShotTutorial, 1));
-                    _wallObjects[0].SetActive(false);
-                    _wallObjects.RemoveAt(0);
-                }
-                
-                break;
-            case 2:
-                if (CheckNext)
-                {
-                    textPhase = 0;
-                    CheckNext = false;
-                    StartCoroutine(NextText(HookShotTutorial,2));
-                    _wallObjects[0].SetActive(false);
-                    _wallObjects.RemoveAt(0);
-                }
-                break;
-            case 3:
-                break;
-            default:
-                break;
+            textPhase = 2;
+            coroutine.MoveNext();
         }
     }
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            CheckNext = true;
-            _boxCollider.enabled = false;
+            coroutine.MoveNext();
         }
     }
 
@@ -65,8 +44,16 @@ public class Story0TextManager : TextManager
         }
         textPhase = 1;
     }
-    void HookShotTutorial()
+
+    IEnumerator<int> Tutorial()
     {
-        textPhase = 2;
+        _wallObjects[0].SetActive(false);
+        _wallObjects.RemoveAt(0);
+        yield return 0;
+        StartCoroutine(enemyManager.ButtleStart(0));
+        yield return 1;
+        yield return 2;
+        yield return 3;
+        yield return 4;
     }
 }
