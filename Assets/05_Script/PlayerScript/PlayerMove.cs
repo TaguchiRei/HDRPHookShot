@@ -78,6 +78,8 @@ public class PlayerMove : MonoBehaviour
     Vector3 _velocity = Vector3.zero;
     [SerializeField] PlayerInputSystem _playerInputSystem;
 
+    [SerializeField] Animator _gameOverAnimator;
+
     private void Start()
     {
         _gameManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
@@ -324,11 +326,15 @@ public class PlayerMove : MonoBehaviour
                 _playerInputSystem.DMGSound();
             _hp -= amount;
             if (_hp < 0)
+            {
                 _hp = 0;
+                _gameOverAnimator.SetBool("End",true);
+            }
             else if (_hp > _maxHp)
                 _hp = _maxHp;
 
             _hpImage.DOFillAmount(_hp / _maxHp, 0.1f);
+            
         }
         else
         {
