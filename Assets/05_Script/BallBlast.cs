@@ -4,7 +4,7 @@ public class BallBlast : MonoBehaviour
 {
     public void BlastAttack(float radius)
     {
-        Collider[] attack =  Physics.OverlapSphere(transform.position, radius);
+        Collider[] attack = Physics.OverlapSphere(transform.position, radius);
         foreach (Collider c in attack)
         {
             switch (c.gameObject.tag)
@@ -15,10 +15,13 @@ public class BallBlast : MonoBehaviour
                 case "Player":
                     var pm = c.gameObject.GetComponent<PlayerMove>();
                     pm.GaugeChanger(32);
-                    pm.GaugeChanger(12,false);
+                    pm.GaugeChanger(12, false);
                     break;
                 case "Barrier":
                     c.GetComponent<DefenderEnemyShield>().HPChanger(10);
+                    break;
+                case "Crystal":
+                    FindAnyObjectByType<TextManager>().phase += 2500;
                     break;
                 default:
                     break;

@@ -89,10 +89,6 @@ public class EnemyManager : MonoBehaviour
                     Quaternion.identity
                     );
                 yield return instantiateResult;
-                foreach (var r in instantiateResult.Result)
-                {
-                    r.name = Guid.NewGuid().ToString();
-                }
                 var objType = obj.GetComponent<EnemyStatus>().EnemyType;
                 if (objType == EnemyType.attacker)
                 {
