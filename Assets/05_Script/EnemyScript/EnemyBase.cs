@@ -52,7 +52,7 @@ public abstract class EnemyBase : MonoBehaviour
                     if (positionHistory.Count != 0)
                     {
                         DelayedPosition = positionHistory.Dequeue();
-                        if (actionInterval < 0 && !DelayedUniqueAction)
+                        if (actionInterval < 0 && !DelayedUniqueAction && DelayedPosition != null)
                         {
                             actionInterval = Random.Range(2.0f, 3.0f);
                             DelayedUniqueAction = true;
@@ -201,7 +201,7 @@ public abstract class EnemyBase : MonoBehaviour
         for (int i = 0; i < EnemyStatus.EnemyBaseList.Count; i++)
         {
             yield return new WaitForEndOfFrame();
-            if (i < EnemyStatus.EnemyBaseList.Count)
+            if (i < EnemyStatus.EnemyBaseList.Count && EnemyStatus.EnemyBaseList[i].enabled)
                 EnemyStatus.EnemyBaseList[i].UniqueAction(delayedPos);
         }
         DelayedUniqueAction = false;

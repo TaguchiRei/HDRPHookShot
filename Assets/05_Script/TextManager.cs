@@ -1,7 +1,6 @@
 using GamesKeystoneFramework.TextSystem;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class TextManager : TextManagerBase
@@ -10,13 +9,15 @@ public abstract class TextManager : TextManagerBase
     public int textPhase = 0;
     public EnemyManager enemyManager;
 
-    public IEnumerator NextText(Action action,int _textDataNum)
+    public int phase = 0;
+
+    public IEnumerator NextText(Action action, int _textDataNum)
     {
-        StartText(_textDataName[0], true);
+        StartText(_textDataName[_textDataNum], true);
         while (true)
         {
             var next = Next();
-            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(2f);
             if (!next)
                 break;
         }

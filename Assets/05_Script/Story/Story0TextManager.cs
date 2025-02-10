@@ -8,6 +8,8 @@ public class Story0TextManager : TextManager
     [SerializeField] GameObject _targetGroup;
     [SerializeField] BoxCollider _boxCollider;
     [SerializeField] List<GameObject> _wallObjects;
+    [SerializeField] Animator _animator;
+    [SerializeField] PlayerMove _playerMove;
     List<GameObject> _targetGroupList = new();
     public bool CheckNext = false;
     public Vector3 checkPoint = Vector3.zero;
@@ -17,6 +19,7 @@ public class Story0TextManager : TextManager
     {
         coroutine = Tutorial();
         StartCoroutine(NextText(ShotTutorial, 0));
+        _playerMove.GaugeChanger(30);
     }
 
     private void Update()
@@ -25,6 +28,10 @@ public class Story0TextManager : TextManager
         {
             textPhase = 2;
             coroutine.MoveNext();
+        }
+        if(textPhase == 2 && enemyManager._measurementNum >= 9)
+        {
+            _animator.SetBool("Clear",true);
         }
     }
     private void OnTriggerEnter(Collider other)
@@ -50,10 +57,8 @@ public class Story0TextManager : TextManager
         _wallObjects[0].SetActive(false);
         _wallObjects.RemoveAt(0);
         yield return 0;
+        enemyManager._measurement = true;
         StartCoroutine(enemyManager.ButtleStart(0));
         yield return 1;
-        yield return 2;
-        yield return 3;
-        yield return 4;
     }
 }

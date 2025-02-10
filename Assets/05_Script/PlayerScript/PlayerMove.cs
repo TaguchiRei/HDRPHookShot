@@ -76,6 +76,7 @@ public class PlayerMove : MonoBehaviour
 
     //ˆê’â~ˆ——p
     Vector3 _velocity = Vector3.zero;
+    [SerializeField] PlayerInputSystem _playerInputSystem;
 
     private void Start()
     {
@@ -136,6 +137,10 @@ public class PlayerMove : MonoBehaviour
                     else if (hit.collider.CompareTag("Target"))
                     {
                         Destroy(hit.collider.gameObject);
+                    }
+                    else if (hit.collider.CompareTag("Pipe"))
+                    {
+                        hit.collider.gameObject.GetComponent<PipeScript>().PipeChange(1);
                     }
                 }
             }
@@ -236,6 +241,10 @@ public class PlayerMove : MonoBehaviour
                     ray.collider.gameObject.GetComponent<DefenderEnemyShield>().HPChanger(2);
                     break;
                 }
+                else if (ray.collider.CompareTag("Pipe"))
+                {
+                    ray.collider.gameObject.GetComponent<PipeScript>().PipeChange(15);
+                }
             }
             GaugeChanger(railgunHit.Length * -5);
         }
@@ -263,7 +272,8 @@ public class PlayerMove : MonoBehaviour
     /// <param name="which">false‚É‚·‚éÛ‚Ì‚İfalse‚Æ“ü—Í</param>
     public void AnimationChange(string animName, bool which = true)
     {
-        _anim.SetBool(animName, which);
+        if (_anim != null)
+            _anim.SetBool(animName, which);
     }
     public void AncShot()
     {
@@ -310,6 +320,8 @@ public class PlayerMove : MonoBehaviour
     {
         if (hpChange)
         {
+            if (amount > 0)
+                _playerInputSystem.DMGSound();
             _hp -= amount;
             if (_hp < 0)
                 _hp = 0;

@@ -14,7 +14,7 @@ public class BallBlast : MonoBehaviour
                     break;
                 case "Player":
                     var pm = c.gameObject.GetComponent<PlayerMove>();
-                    pm.GaugeChanger(20);
+                    pm.GaugeChanger(32);
                     pm.GaugeChanger(12,false);
                     break;
                 case "Barrier":

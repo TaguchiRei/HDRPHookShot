@@ -22,6 +22,8 @@ public class EnemyManager : MonoBehaviour
     public Queue<GameObject> SupporterQueue = new();
     public Queue<GameObject> DefenderQueue = new();
     public int WaitingForSpawn = 0;
+    public bool _measurement = false;
+    public int _measurementNum = 0;
 
     public IEnumerator ButtleStart(int Stage)
     {
@@ -69,9 +71,6 @@ public class EnemyManager : MonoBehaviour
             }
             foreach (var obj in resultGroup)
             {
-                //
-                obj.name = Guid.NewGuid().ToString();
-                //
                 obj.transform.position = obj.transform.position + new Vector3(UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1), 0, UnityEngine.Random.Range(-1 * spawnRange, spawnRange + 1));//位置を決定
                 EnemyStatus enemyStatus = obj.GetComponent<EnemyStatus>();
                 enemyStatus.Initialization(i, lR, false, gameObject, leaderObj);
@@ -125,6 +124,8 @@ public class EnemyManager : MonoBehaviour
 
     public void EnemySpawn(int teamNumber, LR lR, bool leader, GameObject leaderObj, List<GameObject> memberList = null)
     {
+        if (_measurement)
+            _measurementNum++;
         GameObject spawnObj;
         if (infiniteEnemySpawn)
         {
@@ -149,19 +150,21 @@ public class EnemyManager : MonoBehaviour
         }
         else if (allEnemyData.Count != 0)
         {
+            var type = allEnemyData[0].GetComponent<EnemyStatus>().EnemyType;
             //スポーンさせる敵を最初に決めたランダムなスポーン順で決定
-            if (AttackerQueue.Count + DefenderQueue.Count + SupporterQueue.Count == 0)
+            if (type == EnemyType.attacker && AttackerQueue.Count ==0 || type == EnemyType.defender && DefenderQueue.Count == 0 || type == EnemyType.supporter && SupporterQueue.Count == 0)
             {
-                Debug.Log("QueueIsEmpty");
                 return;
             }
-            spawnObj = allEnemyData.FirstOrDefault().GetComponent<EnemyStatus>().EnemyType switch
+            
+            spawnObj = type switch
             {
                 EnemyType.attacker => AttackerQueue.Dequeue(),
                 EnemyType.defender => DefenderQueue.Dequeue(),
                 EnemyType.supporter => SupporterQueue.Dequeue(),
                 _ => null,
             };
+            allEnemyData.RemoveAt(0);
         }
         else
         {

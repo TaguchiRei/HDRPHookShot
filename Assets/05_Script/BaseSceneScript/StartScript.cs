@@ -18,6 +18,11 @@ public class StartScript : MonoBehaviour
     bool _storyMode = false;
     SceneChangeManager _sceneChangeManager = new();
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.None;
+    }
+
     public void Phase(int phase)
     {
         _selectedIndex = phase;
