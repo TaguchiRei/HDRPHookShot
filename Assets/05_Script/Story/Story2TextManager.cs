@@ -24,7 +24,7 @@ public class Story2TextManager : TextManager
         if (_knockDownNum.Count != 0 && enemyManager._measurementNum >= _knockDownNum[0])
         {
             enemyManager._measurementNum = 0;
-            var r = UnityEngine.Random.Range(0, _knockDownNum.Count);
+            var r = UnityEngine.Random.Range(0, _pipes.Count);
             _pipes[r].PipeActivate();
             _pipes[r].TextManager = this;
             _knockDownNum.RemoveAt(r);
