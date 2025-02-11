@@ -11,6 +11,7 @@ public abstract class TextManager : TextManagerBase
 
     public int phase = 0;
 
+    public int Mode = 0;
     public IEnumerator NextText(Action action, int _textDataNum)
     {
         StartText(_textDataName[_textDataNum], true);

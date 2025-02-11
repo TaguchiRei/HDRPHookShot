@@ -23,7 +23,7 @@ public class EnemyManager : MonoBehaviour
     public Queue<GameObject> DefenderQueue = new();
     public int WaitingForSpawn = 0;
     public bool _measurement = false;
-    public int _measurementNum = 0;
+    public float _measurementNum = 0;
 
     public IEnumerator ButtleStart(int Stage)
     {
