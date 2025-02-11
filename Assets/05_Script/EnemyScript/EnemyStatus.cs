@@ -36,6 +36,7 @@ public class EnemyStatus : MonoBehaviour, IEnemyInterface
         enemyBase.Animator.enabled = true;
         enemyBase.Survive = true;
         enemyBase.CanMove = true;
+        enemyBase.EnemyManager = managerObject.GetComponent<EnemyManager>();
         if (!Leader)
         {
             EnemyStatus enemyStatus = leaderObject.GetComponent<EnemyStatus>();

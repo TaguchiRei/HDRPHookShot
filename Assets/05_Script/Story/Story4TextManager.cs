@@ -9,6 +9,7 @@ public class Story4TextManager : TextManager
     [SerializeField] TextMeshProUGUI _textMeshProUGUI;
     [SerializeField] float _maxMin = 0;
     [SerializeField] int _errorPipe = 3;
+    [SerializeField] GameManager _gameManager;
     List<PipeScript> _pipeList = new();
     float _time = 0;
     bool _start = false;
@@ -21,7 +22,7 @@ public class Story4TextManager : TextManager
     }
     private void Update()
     {
-        if (_start)
+        if (_start && !_gameManager._pause)
         {
             float remainingTime = _maxMin + _time - Time.time;
             if (remainingTime <= 0)
@@ -34,7 +35,7 @@ public class Story4TextManager : TextManager
             else if (!timerStop)
             {
                 if(phase >= 400) phase = 400;
-                _time -= (enemyManager._measurementNum + phase) / 60;
+                _time -= (enemyManager._measurementNum * 10 + phase) / 60;
                 enemyManager._measurementNum = 0;
                 phase = 0;
                 _textMeshProUGUI.text = $"Š®—¹‚Ü‚Å{(int)(remainingTime / 60):D2}•ª{(int)(remainingTime % 60):D2}•b";

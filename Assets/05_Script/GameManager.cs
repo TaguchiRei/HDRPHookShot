@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
     //メニューを開くときのプログラム
     public void Stop()
     {
-        //InButtlePause.Invoke();
-        //_pause = true;
+        InButtlePause.Invoke();
+        _pause = true;
     }
 
     public void OpenMenu()

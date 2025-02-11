@@ -25,6 +25,21 @@ public class EnemyManager : MonoBehaviour
     public bool _measurement = false;
     public float _measurementNum = 0;
 
+    [SerializeField] GameManager gameManager;
+    public bool Stop = false;
+
+    private void Update()
+    {
+        if (gameManager._pause)
+        {
+            Stop = true;
+        }
+        else
+        {
+            Stop = false;
+        }
+    }
+
     public IEnumerator ButtleStart(int Stage)
     {
         //自身のマップ番号のエネミーデータを取得

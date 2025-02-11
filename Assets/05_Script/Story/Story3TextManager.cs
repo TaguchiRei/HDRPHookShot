@@ -16,7 +16,7 @@ public class Story3TextManager : TextManager
     private void Update()
     {
         _textMeshProUGUI.text = "残り:" + Mathf.Max(0,_maxDmg - phase).ToString() + "ダメージ";
-        if(phase >= _maxDmg)
+        if(phase >= _maxDmg &&  !PlayerMove._invincible)
         {
             PlayerMove._invincible = true;
             _clearAnimator.SetBool("Clear", true);

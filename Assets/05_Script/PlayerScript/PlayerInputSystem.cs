@@ -46,14 +46,6 @@ public class PlayerInputSystem : MonoBehaviour
         _playerInput.Player.Ability1.started += OnAbility1;
         _playerInput.Player.Ability1.canceled += OnAbility1;
 
-        _playerInput.Player.Ability2.performed += OnAbility2;
-        _playerInput.Player.Ability2.started += OnAbility2;
-        _playerInput.Player.Ability2.canceled += OnAbility2;
-
-        _playerInput.Player.Ability3.performed += OnAbility3;
-        _playerInput.Player.Ability3.started += OnAbility3;
-        _playerInput.Player.Ability3.canceled += OnAbility3;
-
         _playerInput.Player.menu.started += InMenu;
 
         // アクションを有効化
@@ -257,7 +249,6 @@ public class PlayerInputSystem : MonoBehaviour
             if (_player.CanAction && !_player._gameManager._pause)
             {
                 _player.CanAction = false;
-                Debug.Log(_player.AbilitySetting.abilityNumber1);
                 _player.UseAbility(_player.AbilitySetting.abilityNumber1);
             }
         }

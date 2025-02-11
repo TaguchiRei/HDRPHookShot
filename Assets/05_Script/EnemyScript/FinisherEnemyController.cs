@@ -85,67 +85,70 @@ public class FinisherEnemyController : EnemyBase
     public override void Update()
     {
         base.Update();
-        beamPositionHistory.Enqueue(PlayerHead.transform.position);
-        beamElapsedTime += Time.deltaTime;
-        if (beamElapsedTime >= _beamDelay)
+        if (!EnemyManager.Stop)
         {
-            beamDelayedPosition = beamPositionHistory.Dequeue();
-        }
-        _recastTime -= Time.deltaTime;
-        if (_beamStart)
-        {
-            switch (beamPhase)
+            beamPositionHistory.Enqueue(PlayerHead.transform.position);
+            beamElapsedTime += Time.deltaTime;
+            if (beamElapsedTime >= _beamDelay)
             {
-                case 0:
-                    if (!_feedStatus.survive)
-                    {
-                        _beamStart = false;
+                beamDelayedPosition = beamPositionHistory.Dequeue();
+            }
+            _recastTime -= Time.deltaTime;
+            if (_beamStart)
+            {
+                switch (beamPhase)
+                {
+                    case 0:
+                        if (!_feedStatus.survive)
+                        {
+                            _beamStart = false;
+                            break;
+                        }
+                        if (Vector3.Distance(Agent.transform.position, Agent.destination) < 0.5f || Agent.isStopped)
+                        {
+                            beamPhase++;
+                            Animator.SetBool("grab", true);
+                        }
                         break;
-                    }
-                    if (Vector3.Distance(Agent.transform.position, Agent.destination) < 0.5f || Agent.isStopped)
-                    {
-                        beamPhase++;
-                        Animator.SetBool("grab", true);
-                    }
-                    break;
-                case 2:
-                    _feed = null;
-                    if (_timer > 1f)
-                    {
-                        _mainBody.transform.up = -(beamDelayedPosition - _mainBody.transform.position);
-                    }
-                    else if (_timer < 0f)
-                    {
-                        beamPhase = 3;
-                    }
-                    _timer -= Time.deltaTime;
-                    _dangerAreaObject.SetActive(true);
-                    break;
-                case 3:
-                    _dangerAreaObject.SetActive(false);
-                    _beamObject.SetActive(true);
-                    _beamAnimator.SetBool("beam", true);
-                    beamPhase = 4;
-                    _moveTimer = 1f;
-                    break;
-                case 4:
-                    if (_moveTimer < 0f)
-                    {
-                        beamPhase = 0;
-                        _mainBody.transform.rotation = Quaternion.identity;
-                        _recastTime = _defaultRecastTime;
-                        _beamStart = false;
-                        Animator.SetBool("grab", false);
-                        _beamObject.SetActive(false);
-                        Move(EnemyStatus.leaderObject.GetComponent<EnemyBase>().Agent.destination);
-                    }
-                    else
-                    {
-                        _moveTimer -= Time.deltaTime;
-                    }
-                    break;
-                default:
-                    break;
+                    case 2:
+                        _feed = null;
+                        if (_timer > 1f)
+                        {
+                            _mainBody.transform.up = -(beamDelayedPosition - _mainBody.transform.position);
+                        }
+                        else if (_timer < 0f)
+                        {
+                            beamPhase = 3;
+                        }
+                        _timer -= Time.deltaTime;
+                        _dangerAreaObject.SetActive(true);
+                        break;
+                    case 3:
+                        _dangerAreaObject.SetActive(false);
+                        _beamObject.SetActive(true);
+                        _beamAnimator.SetBool("beam", true);
+                        beamPhase = 4;
+                        _moveTimer = 1f;
+                        break;
+                    case 4:
+                        if (_moveTimer < 0f)
+                        {
+                            beamPhase = 0;
+                            _mainBody.transform.rotation = Quaternion.identity;
+                            _recastTime = _defaultRecastTime;
+                            _beamStart = false;
+                            Animator.SetBool("grab", false);
+                            _beamObject.SetActive(false);
+                            Move(EnemyStatus.leaderObject.GetComponent<EnemyBase>().Agent.destination);
+                        }
+                        else
+                        {
+                            _moveTimer -= Time.deltaTime;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }

@@ -24,6 +24,9 @@ public abstract class EnemyBase : MonoBehaviour
     Coroutine movingCoroutine;
     public PlayerMove PlayerMoveI;
     public bool CanMove = false;
+
+    public EnemyManager EnemyManager;
+
     public virtual void Start()
     {
         PlayerMoveI = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMove>();
@@ -31,8 +34,10 @@ public abstract class EnemyBase : MonoBehaviour
     }
     public virtual void Update()
     {
-        if (Survive)
+        if (Survive && !EnemyManager.Stop)
         {
+            Agent.isStopped = false;
+            Animator.speed = 1f;
             if (Agent.remainingDistance <= 0.5f && !Agent.hasPath)
             {
                 Animator.SetBool("Walking", false);
@@ -62,10 +67,12 @@ public abstract class EnemyBase : MonoBehaviour
                     }
                 }
             }
-            else
-            {
-
-            }
+        }
+        else
+        {
+            Animator.speed = 0;
+            Agent.isStopped = true;
+            Agent.velocity = Vector3.zero;
         }
     }
     public virtual void Move(Vector3 position)

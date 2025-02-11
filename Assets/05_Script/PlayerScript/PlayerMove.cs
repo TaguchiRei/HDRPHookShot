@@ -331,6 +331,7 @@ public class PlayerMove : MonoBehaviour
                 if (_hp < 0)
                 {
                     _hp = 0;
+                    _invincible = true;
                     _gameOverAnimator.SetBool("End", true);
                 }
                 else if (_hp > _maxHp)
