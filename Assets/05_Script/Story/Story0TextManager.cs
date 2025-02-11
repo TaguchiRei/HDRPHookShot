@@ -9,17 +9,15 @@ public class Story0TextManager : TextManager
     [SerializeField] BoxCollider _boxCollider;
     [SerializeField] List<GameObject> _wallObjects;
     [SerializeField] Animator _animator;
-    [SerializeField] PlayerMove _playerMove;
     List<GameObject> _targetGroupList = new();
     public bool CheckNext = false;
     public Vector3 checkPoint = Vector3.zero;
     IEnumerator coroutine;
-    int phase = 0;
     private void Start()
     {
         coroutine = Tutorial();
         StartCoroutine(NextText(ShotTutorial, 0));
-        _playerMove.GaugeChanger(30);
+        PlayerMove.GaugeChanger(30);
     }
 
     private void Update()
@@ -31,6 +29,7 @@ public class Story0TextManager : TextManager
         }
         if(textPhase == 2 && enemyManager._measurementNum >= 9)
         {
+            PlayerMove._invincible = true;
             _animator.SetBool("Clear",true);
         }
     }

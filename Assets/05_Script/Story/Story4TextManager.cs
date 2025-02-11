@@ -26,13 +26,17 @@ public class Story4TextManager : TextManager
             float remainingTime = _maxMin + _time - Time.time;
             if (remainingTime <= 0)
             {
+                PlayerMove._invincible = true;
                 _textMeshProUGUI.text = "Š®—¹";
-                _clearAnimator.SetBool("Clear", true);
+                StartCoroutine(NextText(GameClear, 3));
+                _start = false;
             }
             else if (!timerStop)
             {
-                _time -= enemyManager._measurementNum / 300;
+                if(phase >= 400) phase = 400;
+                _time -= (enemyManager._measurementNum + phase) / 60;
                 enemyManager._measurementNum = 0;
+                phase = 0;
                 _textMeshProUGUI.text = $"Š®—¹‚Ü‚Å{(int)(remainingTime / 60):D2}•ª{(int)(remainingTime % 60):D2}•b";
             }
             else
@@ -49,6 +53,7 @@ public class Story4TextManager : TextManager
             if (_stopped && phase >= _errorPipe)
             {
                 timerStop = false;
+                PhaseChange = true;
             }
         }
     }
@@ -66,8 +71,10 @@ public class Story4TextManager : TextManager
     }
     void TimerStop()
     {
+        PhaseChange = false;
         timerStop = true;
-        NextText(PipeChange, 2);
+        phase = 0;
+        StartCoroutine(NextText(PipeChange, 2));
     }
     void PipeChange()
     {
@@ -77,5 +84,9 @@ public class Story4TextManager : TextManager
             _pipeList[r].PipeActivate();
             _pipeList.RemoveAt(r);
         }
+    }
+    void GameClear()
+    {
+        _clearAnimator.SetBool("Clear",true);
     }
 }

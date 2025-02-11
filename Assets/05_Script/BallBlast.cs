@@ -21,7 +21,9 @@ public class BallBlast : MonoBehaviour
                     c.GetComponent<DefenderEnemyShield>().HPChanger(10);
                     break;
                 case "Crystal":
-                    FindAnyObjectByType<TextManager>().phase += 2500;
+                    var tm = FindAnyObjectByType<TextManager>();
+                    if (tm.PhaseChange)
+                        FindAnyObjectByType<TextManager>().phase += 2500;
                     break;
                 default:
                     break;

@@ -70,6 +70,7 @@ public class PlayerMove : MonoBehaviour
     int _beamDmg = 10;
     public AbilitySet AbilitySetting;
     [SerializeField] Vector3 _defaultAbilitySet;
+    public bool _invincible = false;
 
     //アビリティ用
     [SerializeField] AbilityData abilityData;
@@ -320,31 +321,34 @@ public class PlayerMove : MonoBehaviour
     /// <param name="hpChange">falseにするとエネルギーゲージを変更できる</param>
     public void GaugeChanger(float amount, bool hpChange = true)
     {
-        if (hpChange)
+        if (!_invincible)
         {
-            if (amount > 0)
-                _playerInputSystem.DMGSound();
-            _hp -= amount;
-            if (_hp < 0)
+            if (hpChange)
             {
-                _hp = 0;
-                _gameOverAnimator.SetBool("End",true);
+                if (amount > 0)
+                    _playerInputSystem.DMGSound();
+                _hp -= amount;
+                if (_hp < 0)
+                {
+                    _hp = 0;
+                    _gameOverAnimator.SetBool("End", true);
+                }
+                else if (_hp > _maxHp)
+                    _hp = _maxHp;
+
+                _hpImage.DOFillAmount(_hp / _maxHp, 0.1f);
+
             }
-            else if (_hp > _maxHp)
-                _hp = _maxHp;
+            else
+            {
+                _energy -= amount;
+                if (_energy < 0)
+                    _energy = 0;
+                else if (_energy > _maxEnergy)
+                    _energy = _maxEnergy;
 
-            _hpImage.DOFillAmount(_hp / _maxHp, 0.1f);
-            
-        }
-        else
-        {
-            _energy -= amount;
-            if (_energy < 0)
-                _energy = 0;
-            else if (_energy > _maxEnergy)
-                _energy = _maxEnergy;
-
-            _energyImage.DOFillAmount(_energy / _maxEnergy, 0.1f);
+                _energyImage.DOFillAmount(_energy / _maxEnergy, 0.1f);
+            }
         }
     }
 

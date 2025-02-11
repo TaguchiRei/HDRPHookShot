@@ -8,6 +8,9 @@ public abstract class TextManager : TextManagerBase
     public string[] _textDataName;
     public int textPhase = 0;
     public EnemyManager enemyManager;
+    public PlayerMove PlayerMove;
+
+    public bool PhaseChange = true;
 
     public int phase = 0;
 

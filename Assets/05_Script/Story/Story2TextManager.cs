@@ -8,7 +8,6 @@ public class Story2TextManager : TextManager
     List<PipeScript> _pipes = new();
     [SerializeField] List<int> _knockDownNum = new();
     [SerializeField] Animator _clearAnimator;
-    IEnumerator Quest;
     int _knockDown = 0;
     public int Progress = 0;
 
@@ -27,10 +26,12 @@ public class Story2TextManager : TextManager
             var r = UnityEngine.Random.Range(0, _pipes.Count);
             _pipes[r].PipeActivate();
             _pipes[r].TextManager = this;
-            _knockDownNum.RemoveAt(r);
+            _pipes.RemoveAt(r);
+            _knockDownNum.RemoveAt(0);
         }
         if (_knockDownNum.Count == 0 && phase == _knockDown)
         {
+            PlayerMove._invincible = true;
             _clearAnimator.SetBool("Clear", true);
         }
 

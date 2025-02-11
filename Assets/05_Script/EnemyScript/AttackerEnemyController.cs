@@ -39,7 +39,7 @@ public class AttackerEnemyController : EnemyBase
             else
             {
                 _bulletEffect.SetVector3("EndVector", hit.point - _muzzlePos.position);
-                if (hit.collider.CompareTag("Crystal"))
+                if (hit.collider.CompareTag("Crystal") && _textManager.PhaseChange)
                 {
                     _textManager.phase++;
                 }
