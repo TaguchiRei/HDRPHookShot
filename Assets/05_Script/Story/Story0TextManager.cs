@@ -30,6 +30,12 @@ public class Story0TextManager : TextManager
         if(textPhase == 2 && enemyManager._measurementNum >= 9)
         {
             PlayerMove._invincible = true;
+            var pd = FindAnyObjectByType<PlayerData>();
+            if (pd.SaveData.Progress == 0)
+            {
+                pd.SaveData.Progress = 1;
+                pd.SaveData.Save(0);
+            }
             _animator.SetBool("Clear",true);
         }
     }

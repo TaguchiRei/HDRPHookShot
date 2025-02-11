@@ -15,7 +15,6 @@ public class PipeScript : MonoBehaviour
                 GetComponent<Animator>().SetBool("ColorChange", false);
                 TextManager.phase++;
                 _active = false;
-                Debug.Log("Break");
             }
         }
     }

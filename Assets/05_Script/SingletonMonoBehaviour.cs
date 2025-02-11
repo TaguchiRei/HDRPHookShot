@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
 {
     [HideInInspector] public static T Instance = default;
-    private void Awake()
+    public virtual void Awake()
     {
         if (Instance)
         {

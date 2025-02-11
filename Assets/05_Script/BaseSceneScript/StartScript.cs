@@ -1,4 +1,7 @@
 using GamesKeystoneFramework.Core;
+using GamesKeystoneFramework.TextSystem;
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,14 +15,18 @@ public class StartScript : MonoBehaviour
     [SerializeField] StageData _ChallengeStageData;
     [SerializeField] TextMeshProUGUI _questTitle;
     [SerializeField] TextMeshProUGUI _questDescription;
+    
     int _selectedIndex = 0;
     int _storyQuestNumber = 0;
     int _challengeQuestNumber = 0;
     bool _storyMode = false;
     SceneChangeManager _sceneChangeManager = new();
 
+    PlayerData _playerData;
+
     private void Start()
     {
+        _playerData = FindAnyObjectByType<PlayerData>();
         Cursor.lockState = CursorLockMode.None;
     }
 
@@ -43,12 +50,12 @@ public class StartScript : MonoBehaviour
     {
         if (_storyMode)
         {
-            if (_storyQuestNumber < _storyStageData.template.Length - 1)
+            if (_storyQuestNumber < _storyStageData.template.Length - 1 && _storyQuestNumber < _playerData.SaveData.Progress)
                 _storyQuestNumber++;
         }
         else
         {
-            if (_challengeQuestNumber < _ChallengeStageData.template.Length - 1)
+            if (_challengeQuestNumber < _ChallengeStageData.template.Length - 1 && _storyQuestNumber < _playerData.SaveData.Progress)
                 _challengeQuestNumber++;
         }
         TextChange();

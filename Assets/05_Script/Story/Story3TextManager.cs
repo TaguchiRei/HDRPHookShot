@@ -19,6 +19,12 @@ public class Story3TextManager : TextManager
         if(phase >= _maxDmg &&  !PlayerMove._invincible)
         {
             PlayerMove._invincible = true;
+            var pd = FindAnyObjectByType<PlayerData>();
+            if (pd.SaveData.Progress == 3)
+            {
+                pd.SaveData.Progress = 4;
+                pd.SaveData.Save(0);
+            }
             _clearAnimator.SetBool("Clear", true);
         }
     }

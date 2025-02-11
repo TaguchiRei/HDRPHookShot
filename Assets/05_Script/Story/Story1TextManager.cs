@@ -3,7 +3,7 @@ using UnityEngine;
 public class Story1TextManager : TextManager
 {
     [SerializeField] Animator _clearAnimator;
-    [SerializeField] int  maxNum = 150; 
+    [SerializeField] int maxNum = 150;
     bool _started = false;
     private void Start()
     {
@@ -15,6 +15,12 @@ public class Story1TextManager : TextManager
         if (_started && enemyManager._measurementNum >= maxNum)
         {
             PlayerMove._invincible = true;
+            var pd = FindAnyObjectByType<PlayerData>();
+            if (pd.SaveData.Progress == 1)
+            {
+                pd.SaveData.Progress = 2;
+                pd.SaveData.Save(0);
+            }
             _clearAnimator.SetBool("Clear", true);
         }
     }

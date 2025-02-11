@@ -29,9 +29,15 @@ public class Story2TextManager : TextManager
             _pipes.RemoveAt(r);
             _knockDownNum.RemoveAt(0);
         }
-        if (_knockDownNum.Count == 0 && phase == _knockDown)
+        if (_knockDownNum.Count >= 0 && phase >= _knockDown)
         {
             PlayerMove._invincible = true;
+            var pd = FindAnyObjectByType<PlayerData>();
+            if (pd.SaveData.Progress == 2)
+            {
+                pd.SaveData.Progress = 3;
+                pd.SaveData.Save(0);
+            }
             _clearAnimator.SetBool("Clear", true);
         }
 
