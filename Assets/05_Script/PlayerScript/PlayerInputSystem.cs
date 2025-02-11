@@ -268,14 +268,7 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility2(InputAction.CallbackContext context)
     {
-        if (!_destroyPlayerInput)
-        {
-            if (_player.CanAction && !_player._gameManager._pause)
-            {
-                _player.CanAction = false;
-                _player.UseAbility(_player.AbilitySetting.abilityNumber2);
-            }
-        }
+
     }
     /// <summary>
     /// アビリティ３を呼び出す処理
@@ -283,17 +276,7 @@ public class PlayerInputSystem : MonoBehaviour
     /// <param name="context"></param>
     private void OnAbility3(InputAction.CallbackContext context)
     {
-        if (!_destroyPlayerInput)
-        {
-            if (!_player._gameManager._pause)
-            {
-                if (_player.CanAction)
-                {
-                    _player.CanAction = false;
-                    _player.UseAbility(_player.AbilitySetting.abilityNumber3);
-                }
-            }
-        }
+
     }
 
     private void InMenu(InputAction.CallbackContext context)
