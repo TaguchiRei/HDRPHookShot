@@ -1,7 +1,3 @@
-using GamesKeystoneFramework.Core;
-using GamesKeystoneFramework.TextSystem;
-using System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +11,8 @@ public class StartScript : MonoBehaviour
     [SerializeField] StageData _ChallengeStageData;
     [SerializeField] TextMeshProUGUI _questTitle;
     [SerializeField] TextMeshProUGUI _questDescription;
-    
+    [SerializeField] TextMeshProUGUI _returnButtonTMP;
+
     int _selectedIndex = 0;
     int _storyQuestNumber = 0;
     int _challengeQuestNumber = 0;
@@ -32,18 +29,22 @@ public class StartScript : MonoBehaviour
 
     public void Phase(int phase)
     {
-        _selectedIndex = phase;
-        _animator.SetInteger("phase", phase);
-        _animator2.SetInteger("phase", phase);
-        if (phase == 2)
+        if (_animator.GetNextAnimatorStateInfo(0).fullPathHash == 0)
         {
-            _storyMode = true;
+            _returnButtonTMP.text = "–ß‚é";
+            _selectedIndex = phase;
+            _animator.SetInteger("phase", phase);
+            _animator2.SetInteger("phase", phase);
+            if (phase == 2)
+            {
+                _storyMode = true;
+            }
+            else if (phase == 3)
+            {
+                _storyMode = false;
+            }
+            TextChange();
         }
-        else if (phase == 3)
-        {
-            _storyMode = false;
-        }
-        TextChange();
     }
 
     public void NextQuest()
@@ -55,7 +56,7 @@ public class StartScript : MonoBehaviour
         }
         else
         {
-            if (_challengeQuestNumber < _ChallengeStageData.template.Length - 1 && _storyQuestNumber < _playerData.SaveData.Progress)
+            if (_challengeQuestNumber < _ChallengeStageData.template.Length - 1 && _challengeQuestNumber < _playerData.SaveData.Progress)
                 _challengeQuestNumber++;
         }
         TextChange();
@@ -78,17 +79,26 @@ public class StartScript : MonoBehaviour
 
     public void PhaseDown()
     {
-        if (_selectedIndex > 1)
+        if (_selectedIndex == 4 || _selectedIndex <= 1)
+        {
+            if (_selectedIndex == 0)
+            {
+                Debug.Log("A");
+                Application.Quit();
+            }
+            else
+            {
+                _selectedIndex = 0;
+                _animator.SetInteger("phase", 0);
+                _animator2.SetInteger("phase", 0);
+            }
+            _returnButtonTMP.text = "I—¹";
+        }
+        else
         {
             _selectedIndex = 1;
             _animator.SetInteger("phase", 1);
             _animator2.SetInteger("phase", 1);
-        }
-        else
-        {
-            _selectedIndex = 0;
-            _animator.SetInteger("phase", 0);
-            _animator2.SetInteger("phase", 0);
         }
     }
     public void Decision()

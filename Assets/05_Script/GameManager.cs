@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public string _playerName = string.Empty;
     public Action InButtlePause;
     public Action InButtleReStart;
-
+    [SerializeField] GameObject _text;
 
     void Start()
     {
@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     {
         InButtlePause.Invoke();
         _pause = true;
+        _text.SetActive(true);
     }
 
     public void OpenMenu()
@@ -39,6 +40,7 @@ public class GameManager : MonoBehaviour
     {
         InButtleReStart.Invoke();
         _pause = false;
+        _text.SetActive(false);
     }
 }
 

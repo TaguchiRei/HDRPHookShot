@@ -91,9 +91,6 @@ public class PlayerMove : MonoBehaviour
         AbilitySetting.abilityNumber1 = (int)_defaultAbilitySet.x;
         AbilitySetting.abilityNumber2 = (int)_defaultAbilitySet.y;
         AbilitySetting.abilityNumber3 = (int)_defaultAbilitySet.z;
-        Debug.Log(AbilitySetting.abilityNumber1);
-        Debug.Log(AbilitySetting.abilityNumber2);
-        Debug.Log(AbilitySetting.abilityNumber3);
         _gameManager.InButtlePause += Pause;
         _gameManager.InButtleReStart += ReStart;
     }
